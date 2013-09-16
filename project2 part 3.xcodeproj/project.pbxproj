@@ -17,7 +17,12 @@
 		EA26D38417DD582E0066C43B /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA26D38317DD582E0066C43B /* Default@2x.png */; };
 		EA26D38617DD582E0066C43B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA26D38517DD582E0066C43B /* Default-568h@2x.png */; };
 		EA26D38917DD582E0066C43B /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA26D38717DD582E0066C43B /* MainStoryboard.storyboard */; };
-		EA26D38C17DD582E0066C43B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D38B17DD582E0066C43B /* ViewController.m */; };
+		EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D38B17DD582E0066C43B /* ListEventViewController.m */; };
+		EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39917DD5A280066C43B /* ListEventCell.m */; };
+		EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39D17DD5B370066C43B /* ListEvent.m */; };
+		EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A117DD5D600066C43B /* ListEventDataSource.m */; };
+		EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A417DD5E220066C43B /* CustomCellColor.m */; };
+		EA26D3A717DD63B50066C43B /* super_rough_nav.png in Resources */ = {isa = PBXBuildFile; fileRef = EA26D3A617DD63B50066C43B /* super_rough_nav.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,8 +40,17 @@
 		EA26D38317DD582E0066C43B /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		EA26D38517DD582E0066C43B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		EA26D38817DD582E0066C43B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		EA26D38A17DD582E0066C43B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		EA26D38B17DD582E0066C43B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		EA26D38A17DD582E0066C43B /* ListEventViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ListEventViewController.h; sourceTree = "<group>"; };
+		EA26D38B17DD582E0066C43B /* ListEventViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ListEventViewController.m; sourceTree = "<group>"; };
+		EA26D39817DD5A280066C43B /* ListEventCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListEventCell.h; sourceTree = "<group>"; };
+		EA26D39917DD5A280066C43B /* ListEventCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEventCell.m; sourceTree = "<group>"; };
+		EA26D39C17DD5B370066C43B /* ListEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListEvent.h; sourceTree = "<group>"; };
+		EA26D39D17DD5B370066C43B /* ListEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEvent.m; sourceTree = "<group>"; };
+		EA26D3A017DD5D600066C43B /* ListEventDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListEventDataSource.h; sourceTree = "<group>"; };
+		EA26D3A117DD5D600066C43B /* ListEventDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEventDataSource.m; sourceTree = "<group>"; };
+		EA26D3A317DD5E220066C43B /* CustomCellColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellColor.h; sourceTree = "<group>"; };
+		EA26D3A417DD5E220066C43B /* CustomCellColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellColor.m; sourceTree = "<group>"; };
+		EA26D3A617DD63B50066C43B /* super_rough_nav.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = super_rough_nav.png; path = ../../../Desktop/super_rough_nav.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,11 +97,12 @@
 		EA26D37517DD582E0066C43B /* project2 part 3 */ = {
 			isa = PBXGroup;
 			children = (
-				EA26D37E17DD582E0066C43B /* AppDelegate.h */,
-				EA26D37F17DD582E0066C43B /* AppDelegate.m */,
-				EA26D38717DD582E0066C43B /* MainStoryboard.storyboard */,
-				EA26D38A17DD582E0066C43B /* ViewController.h */,
-				EA26D38B17DD582E0066C43B /* ViewController.m */,
+				EA26D39317DD58C90066C43B /* storyboards */,
+				EA26D39F17DD5CDE0066C43B /* datasource */,
+				EA26D39B17DD5B210066C43B /* models */,
+				EA26D39617DD59F10066C43B /* views */,
+				EA26D39417DD58D60066C43B /* controllers */,
+				EA26D39217DD58B80066C43B /* delegate */,
 				EA26D37617DD582E0066C43B /* Supporting Files */,
 			);
 			path = "project2 part 3";
@@ -96,6 +111,7 @@
 		EA26D37617DD582E0066C43B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EA26D3A617DD63B50066C43B /* super_rough_nav.png */,
 				EA26D37717DD582E0066C43B /* project2 part 3-Info.plist */,
 				EA26D37817DD582E0066C43B /* InfoPlist.strings */,
 				EA26D37B17DD582E0066C43B /* main.m */,
@@ -105,6 +121,69 @@
 				EA26D38517DD582E0066C43B /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EA26D39217DD58B80066C43B /* delegate */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D37E17DD582E0066C43B /* AppDelegate.h */,
+				EA26D37F17DD582E0066C43B /* AppDelegate.m */,
+			);
+			name = delegate;
+			sourceTree = "<group>";
+		};
+		EA26D39317DD58C90066C43B /* storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D38717DD582E0066C43B /* MainStoryboard.storyboard */,
+			);
+			name = storyboards;
+			sourceTree = "<group>";
+		};
+		EA26D39417DD58D60066C43B /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D38A17DD582E0066C43B /* ListEventViewController.h */,
+				EA26D38B17DD582E0066C43B /* ListEventViewController.m */,
+			);
+			name = controllers;
+			sourceTree = "<group>";
+		};
+		EA26D39617DD59F10066C43B /* views */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D39717DD5A030066C43B /* table cells */,
+			);
+			name = views;
+			sourceTree = "<group>";
+		};
+		EA26D39717DD5A030066C43B /* table cells */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D39817DD5A280066C43B /* ListEventCell.h */,
+				EA26D39917DD5A280066C43B /* ListEventCell.m */,
+			);
+			name = "table cells";
+			sourceTree = "<group>";
+		};
+		EA26D39B17DD5B210066C43B /* models */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D39C17DD5B370066C43B /* ListEvent.h */,
+				EA26D39D17DD5B370066C43B /* ListEvent.m */,
+				EA26D3A317DD5E220066C43B /* CustomCellColor.h */,
+				EA26D3A417DD5E220066C43B /* CustomCellColor.m */,
+			);
+			name = models;
+			sourceTree = "<group>";
+		};
+		EA26D39F17DD5CDE0066C43B /* datasource */ = {
+			isa = PBXGroup;
+			children = (
+				EA26D3A017DD5D600066C43B /* ListEventDataSource.h */,
+				EA26D3A117DD5D600066C43B /* ListEventDataSource.m */,
+			);
+			name = datasource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -163,6 +242,7 @@
 				EA26D38417DD582E0066C43B /* Default@2x.png in Resources */,
 				EA26D38617DD582E0066C43B /* Default-568h@2x.png in Resources */,
 				EA26D38917DD582E0066C43B /* MainStoryboard.storyboard in Resources */,
+				EA26D3A717DD63B50066C43B /* super_rough_nav.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,7 +255,11 @@
 			files = (
 				EA26D37C17DD582E0066C43B /* main.m in Sources */,
 				EA26D38017DD582E0066C43B /* AppDelegate.m in Sources */,
-				EA26D38C17DD582E0066C43B /* ViewController.m in Sources */,
+				EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */,
+				EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */,
+				EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */,
+				EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */,
+				EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

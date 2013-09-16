@@ -1,23 +1,149 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2519" systemVersion="12A206j" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1856"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <scenes>
-        <!--class Prefix:identifier View Controller-->
+        <!--List Event View Controller-->
         <scene sceneID="5">
             <objects>
-                <viewController id="2" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="2" customClass="ListEventViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="yYg-4T-DvC"/>
+                        <viewControllerLayoutGuide type="bottom" id="jW3-51-Yva"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="3">
-                        <rect key="frame" x="0.0" y="20" width="320" height="460"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="T7L-9g-Ug4">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="448"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="448" id="rEr-3Y-HA3"/>
+                                </constraints>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="listEventCell" id="0tN-Sy-T2U" customClass="ListEventCell">
+                                        <rect key="frame" x="0.0" y="22" width="320" height="80"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0tN-Sy-T2U" id="z0N-ro-Zby">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Date" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TGu-gc-fOj">
+                                                    <rect key="frame" x="0.0" y="29" width="88" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="49l-nO-4Va"/>
+                                                        <constraint firstAttribute="width" constant="88" id="x03-BL-9VU"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </label>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Event" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="3f6-3G-JqY">
+                                                    <rect key="frame" x="96" y="40" width="204" height="0.0"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="2" id="SZo-pX-4me"/>
+                                                    </connections>
+                                                </textField>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Event" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="197" translatesAutoresizingMaskIntoConstraints="NO" id="AI2-ME-Vxu">
+                                                    <rect key="frame" x="103" y="13" width="197" height="54"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="197" id="Jtc-n7-46s"/>
+                                                        <constraint firstAttribute="height" constant="54" id="sS7-YJ-v3N"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </label>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="boz-FS-l7I">
+                                                    <rect key="frame" x="96" y="25" width="204" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="2" id="g5E-e3-brv"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="3f6-3G-JqY" secondAttribute="trailing" constant="20" id="Ex3-pm-r08"/>
+                                            <constraint firstItem="TGu-gc-fOj" firstAttribute="leading" secondItem="0tN-Sy-T2U" secondAttribute="leading" id="TCo-4X-3J4"/>
+                                            <constraint firstItem="AI2-ME-Vxu" firstAttribute="centerY" secondItem="0tN-Sy-T2U" secondAttribute="centerY" id="ahT-yK-wR2"/>
+                                            <constraint firstItem="3f6-3G-JqY" firstAttribute="leading" secondItem="TGu-gc-fOj" secondAttribute="trailing" constant="8" symbolic="YES" id="d3f-mv-b2G"/>
+                                            <constraint firstAttribute="trailing" secondItem="AI2-ME-Vxu" secondAttribute="trailing" constant="20" id="hMt-ap-olK"/>
+                                            <constraint firstItem="3f6-3G-JqY" firstAttribute="baseline" secondItem="AI2-ME-Vxu" secondAttribute="baseline" id="nt8-kB-czk"/>
+                                            <constraint firstItem="3f6-3G-JqY" firstAttribute="centerY" secondItem="AI2-ME-Vxu" secondAttribute="centerY" id="r9d-oS-Tso"/>
+                                            <constraint firstItem="TGu-gc-fOj" firstAttribute="top" secondItem="0tN-Sy-T2U" secondAttribute="top" constant="29" id="s1e-oY-7nx"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="dateLabel" destination="TGu-gc-fOj" id="KJu-Ab-xQ2"/>
+                                            <outlet property="eventLabel" destination="AI2-ME-Vxu" id="9o0-NG-sfz"/>
+                                            <outlet property="textField" destination="boz-FS-l7I" id="2hi-MA-5Wj"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="2" id="SHo-F4-WSL"/>
+                                    <outlet property="delegate" destination="2" id="UaN-CG-ffZ"/>
+                                </connections>
+                            </tableView>
+                            <imageView contentMode="scaleToFill" image="super_rough_nav.png" translatesAutoresizingMaskIntoConstraints="NO" id="g1l-bX-Jwm">
+                                <rect key="frame" x="0.0" y="468" width="320" height="100"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="pFq-2x-2ex" appends="YES" id="as7-zj-DIR"/>
+                                    <outletCollection property="gestureRecognizers" destination="asR-7F-eQI" appends="YES" id="z2V-hX-6KH"/>
+                                    <outletCollection property="gestureRecognizers" destination="y1r-55-gaC" appends="YES" id="6sr-oh-dwZ"/>
+                                    <outletCollection property="gestureRecognizers" destination="2Ss-eR-dkv" appends="YES" id="QNM-wQ-DfQ"/>
+                                </connections>
+                            </imageView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="g1l-bX-Jwm" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="7JP-rp-WXY"/>
+                            <constraint firstItem="T7L-9g-Ug4" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" id="87N-4W-JJr"/>
+                            <constraint firstItem="T7L-9g-Ug4" firstAttribute="top" secondItem="3" secondAttribute="top" id="NrQ-73-QS2"/>
+                            <constraint firstItem="T7L-9g-Ug4" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="fkC-wA-Quo"/>
+                            <constraint firstItem="g1l-bX-Jwm" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="r6B-ec-tiF"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="tableView" destination="T7L-9g-Ug4" id="96m-qZ-ikZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="up" id="pFq-2x-2ex">
+                    <connections>
+                        <action selector="pullUp:" destination="2" id="ein-Dg-qGQ"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="asR-7F-eQI">
+                    <connections>
+                        <action selector="switchCategory:" destination="2" id="qSs-h7-otQ"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="y1r-55-gaC">
+                    <connections>
+                        <action selector="switchCategory:" destination="2" id="3AU-ii-IfF"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="2Ss-eR-dkv">
+                    <connections>
+                        <action selector="showAllEvents:" destination="2" id="QFZ-Qa-fkT"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
         </scene>
     </scenes>
+    <resources>
+        <image name="super_rough_nav.png" width="320" height="100"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
