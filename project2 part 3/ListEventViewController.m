@@ -236,7 +236,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // checking to se if works
     // Dispose of any resources that can be recreated.
 }
 
