@@ -11,6 +11,7 @@
 @implementation ListEventDataSource
 
 @synthesize events;
+@synthesize eventsAddedToAll;
 @synthesize currentKey;
 
 static ListEventDataSource *_sharedDataSource = nil;
@@ -20,6 +21,8 @@ static ListEventDataSource *_sharedDataSource = nil;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[ListEventDataSource alloc] init];
         _sharedDataSource.currentKey = @0;
+        _sharedDataSource.events = [[NSMapTable alloc] init];
+        _sharedDataSource.eventsAddedToAll = [[NSMutableArray alloc] init];
     });
     return _sharedDataSource;
 }
@@ -39,6 +42,10 @@ static ListEventDataSource *_sharedDataSource = nil;
             [allEvents addObject:currentEvent];
         }
     }
+    for(int i = 0; i < eventsAddedToAll.count; ++i) {
+        ListEvent *currentEvent = [eventsAddedToAll objectAtIndex:i];
+        [allEvents addObject:currentEvent];
+    }
     return allEvents;
 }
 
@@ -49,16 +56,24 @@ static ListEventDataSource *_sharedDataSource = nil;
 - (NSInteger)numberOfEventsForCurrentKey {
     if([self isDisplayingAllEvents]) {
         NSInteger totalNumberOfEvents = 0;
+        NSLog(@"events : %@",events);
         for(NSNumber *key in events) {
+            NSLog(@"key: %@",key);
             NSArray *array = [events objectForKey:key];
             totalNumberOfEvents += array.count;
         }
+        totalNumberOfEvents += eventsAddedToAll.count;
         return totalNumberOfEvents;
     }
     return [[events objectForKey:currentKey] count];
 }
 
 - (ListEvent *)recentlyAddedEvent {
+    if([self isDisplayingAllEvents]) {
+        if(eventsAddedToAll.count > 0) {
+            return [eventsAddedToAll objectAtIndex:eventsAddedToAll.count-1];
+        }
+    }
     NSArray *eventsForKey = [events objectForKey:currentKey];
     NSInteger numOfEvents = eventsForKey.count;
     return [eventsForKey objectAtIndex:numOfEvents - 1];
@@ -71,21 +86,32 @@ static ListEventDataSource *_sharedDataSource = nil;
         events = [[NSMapTable alloc] init];
     }
     if(currentKey == nil) currentKey = @0;
-    /*
+
     if([self isDisplayingAllEvents]) {
-        if([events objectForKey:@0] == nil) [events setObject:[[NSMutableArray alloc] init] forKey:@0];
-        [[events objectForKey:@0] addObject:newEvent];
-        [self organizeEvents];
-        //[events setObject:newEvent forKey:@0];
+        if(eventsAddedToAll == nil) {
+            eventsAddedToAll = [[NSMutableArray alloc] init];
+        }
+        newEvent.categoryID = @0;
+        [eventsAddedToAll addObject:newEvent];
         return;
     }
-     */
+    
     if([events objectForKey:currentKey] == nil) {
         NSLog(@"init");
         // initialize array
         [events setObject:[[NSMutableArray alloc] init] forKey:currentKey];
     }
     [[events objectForKey:currentKey] addObject:newEvent];
+}
+
+- (void)removeEvent:(ListEvent *)eventToBeRemoved {
+    NSNumber *key = eventToBeRemoved.categoryID;
+    NSArray *eventsForKey = [events objectForKey:key];
+    for(int i = 0; i < eventsForKey.count; ++i) {
+        if([eventToBeRemoved isEqual:[eventsForKey objectAtIndex:i]]) {
+            [[events objectForKey:key] removeObjectAtIndex:i];
+        }
+    }
 }
 
 - (void)removeEventAtIndexPath:(NSIndexPath *)indexPath {
@@ -142,7 +168,6 @@ static ListEventDataSource *_sharedDataSource = nil;
     [events removeAllObjects];
     ListEvent *currentEvent = [[ListEvent alloc] init];
     NSNumber *eventKey;
-    
     // go through all 'keys' in events
     for(NSNumber *key in temp) {
         // go through each of the arrays
@@ -150,7 +175,9 @@ static ListEventDataSource *_sharedDataSource = nil;
         for(int i = 0; i < array.count; ++i) {
             // grab the event and its ID
             currentEvent = [array objectAtIndex:i];
+            
             eventKey = currentEvent.categoryID;
+            if(eventKey == nil) eventKey = @0;
             
             // it there is no key in events that matches the event key,
             // create a new array for it
@@ -161,6 +188,15 @@ static ListEventDataSource *_sharedDataSource = nil;
             // add current event to events with its ID
             [[events objectForKey:eventKey] addObject:currentEvent];
         }
+    }
+    if(eventsAddedToAll.count > 0) {
+        if([events objectForKey:@0] == nil) {
+            [events setObject:[[NSMutableArray alloc] init] forKey:@0];
+            for(int i = 0; i < eventsAddedToAll.count; ++i) {
+                [[events objectForKey:@0] addObject:[eventsAddedToAll objectAtIndex:i]];
+            }
+        }
+        [eventsAddedToAll removeAllObjects];
     }
 }
 

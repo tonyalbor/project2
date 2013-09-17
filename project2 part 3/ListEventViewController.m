@@ -17,6 +17,7 @@
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSLog(@"current category: %@",[[ListEventDataSource sharedDataSource] currentKey]);
     return [[ListEventDataSource sharedDataSource] numberOfEventsForCurrentKey];
 }
 
@@ -52,10 +53,10 @@
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
     [cell.eventLabel setText:event.title];
+    NSLog(@"category id for event: %@",event.categoryID);
+    if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
     
-    BOOL eventCategoryIs99 = [event.categoryID isEqualToNumber:@99];
-    
-    CustomCellColor *backgroundColor = [CustomCellColor colorForId:eventCategoryIs99 ? @0 : event.categoryID];
+    CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [UIColor colorWithRed:backgroundColor.red green:backgroundColor.green blue:backgroundColor.blue alpha:1];
     
     UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] init];
@@ -114,9 +115,10 @@
     [newCell.textField becomeFirstResponder];
 }
 
-- (void)deleteSwipedCellAtIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
+- (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
     [self.tableView beginUpdates];
-    [[ListEventDataSource sharedDataSource] removeEventAtIndexPath:indexPath];
+    //[[ListEventDataSource sharedDataSource] removeEventAtIndexPath:indexPath];
+    [[ListEventDataSource sharedDataSource] removeEvent:event];
     [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
     [self.tableView endUpdates];
 }
@@ -184,11 +186,12 @@
     UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    ListEvent *eventToBeRemoved = [self getEventForIndexPath:indexPath];
     
     if(swipeDirection == UISwipeGestureRecognizerDirectionLeft) {
-        [self deleteSwipedCellAtIndexPath:indexPath withRowAnimation:UITableViewRowAnimationLeft];
+        [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationLeft];
     } else if(swipeDirection == UISwipeGestureRecognizerDirectionRight) {
-        [self deleteSwipedCellAtIndexPath:indexPath withRowAnimation:UITableViewRowAnimationRight];
+        [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationRight];
     } else {
         // wait, what
     }
@@ -199,7 +202,8 @@
     NSLog(@"tapped cell");
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    ListEvent *event = [[ListEventDataSource sharedDataSource] eventForIndexPath:indexPath];
+    ListEvent *event = [self getEventForIndexPath:indexPath];
+    
     [event changeColor];
     [self.tableView reloadData];
 }
@@ -237,6 +241,17 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (ListEvent *)getEventForIndexPath:(NSIndexPath *)indexPath {
+    ListEventDataSource *sharedDataSource = [ListEventDataSource sharedDataSource];
+    NSArray *events;
+    if([sharedDataSource isDisplayingAllEvents]) {
+        events = [sharedDataSource getAllEvents];
+    } else {
+        events = [sharedDataSource eventsForCurrentKey];
+    }
+    return [events objectAtIndex:indexPath.row];
 }
 
 @end
