@@ -14,11 +14,13 @@
 
 @implementation ListEventViewController
 
+@synthesize sharedDataSource;
+
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"current category: %@",[[ListEventDataSource sharedDataSource] currentKey]);
-    return [[ListEventDataSource sharedDataSource] numberOfEventsForCurrentKey];
+    NSLog(@"current category: %@",[sharedDataSource currentKey]);
+    return [sharedDataSource numberOfEventsForCurrentKey];
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -35,7 +37,6 @@
 }
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    ListEventDataSource *sharedDataSource = [ListEventDataSource sharedDataSource];
     NSNumber *currentKey = [sharedDataSource currentKey];
     
     NSArray *events;
@@ -48,13 +49,19 @@
         events = [[sharedDataSource events] objectForKey:currentKey];
     }
     
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width+10, 30, 40, 40)];
+    [button setTitle:@"ni" forState:UIControlStateNormal];
+    [button setBackgroundColor:[UIColor redColor]];
+    [cell.contentView addSubview:button];
+    
     ListEvent *event = [events objectAtIndex:indexPath.row];
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
     [cell.eventLabel setText:event.title];
-    NSLog(@"category id for event: %@",event.categoryID);
+    
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
+    //NSLog(@"category id for event: %@",event.categoryID);
     
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [UIColor colorWithRed:backgroundColor.red green:backgroundColor.green blue:backgroundColor.blue alpha:1];
@@ -80,12 +87,12 @@
 }
 
 - (void)deleteAllEventsFromTableView {
-    [self.tableView beginUpdates];
+    //[self.tableView beginUpdates];
     for(int i = 0; i < [self.tableView numberOfRowsInSection:0]; ++ i) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
     }
-    [self.tableView endUpdates];
+    //[self.tableView endUpdates];
 }
 
 - (void)insertRowAtBottomOfTableView {
@@ -93,7 +100,7 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:numberOfRows inSection:0];
     
     [self.tableView beginUpdates];
-    [[ListEventDataSource sharedDataSource] addEvent:[ListEvent new]];
+    [sharedDataSource addEvent:[ListEvent new]];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
 }
@@ -102,14 +109,16 @@
     NSInteger newCellIndex = [self.tableView numberOfRowsInSection:0] - 1;
     NSIndexPath *newCellIndexPath = [NSIndexPath indexPathForRow:newCellIndex inSection:0];
     ListEventCell *newCell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:newCellIndexPath];
-    ListEventDataSource *sharedDataSource = [ListEventDataSource sharedDataSource];
     
-    ListEvent *event = [sharedDataSource recentlyAddedEvent];
-    event.categoryID = [[ListEventDataSource sharedDataSource] currentKey];
+    // can also try recentlyAddedEvent
+    ListEvent *event = [self getEventForIndexPath:newCellIndexPath];
+    event.categoryID = [sharedDataSource currentKey];
+    if([event.categoryID isEqualToNumber:@99]) {
+        event.categoryID = @0;
+    }
+    //BOOL createWhiteCell = [sharedDataSource isDisplayingAllEvents];
     
-    BOOL createWhiteCell = [sharedDataSource isDisplayingAllEvents];
-    
-    newCell.cellColor = [CustomCellColor colorForId:createWhiteCell ? @0 : event.categoryID];
+    newCell.cellColor = [CustomCellColor colorForId:/*createWhiteCell ? @0 : */event.categoryID];
     //[self.tableView reloadData];
     [newCell.textField setEnabled:YES];
     [newCell.textField becomeFirstResponder];
@@ -117,10 +126,27 @@
 
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
     [self.tableView beginUpdates];
-    //[[ListEventDataSource sharedDataSource] removeEventAtIndexPath:indexPath];
-    [[ListEventDataSource sharedDataSource] removeEvent:event];
+    [sharedDataSource removeEvent:event];
     [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
     [self.tableView endUpdates];
+}
+
+- (void)scrollToBottomOfTableView {
+    /*NSInteger numOfCells = [self.tableView numberOfRowsInSection:0];
+    if(numOfCells > 1) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(numOfCells-1) inSection:0];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }*/
+}
+
+- (void)adjustTableViewForInsertion {
+    //self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 200, 0);
+    //self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 200, 0);
+}
+
+- (void)readjustTableViewBackToNormal {
+    //self.tableView.contentInset = UIEdgeInsetsZero;
+    //self.tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
 #pragma mark IBActions
@@ -128,15 +154,15 @@
 - (IBAction)pullUp:(id)sender {
     NSLog(@"pulled up");
     
+    [self adjustTableViewForInsertion];
+    [self scrollToBottomOfTableView];
     [self insertRowAtBottomOfTableView];
-    NSLog(@"1");
     [self bringUpKeyboardForNewEvent];
-    NSLog(@"2");
 }
 
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
     // called when swiped left/right
-    [[ListEventDataSource sharedDataSource] organizeEvents];
+    [sharedDataSource organizeEvents];
     
     [self.tableView beginUpdates];
     if(gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
@@ -146,8 +172,8 @@
             [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
         }
 
-        [[ListEventDataSource sharedDataSource] decrementCurrentKey];
-        NSArray *arr = [[ListEventDataSource sharedDataSource] eventsForCurrentKey];
+        [sharedDataSource decrementCurrentKey];
+        NSArray *arr = [sharedDataSource eventsForCurrentKey];
         NSIndexPath *indexPath;
         for(int i = 0; i < arr.count; ++i) {
             indexPath = [NSIndexPath indexPathForRow:i inSection:0];
@@ -161,8 +187,8 @@
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
         }
-        [[ListEventDataSource sharedDataSource] incrementCurrentKey];
-        NSArray *arr = [[ListEventDataSource sharedDataSource] eventsForCurrentKey];
+        [sharedDataSource incrementCurrentKey];
+        NSArray *arr = [sharedDataSource eventsForCurrentKey];
         NSIndexPath *indexPath;
         for(int i = 0; i < arr.count; ++i) {
             indexPath = [NSIndexPath indexPathForRow:i inSection:0];
@@ -175,10 +201,50 @@
 
 - (IBAction)showAllEvents:(id)sender {
     // called when double tapped
-    [[ListEventDataSource sharedDataSource] organizeEvents];
-    [[ListEventDataSource sharedDataSource] displayAllEvents];
-    [self.tableView reloadData];
+    
+    if(![sharedDataSource isDisplayingAllEvents]) {
+        [self.tableView beginUpdates];
+        [self deleteAllEventsFromTableView];
+        [sharedDataSource organizeEvents];
+        [sharedDataSource displayAllEvents];
+        
+        NSArray *allEvents = [sharedDataSource getAllEvents];
+        for(int i = 0; i < allEvents.count; ++i)  {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
+        }
+        [self.tableView endUpdates];
+    }
 }
+
+- (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
+    if(sender.state == UIGestureRecognizerStateBegan ) {
+        NSLog(@"menu doe");
+        [UIView animateWithDuration:.3 animations:^{
+            self.containerView.alpha = 1;
+        }];
+    } else if(sender.state == UIGestureRecognizerStateEnded) {
+        [UIView animateWithDuration:.5 animations:^{
+            self.containerView.alpha = 0;
+        }];
+        CGPoint point = [sender locationInView:self.containerView];
+
+        NSLog(@"x:%.02lf y:%.02lf",point.x,point.y);
+    }
+    
+}
+
+#pragma mark Menu Options
+
+- (IBAction)hitButton:(id)sender {
+    NSLog(@"hit");
+  
+    self.containerView.hidden = YES;
+    [UIView animateWithDuration:.5 animations:^{
+        self.containerView.alpha = 0;
+    }];
+}
+
 
 #pragma mark UIGestureRecognizer
 
@@ -215,25 +281,36 @@
 #pragma mark UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self readjustTableViewBackToNormal];
+    [self scrollToBottomOfTableView];
     
-    ListEvent *newEvent = [[ListEventDataSource sharedDataSource] recentlyAddedEvent];
+    ListEvent *newEvent = [sharedDataSource recentlyAddedEvent];
     newEvent.title = textField.text;
     [self.tableView reloadData];
     textField.text = @"";
     [textField setEnabled:NO];
     [textField resignFirstResponder];
-  
+    //[sharedDataSource organizeEvents];
     return NO;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    ListEventCell *cell = (ListEventCell *)textField.superview.superview.superview;
+    UIView *view = textField.superview;
+    while(![view isKindOfClass:[ListEventCell class]]) {
+        // keep getting textfield's superview until it is the ListEventCell
+        // i think on ios 6 and ios 7 they have a different heirarchy
+        // but eventually it'll get there
+        view = view.superview;
+    }
+    ListEventCell *cell = (ListEventCell *)view;
     return cell.eventLabel.text.length == 0;
 }
 
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
+    self.containerView.alpha = 0;
+    sharedDataSource = [ListEventDataSource sharedDataSource];
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -244,7 +321,6 @@
 }
 
 - (ListEvent *)getEventForIndexPath:(NSIndexPath *)indexPath {
-    ListEventDataSource *sharedDataSource = [ListEventDataSource sharedDataSource];
     NSArray *events;
     if([sharedDataSource isDisplayingAllEvents]) {
         events = [sharedDataSource getAllEvents];

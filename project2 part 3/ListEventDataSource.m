@@ -56,9 +56,7 @@ static ListEventDataSource *_sharedDataSource = nil;
 - (NSInteger)numberOfEventsForCurrentKey {
     if([self isDisplayingAllEvents]) {
         NSInteger totalNumberOfEvents = 0;
-        NSLog(@"events : %@",events);
         for(NSNumber *key in events) {
-            NSLog(@"key: %@",key);
             NSArray *array = [events objectForKey:key];
             totalNumberOfEvents += array.count;
         }
@@ -93,11 +91,11 @@ static ListEventDataSource *_sharedDataSource = nil;
         }
         newEvent.categoryID = @0;
         [eventsAddedToAll addObject:newEvent];
+        NSLog(@"count of added to all: %d",eventsAddedToAll.count);
         return;
     }
     
     if([events objectForKey:currentKey] == nil) {
-        NSLog(@"init");
         // initialize array
         [events setObject:[[NSMutableArray alloc] init] forKey:currentKey];
     }
@@ -110,6 +108,13 @@ static ListEventDataSource *_sharedDataSource = nil;
     for(int i = 0; i < eventsForKey.count; ++i) {
         if([eventToBeRemoved isEqual:[eventsForKey objectAtIndex:i]]) {
             [[events objectForKey:key] removeObjectAtIndex:i];
+            return;
+        }
+    }
+    // if method hasn't returned, that means the event is in added to all
+    for(int i = 0; i < eventsAddedToAll.count; ++i) {
+        if([eventToBeRemoved isEqual:[eventsAddedToAll objectAtIndex:i]]) {
+            [eventsAddedToAll removeObjectAtIndex:i];
         }
     }
 }
@@ -190,11 +195,12 @@ static ListEventDataSource *_sharedDataSource = nil;
         }
     }
     if(eventsAddedToAll.count > 0) {
-        if([events objectForKey:@0] == nil) {
-            [events setObject:[[NSMutableArray alloc] init] forKey:@0];
-            for(int i = 0; i < eventsAddedToAll.count; ++i) {
-                [[events objectForKey:@0] addObject:[eventsAddedToAll objectAtIndex:i]];
-            }
+        //[events setObject:[[NSMutableArray alloc] init] forKey:@0];
+        for(int i = 0; i < eventsAddedToAll.count; ++i) {
+            ListEvent *event = [eventsAddedToAll objectAtIndex:i];
+            NSNumber *key = event.categoryID;
+            if([events objectForKey:key] == nil) [events setObject:[[NSMutableArray alloc] init] forKey:key];
+            [[events objectForKey:key] addObject:event];
         }
         [eventsAddedToAll removeAllObjects];
     }

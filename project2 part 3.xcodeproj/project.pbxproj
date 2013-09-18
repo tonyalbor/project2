@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA0D3E6617E932B0003B8F85 /* super-rough-nav2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA0D3E6517E932B0003B8F85 /* super-rough-nav2.png */; };
 		EA26D37017DD582E0066C43B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D36F17DD582E0066C43B /* UIKit.framework */; };
 		EA26D37217DD582E0066C43B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D37117DD582E0066C43B /* Foundation.framework */; };
 		EA26D37417DD582E0066C43B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D37317DD582E0066C43B /* CoreGraphics.framework */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EA0D3E6517E932B0003B8F85 /* super-rough-nav2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "super-rough-nav2.png"; path = "../../../Desktop/super-rough-nav2.png"; sourceTree = "<group>"; };
 		EA26D36C17DD582E0066C43B /* project2 part 3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "project2 part 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA26D36F17DD582E0066C43B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EA26D37117DD582E0066C43B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -112,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				EA26D3A617DD63B50066C43B /* super_rough_nav.png */,
+				EA0D3E6517E932B0003B8F85 /* super-rough-nav2.png */,
 				EA26D37717DD582E0066C43B /* project2 part 3-Info.plist */,
 				EA26D37817DD582E0066C43B /* InfoPlist.strings */,
 				EA26D37B17DD582E0066C43B /* main.m */,
@@ -238,6 +241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA26D37A17DD582E0066C43B /* InfoPlist.strings in Resources */,
+				EA0D3E6617E932B0003B8F85 /* super-rough-nav2.png in Resources */,
 				EA26D38217DD582E0066C43B /* Default.png in Resources */,
 				EA26D38417DD582E0066C43B /* Default@2x.png in Resources */,
 				EA26D38617DD582E0066C43B /* Default-568h@2x.png in Resources */,
@@ -382,6 +386,7 @@
 				EA26D39117DD582E0066C43B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -15,5 +15,9 @@
 @interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) ListEventDataSource *sharedDataSource;
+
+@property (weak, nonatomic) IBOutlet UIView *containerView;
+
 
 @end
