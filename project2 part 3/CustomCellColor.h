@@ -16,6 +16,8 @@
 
 @property (strong, nonatomic) NSNumber *index;
 
+- (UIColor *)customCellColorToUIColor;
+
 + (CustomCellColor *)colorForId:(NSNumber *)index;
 
 + (CustomCellColor *)whiteColor;

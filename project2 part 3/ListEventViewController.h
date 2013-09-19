@@ -11,6 +11,7 @@
 #import "ListEventCell.h"
 #import "ListEventDataSource.h"
 #import "CustomCellColor.h"
+#import "DetailViewController.h"
 
 @interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 

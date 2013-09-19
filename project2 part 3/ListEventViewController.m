@@ -20,6 +20,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSLog(@"current category: %@",[sharedDataSource currentKey]);
+    self.title = [NSString stringWithFormat:@"@%@",[sharedDataSource currentKey]];
     return [sharedDataSource numberOfEventsForCurrentKey];
 }
 
@@ -64,7 +65,7 @@
     //NSLog(@"category id for event: %@",event.categoryID);
     
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
-    cell.backgroundColor = [UIColor colorWithRed:backgroundColor.red green:backgroundColor.green blue:backgroundColor.blue alpha:1];
+    cell.backgroundColor = [backgroundColor customCellColorToUIColor];
     
     UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] init];
     [leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
@@ -160,13 +161,31 @@
     [self bringUpKeyboardForNewEvent];
 }
 
+- (void)switchCategoryToTheLeft {
+    int numOfCells = [self.tableView numberOfRowsInSection:0];
+    for(int i = 0; i < numOfCells; ++i) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+    }
+    
+    [sharedDataSource decrementCurrentKey];
+    NSArray *arr = [sharedDataSource eventsForCurrentKey];
+    NSIndexPath *indexPath;
+    for(int i = 0; i < arr.count; ++i) {
+        indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
+    }
+}
+
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
     // called when swiped left/right
     [sharedDataSource organizeEvents];
     
+    if([[sharedDataSource events] count] <= 1) return;
+    
     [self.tableView beginUpdates];
     if(gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
-        int numOfCells = [self.tableView numberOfRowsInSection:0];
+        /*int numOfCells = [self.tableView numberOfRowsInSection:0];
         for(int i = 0; i < numOfCells; ++i) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
@@ -178,29 +197,34 @@
         for(int i = 0; i < arr.count; ++i) {
             indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
-        }
-
+        }*/
+        [self switchCategoryToTheLeft];
         
     } else if(gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-        int numOfCells = [self.tableView numberOfRowsInSection:0];
-        for(int i = 0; i < numOfCells; ++i) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
-        }
-        [sharedDataSource incrementCurrentKey];
-        NSArray *arr = [sharedDataSource eventsForCurrentKey];
-        NSIndexPath *indexPath;
-        for(int i = 0; i < arr.count; ++i) {
-            indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-            [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-        }
+        [self switchCategoryToTheRight];
     }
     [self.tableView endUpdates];
     //[self.tableView reloadData];
 }
 
+- (void)switchCategoryToTheRight {
+    int numOfCells = [self.tableView numberOfRowsInSection:0];
+    for(int i = 0; i < numOfCells; ++i) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
+    }
+    [sharedDataSource incrementCurrentKey];
+    NSArray *arr = [sharedDataSource eventsForCurrentKey];
+    NSIndexPath *indexPath;
+    for(int i = 0; i < arr.count; ++i) {
+        indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+    }
+}
+
 - (IBAction)showAllEvents:(id)sender {
     // called when double tapped
+    if([[sharedDataSource events] count] <= 1) return;
     
     if(![sharedDataSource isDisplayingAllEvents]) {
         [self.tableView beginUpdates];
@@ -246,7 +270,7 @@
 }
 
 
-#pragma mark UIGestureRecognizer
+#pragma mark ListEventCell UIGestureRecognizer
 
 - (void)swipedCell:(UISwipeGestureRecognizer *)gestureRecognizer {
     UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
@@ -275,7 +299,19 @@
 }
 
 - (void)longPressedCell:(UILongPressGestureRecognizer *)gesutureRecognizer {
-    [self.tableView setEditing:YES animated:1];
+    //[self.tableView setEditing:YES animated:1];
+    NSLog(@"long press");
+    if(gesutureRecognizer.state == UIGestureRecognizerStateBegan) {
+        NSLog(@"got in");
+        ListEventCell *cell = (ListEventCell *)gesutureRecognizer.view;
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+        ListEvent *event = [self getEventForIndexPath:indexPath];
+        CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
+        UIColor *colorcolor = [color customCellColorToUIColor];
+        [DetailViewController setColor:colorcolor];
+        DetailViewController *detail = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
+        [self.navigationController pushViewController:detail animated:YES];
+    }
 }
 
 #pragma mark UITextFieldDelegate

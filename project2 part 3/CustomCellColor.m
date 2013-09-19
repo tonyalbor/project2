@@ -12,6 +12,10 @@
 
 @synthesize red,blue,green;
 
+- (UIColor *)customCellColorToUIColor {
+    return [UIColor colorWithRed:red green:green blue:blue alpha:1];
+}
+
 + (CustomCellColor *)newColorWithRed:(CGFloat)redFloat blue:(CGFloat)blueFloat green:(CGFloat)greenFloat andIndex:(NSNumber *)index {
     CustomCellColor *color = [CustomCellColor new];
     color.red = redFloat;

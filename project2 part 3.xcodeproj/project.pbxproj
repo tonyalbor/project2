@@ -24,6 +24,7 @@
 		EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A117DD5D600066C43B /* ListEventDataSource.m */; };
 		EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A417DD5E220066C43B /* CustomCellColor.m */; };
 		EA26D3A717DD63B50066C43B /* super_rough_nav.png in Resources */ = {isa = PBXBuildFile; fileRef = EA26D3A617DD63B50066C43B /* super_rough_nav.png */; };
+		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,8 @@
 		EA26D3A317DD5E220066C43B /* CustomCellColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellColor.h; sourceTree = "<group>"; };
 		EA26D3A417DD5E220066C43B /* CustomCellColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellColor.m; sourceTree = "<group>"; };
 		EA26D3A617DD63B50066C43B /* super_rough_nav.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = super_rough_nav.png; path = ../../../Desktop/super_rough_nav.png; sourceTree = "<group>"; };
+		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		EA762F8F17EBA14E00B80123 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +151,8 @@
 			children = (
 				EA26D38A17DD582E0066C43B /* ListEventViewController.h */,
 				EA26D38B17DD582E0066C43B /* ListEventViewController.m */,
+				EA762F8E17EBA14E00B80123 /* DetailViewController.h */,
+				EA762F8F17EBA14E00B80123 /* DetailViewController.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -260,6 +265,7 @@
 				EA26D37C17DD582E0066C43B /* main.m in Sources */,
 				EA26D38017DD582E0066C43B /* AppDelegate.m in Sources */,
 				EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */,
+				EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */,
 				EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */,
 				EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */,
 				EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */,

@@ -111,7 +111,7 @@ static ListEventDataSource *_sharedDataSource = nil;
             return;
         }
     }
-    // if method hasn't returned, that means the event is in added to all
+    // if method hasn't returned, that means the event is in eventsAddedToAll
     for(int i = 0; i < eventsAddedToAll.count; ++i) {
         if([eventToBeRemoved isEqual:[eventsAddedToAll objectAtIndex:i]]) {
             [eventsAddedToAll removeObjectAtIndex:i];
