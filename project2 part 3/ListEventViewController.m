@@ -161,22 +161,6 @@
     [self bringUpKeyboardForNewEvent];
 }
 
-- (void)switchCategoryToTheLeft {
-    int numOfCells = [self.tableView numberOfRowsInSection:0];
-    for(int i = 0; i < numOfCells; ++i) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-    }
-    
-    [sharedDataSource decrementCurrentKey];
-    NSArray *arr = [sharedDataSource eventsForCurrentKey];
-    NSIndexPath *indexPath;
-    for(int i = 0; i < arr.count; ++i) {
-        indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
-    }
-}
-
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
     // called when swiped left/right
     [sharedDataSource organizeEvents];
@@ -184,42 +168,8 @@
     if([[sharedDataSource events] count] <= 1) return;
     
     [self.tableView beginUpdates];
-    if(gestureRecognizer.direction == UISwipeGestureRecognizerDirectionLeft) {
-        /*int numOfCells = [self.tableView numberOfRowsInSection:0];
-        for(int i = 0; i < numOfCells; ++i) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-        }
-
-        [sharedDataSource decrementCurrentKey];
-        NSArray *arr = [sharedDataSource eventsForCurrentKey];
-        NSIndexPath *indexPath;
-        for(int i = 0; i < arr.count; ++i) {
-            indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-            [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
-        }*/
-        [self switchCategoryToTheLeft];
-        
-    } else if(gestureRecognizer.direction == UISwipeGestureRecognizerDirectionRight) {
-        [self switchCategoryToTheRight];
-    }
+    [self switchCategoryWithDirection:gestureRecognizer.direction];
     [self.tableView endUpdates];
-    //[self.tableView reloadData];
-}
-
-- (void)switchCategoryToTheRight {
-    int numOfCells = [self.tableView numberOfRowsInSection:0];
-    for(int i = 0; i < numOfCells; ++i) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
-    }
-    [sharedDataSource incrementCurrentKey];
-    NSArray *arr = [sharedDataSource eventsForCurrentKey];
-    NSIndexPath *indexPath;
-    for(int i = 0; i < arr.count; ++i) {
-        indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-    }
 }
 
 - (IBAction)showAllEvents:(id)sender {
@@ -356,6 +306,8 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark helper functions
+
 - (ListEvent *)getEventForIndexPath:(NSIndexPath *)indexPath {
     NSArray *events;
     if([sharedDataSource isDisplayingAllEvents]) {
@@ -364,6 +316,42 @@
         events = [sharedDataSource eventsForCurrentKey];
     }
     return [events objectAtIndex:indexPath.row];
+}
+
+- (void)switchCategoryWithDirection:(UISwipeGestureRecognizerDirection)direction {
+    BOOL shouldIncrement;
+    UITableViewRowAnimation insertAnimation;
+    UITableViewRowAnimation deleteAnimation;
+    
+    // determine which direction to insert/delete
+    if(direction == UISwipeGestureRecognizerDirectionLeft) {
+        shouldIncrement = NO;
+        deleteAnimation = UITableViewRowAnimationLeft;
+        insertAnimation = UITableViewRowAnimationRight;
+    } else if(direction == UISwipeGestureRecognizerDirectionRight) {
+        shouldIncrement = YES;
+        insertAnimation = UITableViewRowAnimationLeft;
+        deleteAnimation = UITableViewRowAnimationRight;
+    }
+    
+    // delete rows
+    int numOfCells = [self.tableView numberOfRowsInSection:0];
+    for(int i = 0; i < numOfCells; ++i) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:deleteAnimation];
+    }
+    
+    // increment/decrement key
+    if(shouldIncrement) [sharedDataSource incrementCurrentKey];
+    else [sharedDataSource decrementCurrentKey];
+    
+    // insert rows
+    NSArray *arr = [sharedDataSource eventsForCurrentKey];
+    NSIndexPath *indexPath;
+    for(int i = 0; i < arr.count; ++i) {
+        indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:insertAnimation];
+    }
 }
 
 @end
