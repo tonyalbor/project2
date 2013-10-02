@@ -81,19 +81,23 @@
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] init];
     [longPress addTarget:self action:@selector(longPressedCell:)];
     
-    [cell addGestureRecognizer:leftSwipe];
-    [cell addGestureRecognizer:rightSwipe];
-    [cell addGestureRecognizer:tap];
-    [cell addGestureRecognizer:longPress];
+    if(cell.gestureRecognizers.count != 4) {
+        // 4 is the number of recognizers I'd like to add
+        // if there are 4 recognizers for the cell, then there
+        // is no need to add them again
+        // (since this method gets called a lotttt)
+        [cell addGestureRecognizer:leftSwipe];
+        [cell addGestureRecognizer:rightSwipe];
+        [cell addGestureRecognizer:tap];
+        [cell addGestureRecognizer:longPress];
+    }
 }
 
 - (void)deleteAllEventsFromTableView {
-    //[self.tableView beginUpdates];
     for(int i = 0; i < [self.tableView numberOfRowsInSection:0]; ++ i) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
     }
-    //[self.tableView endUpdates];
 }
 
 - (void)insertRowAtBottomOfTableView {
@@ -117,10 +121,7 @@
     if([event.categoryID isEqualToNumber:@99]) {
         event.categoryID = @0;
     }
-    //BOOL createWhiteCell = [sharedDataSource isDisplayingAllEvents];
-    
-    newCell.cellColor = [CustomCellColor colorForId:/*createWhiteCell ? @0 : */event.categoryID];
-    //[self.tableView reloadData];
+   
     [newCell.textField setEnabled:YES];
     [newCell.textField becomeFirstResponder];
 }
@@ -192,15 +193,27 @@
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
+    
     if(sender.state == UIGestureRecognizerStateBegan ) {
         NSLog(@"menu doe");
+        UIView *mask = [[UIView alloc] initWithFrame:self.view.frame];
+        [mask setHidden:YES];
+        [mask setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
+        
+        [self.containerView insertSubview:mask atIndex:0];
+        
         [UIView animateWithDuration:.3 animations:^{
+            [mask setHidden:NO];
+            [mask setAlpha:.8];
             self.containerView.alpha = 1;
         }];
     } else if(sender.state == UIGestureRecognizerStateEnded) {
         [UIView animateWithDuration:.5 animations:^{
+            [[self.containerView.subviews objectAtIndex:0] setAlpha:0];
+            //[[self.view.subviews objectAtIndex:self.view.subviews.count-2] removeFromSuperview];
             self.containerView.alpha = 0;
         }];
+        
         CGPoint point = [sender locationInView:self.containerView];
 
         NSLog(@"x:%.02lf y:%.02lf",point.x,point.y);

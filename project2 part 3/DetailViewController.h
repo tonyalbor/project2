@@ -8,9 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    DATE,
+    REMINDER,
+    NOTES
+} detailSegments;
+
 @interface DetailViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet UISegmentedControl *seg;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
+@property (weak, nonatomic) IBOutlet UIDatePicker *datePicker;
+@property (weak, nonatomic) IBOutlet UIButton *setTimeButton;
 
 + (void)setColor:(UIColor *)cellBackgroundColor;
 

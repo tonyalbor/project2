@@ -13,6 +13,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *eventLabel;
 @property (weak, nonatomic) IBOutlet UITextField *textField;
-@property (strong, nonatomic) CustomCellColor *cellColor;
+//@property (strong, nonatomic) CustomCellColor *cellColor;
 
 @end

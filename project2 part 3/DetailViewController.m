@@ -14,7 +14,12 @@
 
 @implementation DetailViewController
 
+@synthesize datePicker;
+@synthesize setTimeButton;
+@synthesize segmentedControl;
+
 static UIColor *color = nil;
+static BOOL displayingDatePicker;
 
 + (void)setColor:(UIColor *)cellBackgroundColor {
     color = cellBackgroundColor;
@@ -28,10 +33,73 @@ static UIColor *color = nil;
     return self;
 }
 
+- (IBAction)setDate:(id)sender {
+    NSDate *date;
+    NSString *dateString;
+    
+    date = datePicker.date;
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    
+    UIButton *button = (UIButton *)sender;
+    if([button.titleLabel.text isEqualToString:@"Set Date"]) {
+        [dateFormatter setDateFormat:@"MM/dd/yy"];
+    } else if([button.titleLabel.text isEqualToString:@"Set Time"]) {
+        [dateFormatter setDateFormat:@"hh:mm"];
+    }
+    
+    dateString = [dateFormatter stringFromDate:date];
+
+    NSLog(@"Date: %@",dateString);
+}
+
+- (IBAction)segmentedControlDidSwitch:(id)sender {
+    
+    switch (segmentedControl.selectedSegmentIndex) {
+        case DATE:
+            [self displayDateSegment];
+            break;
+        case REMINDER:
+            [self displayReminderSegment];
+            break;
+        case NOTES:
+            [self displayNotesSegment];
+            break;
+        default:
+            NSLog(@"whaaaaaaat");
+            break;
+    }
+    [self setUpDatePicker];
+}
+
+- (void)setUpDatePicker {
+    [datePicker setHidden:!displayingDatePicker];
+    [setTimeButton setHidden:!displayingDatePicker];
+}
+
+- (void)displayDateSegment {
+    [datePicker setDatePickerMode:UIDatePickerModeDate];
+    [setTimeButton setTitle:@"Set Date" forState:UIControlStateNormal];
+    displayingDatePicker = YES;
+}
+
+- (void)displayReminderSegment {
+    [datePicker setDatePickerMode:UIDatePickerModeTime];
+    [setTimeButton setTitle:@"Set Time" forState:UIControlStateNormal];
+    displayingDatePicker = YES;
+}
+
+- (void)displayNotesSegment {
+    displayingDatePicker = NO;
+}
+
 - (void)viewDidLoad {
+    NSLog(@"hot here");
     if(color != nil) {
         self.view.backgroundColor = color;
     } else NSLog(@"not setting that color");
+    
+    displayingDatePicker = segmentedControl.selectedSegmentIndex != NOTES;
+    
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 }
