@@ -93,7 +93,6 @@ static BOOL displayingDatePicker;
 }
 
 - (void)viewDidLoad {
-    NSLog(@"hot here");
     if(color != nil) {
         self.view.backgroundColor = color;
     } else NSLog(@"not setting that color");

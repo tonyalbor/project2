@@ -16,7 +16,13 @@
 
 @synthesize sharedDataSource;
 
+static CGFloat cellHeight = 80;
+
 #pragma mark UITableViewDataSource
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return cellHeight;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSLog(@"current category: %@",[sharedDataSource currentKey]);
@@ -50,11 +56,6 @@
         events = [[sharedDataSource events] objectForKey:currentKey];
     }
     
-    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(self.tableView.frame.size.width+10, 30, 40, 40)];
-    [button setTitle:@"ni" forState:UIControlStateNormal];
-    [button setBackgroundColor:[UIColor redColor]];
-    [cell.contentView addSubview:button];
-    
     ListEvent *event = [events objectAtIndex:indexPath.row];
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
@@ -67,25 +68,28 @@
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
     
-    UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] init];
-    [leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
-    [leftSwipe addTarget:self action:@selector(swipedCell:)];
-    
-    UISwipeGestureRecognizer *rightSwipe = [[UISwipeGestureRecognizer alloc] init];
-    [rightSwipe setDirection:UISwipeGestureRecognizerDirectionRight];
-    [rightSwipe addTarget:self action:@selector(swipedCell:)];
-    
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
-    [tap addTarget:self action:@selector(tappedCell:)];
-    
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] init];
-    [longPress addTarget:self action:@selector(longPressedCell:)];
+   
     
     if(cell.gestureRecognizers.count != 4) {
-        // 4 is the number of recognizers I'd like to add
-        // if there are 4 recognizers for the cell, then there
+        // 5 is the number of recognizers I'd like to add
+        // if there are 5 recognizers for the cell, then there
         // is no need to add them again
         // (since this method gets called a lotttt)
+        
+        UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] init];
+        [leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
+        [leftSwipe addTarget:self action:@selector(swipedCell:)];
+        
+        UISwipeGestureRecognizer *rightSwipe = [[UISwipeGestureRecognizer alloc] init];
+        [rightSwipe setDirection:UISwipeGestureRecognizerDirectionRight];
+        [rightSwipe addTarget:self action:@selector(swipedCell:)];
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
+        [tap addTarget:self action:@selector(tappedCell:)];
+        
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] init];
+        [longPress addTarget:self action:@selector(longPressedCell:)];
+        
         [cell addGestureRecognizer:leftSwipe];
         [cell addGestureRecognizer:rightSwipe];
         [cell addGestureRecognizer:tap];
@@ -196,7 +200,7 @@
     
     if(sender.state == UIGestureRecognizerStateBegan ) {
         NSLog(@"menu doe");
-        UIView *mask = [[UIView alloc] initWithFrame:self.view.frame];
+        UIView *mask = [[UIView alloc] initWithFrame:self.containerView.frame];
         [mask setHidden:YES];
         [mask setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
         
@@ -277,6 +281,47 @@
     }
 }
 
+- (void)pinchedCells:(UIPinchGestureRecognizer *)gestureRecongnizer {
+    UIGestureRecognizerState pinchState = gestureRecongnizer.state;
+    
+    if(pinchState == UIGestureRecognizerStateRecognized) {
+        NSLog(@"recognized pinch");
+    } else if(pinchState == UIGestureRecognizerStateChanged) {
+        // this is where it all should happen
+        NSLog(@"changed pinch");
+        if([self didPinchInwards:gestureRecongnizer]) {
+            // make cells smaller
+            if(cellHeight >= 40) {
+                cellHeight -= 1;
+            }
+        } else if([self didPinchOutwards:gestureRecongnizer]) {
+            // make cells larger
+            if(cellHeight <= 100) {
+                cellHeight += 1;
+            }
+        }
+        [self.tableView reloadData];
+    } else if(pinchState == UIGestureRecognizerStateEnded) {
+        
+    }
+}
+
+/*
+ 
+ these two methods need to be changed
+ i believe the problem is that the scale
+ is based off of the initial two points
+ where the pinch started
+ 
+ */
+- (BOOL)didPinchInwards:(UIPinchGestureRecognizer *)pinchRecognizer {
+    return pinchRecognizer.scale < 1;
+}
+
+- (BOOL)didPinchOutwards:(UIPinchGestureRecognizer *)pinchRecognizer {
+    return pinchRecognizer.scale > 1;
+}
+
 #pragma mark UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -311,7 +356,12 @@
     self.containerView.alpha = 0;
     sharedDataSource = [ListEventDataSource sharedDataSource];
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    // Do any additional setup after loading the view, typically from a nib.
+    
+    // pinch stuff
+    UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
+    [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
+    [self.tableView addGestureRecognizer:pinchRecognizer];
 }
 
 - (void)didReceiveMemoryWarning {
