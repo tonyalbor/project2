@@ -71,8 +71,8 @@ static CGFloat cellHeight = 80;
    
     
     if(cell.gestureRecognizers.count != 4) {
-        // 5 is the number of recognizers I'd like to add
-        // if there are 5 recognizers for the cell, then there
+        // 4 is the number of recognizers I'd like to add
+        // if there are 4 recognizers for the cell, then there
         // is no need to add them again
         // (since this method gets called a lotttt)
         
