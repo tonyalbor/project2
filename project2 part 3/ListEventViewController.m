@@ -194,6 +194,9 @@ static CGFloat cellHeight = 80;
         }
         [self.tableView endUpdates];
     }
+    
+    // save data doe
+    [sharedDataSource saveData];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EA0D3E6617E932B0003B8F85 /* super-rough-nav2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA0D3E6517E932B0003B8F85 /* super-rough-nav2.png */; };
 		EA26D37017DD582E0066C43B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D36F17DD582E0066C43B /* UIKit.framework */; };
 		EA26D37217DD582E0066C43B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D37117DD582E0066C43B /* Foundation.framework */; };
 		EA26D37417DD582E0066C43B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D37317DD582E0066C43B /* CoreGraphics.framework */; };
@@ -23,12 +22,11 @@
 		EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39D17DD5B370066C43B /* ListEvent.m */; };
 		EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A117DD5D600066C43B /* ListEventDataSource.m */; };
 		EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A417DD5E220066C43B /* CustomCellColor.m */; };
-		EA26D3A717DD63B50066C43B /* super_rough_nav.png in Resources */ = {isa = PBXBuildFile; fileRef = EA26D3A617DD63B50066C43B /* super_rough_nav.png */; };
 		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
+		EAFDD8711856F2200049F482 /* save_data.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAFDD8701856F2200049F482 /* save_data.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		EA0D3E6517E932B0003B8F85 /* super-rough-nav2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "super-rough-nav2.png"; path = "../../../Desktop/super-rough-nav2.png"; sourceTree = "<group>"; };
 		EA26D36C17DD582E0066C43B /* project2 part 3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "project2 part 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA26D36F17DD582E0066C43B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		EA26D37117DD582E0066C43B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -53,9 +51,9 @@
 		EA26D3A117DD5D600066C43B /* ListEventDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEventDataSource.m; sourceTree = "<group>"; };
 		EA26D3A317DD5E220066C43B /* CustomCellColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellColor.h; sourceTree = "<group>"; };
 		EA26D3A417DD5E220066C43B /* CustomCellColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellColor.m; sourceTree = "<group>"; };
-		EA26D3A617DD63B50066C43B /* super_rough_nav.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = super_rough_nav.png; path = ../../../Desktop/super_rough_nav.png; sourceTree = "<group>"; };
 		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		EA762F8F17EBA14E00B80123 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		EAFDD8701856F2200049F482 /* save_data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = save_data.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,8 +114,6 @@
 		EA26D37617DD582E0066C43B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				EA26D3A617DD63B50066C43B /* super_rough_nav.png */,
-				EA0D3E6517E932B0003B8F85 /* super-rough-nav2.png */,
 				EA26D37717DD582E0066C43B /* project2 part 3-Info.plist */,
 				EA26D37817DD582E0066C43B /* InfoPlist.strings */,
 				EA26D37B17DD582E0066C43B /* main.m */,
@@ -125,6 +121,7 @@
 				EA26D38117DD582E0066C43B /* Default.png */,
 				EA26D38317DD582E0066C43B /* Default@2x.png */,
 				EA26D38517DD582E0066C43B /* Default-568h@2x.png */,
+				EAFDD8701856F2200049F482 /* save_data.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -246,12 +243,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA26D37A17DD582E0066C43B /* InfoPlist.strings in Resources */,
-				EA0D3E6617E932B0003B8F85 /* super-rough-nav2.png in Resources */,
+				EAFDD8711856F2200049F482 /* save_data.plist in Resources */,
 				EA26D38217DD582E0066C43B /* Default.png in Resources */,
 				EA26D38417DD582E0066C43B /* Default@2x.png in Resources */,
 				EA26D38617DD582E0066C43B /* Default-568h@2x.png in Resources */,
 				EA26D38917DD582E0066C43B /* MainStoryboard.storyboard in Resources */,
-				EA26D3A717DD63B50066C43B /* super_rough_nav.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -210,4 +210,23 @@ static ListEventDataSource *_sharedDataSource = nil;
     return [currentKey isEqualToNumber:@99];
 }
 
+- (void)saveData {
+    NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES) lastObject];
+    path = [path stringByAppendingPathComponent:@"save_data.plist"];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSLog(@"the file exists? %d",[fileManager fileExistsAtPath:path]);
+    
+    if(![fileManager fileExistsAtPath:path]) {
+        NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"save_data" ofType:@"plist"];
+        [fileManager copyItemAtPath:sourcePath toPath:path error:nil];
+    }
+    NSArray *array = [[NSArray alloc] initWithContentsOfFile:path];
+    NSLog(@"array: %@",array);
+    NSDictionary *d = [self mapToDictionary:events];
+    [d writeToFile:path atomically:YES];
+    NSLog(@"array now: %@",array);
+}
+
 @end

@@ -40,4 +40,6 @@
 
 - (BOOL)isDisplayingAllEvents;
 
+- (void)saveData;
+
 @end
