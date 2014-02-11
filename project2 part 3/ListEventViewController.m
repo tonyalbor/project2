@@ -20,6 +20,10 @@ static CGFloat cellHeight = 80;
 
 #pragma mark UITableViewDataSource
 
+- (IBAction)segmentedControlValueDidChange:(UISegmentedControl *)sender {
+    //[sharedDataSource setCurrentList:@([sender selectedSegmentIndex])];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return cellHeight;
 }
@@ -196,7 +200,7 @@ static CGFloat cellHeight = 80;
     }
     
     // save data doe
-    [sharedDataSource saveData];
+    //[sharedDataSource saveData];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
@@ -255,7 +259,6 @@ static CGFloat cellHeight = 80;
     } else {
         // wait, what
     }
-
 }
 
 - (void)tappedCell:(UITapGestureRecognizer *)gestureRecognizer {
