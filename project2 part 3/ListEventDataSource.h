@@ -14,6 +14,7 @@
 // key: NSNumber id for CustomCellColor
 // object: NSMutableArray containing events for key
 @property (strong, nonatomic) NSMapTable *events;
+// -------------------------------------------------
 
 @property (strong, nonatomic) NSMutableArray *eventsAddedToAll;
 
@@ -26,9 +27,11 @@
 - (NSMutableArray *)eventsForCurrentKey;
 - (NSInteger)numberOfEventsForCurrentKey;
 - (ListEvent *)recentlyAddedEvent;
+
 - (void)addEvent:(ListEvent *)newEvent;
 - (void)removeEvent:(ListEvent *)eventToBeRemoved;
 - (void)removeEventAtIndexPath:(NSIndexPath *)indexPath;
+
 - (ListEvent *)eventForIndexPath:(NSIndexPath *)indexPath;
 
 - (void)incrementCurrentKey;

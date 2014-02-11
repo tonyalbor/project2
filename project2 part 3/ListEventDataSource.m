@@ -24,6 +24,7 @@ static ListEventDataSource *_sharedDataSource = nil;
         _sharedDataSource.events = [[NSMapTable alloc] init];
         _sharedDataSource.eventsAddedToAll = [[NSMutableArray alloc] init];
     });
+    
     return _sharedDataSource;
 }
 
