@@ -129,7 +129,13 @@ static ListEventDataSource *_sharedDataSource = nil;
     for(int i = 0; i < eventsAddedToAll.count; ++i) {
         if([eventToBeRemoved isEqual:[eventsAddedToAll objectAtIndex:i]]) {
             [eventsAddedToAll removeObjectAtIndex:i];
+            return;
         }
+    }
+    
+    // if still not found, just go through it all to find it
+    for(NSNumber *key in events) {
+        [[events objectForKey:key] removeObject:eventToBeRemoved];
     }
 }
 
