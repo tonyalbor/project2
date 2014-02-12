@@ -101,17 +101,30 @@ static ListEventDataSource *_sharedDataSource = nil;
         [events setObject:[[NSMutableArray alloc] init] forKey:currentKey];
     }
     [[events objectForKey:currentKey] addObject:newEvent];
+    NSLog(@"%@",events);
+    NSLog(@"%@",eventsAddedToAll);
 }
 
 - (void)removeEvent:(ListEvent *)eventToBeRemoved {
+    // key for color
     NSNumber *key = eventToBeRemoved.categoryID;
+    NSLog(@"key: %@",eventToBeRemoved.categoryID);
+    
+    // get all events of the same color
     NSArray *eventsForKey = [events objectForKey:key];
+    NSLog(@"same color count: %d",eventsForKey.count);
+    
+    // go through events of same color
     for(int i = 0; i < eventsForKey.count; ++i) {
+        //NSLog(@"%@",eventToBeRemoved.title);
         if([eventToBeRemoved isEqual:[eventsForKey objectAtIndex:i]]) {
+            // if eventToBeRemoved is found, then remove it
             [[events objectForKey:key] removeObjectAtIndex:i];
             return;
         }
     }
+    
+    NSLog(@"added to all count: %d",eventsAddedToAll.count);
     // if method hasn't returned, that means the event is in eventsAddedToAll
     for(int i = 0; i < eventsAddedToAll.count; ++i) {
         if([eventToBeRemoved isEqual:[eventsAddedToAll objectAtIndex:i]]) {
@@ -152,6 +165,26 @@ static ListEventDataSource *_sharedDataSource = nil;
         currentKey = [NSNumber numberWithInteger:temp];
     }
     if([[events objectForKey:currentKey] count] == 0) [self decrementCurrentKey];
+}
+
+- (void)changeKeyFor:(ListEvent *)event fromKey:(NSNumber *)before toKey:(NSNumber *)after {
+    // get all events for the same before color
+    NSArray *eventsForOldKey = [events objectForKey:before];
+    
+    // find it in events and remove it
+    for(ListEvent *eventEnum in eventsForOldKey) {
+        if([event isEqual:eventEnum]) {
+            [[events objectForKey:before] removeObject:event];
+        }
+    }
+    
+    // initialize array if nil
+    if(![events objectForKey:after]) {
+        [events setObject:[NSMutableArray new] forKey:after];
+    }
+    
+    // place event in after key
+    [[events objectForKey:after] addObject:event];
 }
 
 - (NSMutableDictionary *)mapToDictionary:(NSMapTable *)map {

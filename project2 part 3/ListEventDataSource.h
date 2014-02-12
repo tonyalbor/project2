@@ -37,6 +37,8 @@
 - (void)incrementCurrentKey;
 - (void)decrementCurrentKey;
 
+- (void)changeKeyFor:(ListEvent *)event fromKey:(NSNumber *)before toKey:(NSNumber *)after;
+
 - (void)organizeEvents;
 - (NSMutableArray *)getAllEvents;
 - (void)displayAllEvents;

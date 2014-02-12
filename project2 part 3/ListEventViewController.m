@@ -29,7 +29,19 @@ static CGFloat cellHeight = 80;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"current category: %@",[sharedDataSource currentKey]);
+    //NSLog(@"current category: %@",[sharedDataSource currentKey]);
+    
+    int n = 0;
+    for(NSNumber *key in sharedDataSource.events) {
+        NSArray *a = [sharedDataSource.events objectForKey:key];
+        for(id object in a) {
+            ++n;
+        }
+    }
+
+    NSLog(@"number in actual shit: %d",n);
+    NSLog(@"fake num: %d",sharedDataSource.eventsAddedToAll.count);
+    
     self.title = [NSString stringWithFormat:@"@%@",[sharedDataSource currentKey]];
     return [sharedDataSource numberOfEventsForCurrentKey];
 }
@@ -267,8 +279,15 @@ static CGFloat cellHeight = 80;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *event = [self getEventForIndexPath:indexPath];
     
+    //NSNumber *oldKey = event.categoryID;
     [event changeColor];
+    //NSNumber *newKey = event.categoryID;
+    
+    
+    
     [self.tableView reloadData];
+    //[sharedDataSource changeKeyFor:event fromKey:oldKey toKey:newKey];
+    NSLog(@"events now: %@",sharedDataSource.events);
 }
 
 - (void)longPressedCell:(UILongPressGestureRecognizer *)gesutureRecognizer {
