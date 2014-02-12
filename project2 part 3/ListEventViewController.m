@@ -7,6 +7,9 @@
 //
 
 #import "ListEventViewController.h"
+#import "ListEventDataSource.h"
+#import "CompletedDataSource.h"
+#import "DeletedDataSource.h"
 
 @interface ListEventViewController ()
 
@@ -14,14 +17,55 @@
 
 @implementation ListEventViewController
 
-@synthesize sharedDataSource;
+@synthesize eventDataSource;
+@synthesize completedDataSource;
+@synthesize deletedDataSource;
 
 static CGFloat cellHeight = 80;
+
+// ADD MORE TO THIS
+// ADD MORE TO THIS
+// ADD MORE TO THIS
+static BOOL isInCreateMode = YES;
 
 #pragma mark UITableViewDataSource
 
 - (IBAction)segmentedControlValueDidChange:(UISegmentedControl *)sender {
-    //[sharedDataSource setCurrentList:@([sender selectedSegmentIndex])];
+    //[eventDataSource setCurrentList:@([sender selectedSegmentIndex])];
+    
+    
+    // 0 - deleted
+    // 1 - events
+    // 2 - completed
+    
+    /*
+     
+     IDEA TIME
+     ---------
+     
+     Maybe instead of the segmented control,
+     I can just have three circles at the bottom,
+     one for each list (deleted, events, completed).
+     
+     And then you can touch one to go to that list.
+     
+     Oh, and being able to change the name of a category would be cool.
+     It would work like this:
+     
+        Tap on the navigation item title and enter the name from there.
+     
+     And then just make sure that everywhere where I have been doing:
+     
+        for(NSNumber *key in events) ...
+     
+     I would need to change it to:
+     
+        for(id key in events) ...
+     
+     That way the key can be either a user-entered string, or just an NSNumber *
+     
+     */
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -29,21 +73,8 @@ static CGFloat cellHeight = 80;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    //NSLog(@"current category: %@",[sharedDataSource currentKey]);
-    
-    int n = 0;
-    for(NSNumber *key in sharedDataSource.events) {
-        NSArray *a = [sharedDataSource.events objectForKey:key];
-        for(id object in a) {
-            ++n;
-        }
-    }
-
-    NSLog(@"number in actual shit: %d",n);
-    NSLog(@"fake num: %d",sharedDataSource.eventsAddedToAll.count);
-    
-    self.title = [NSString stringWithFormat:@"@%@",[sharedDataSource currentKey]];
-    return [sharedDataSource numberOfEventsForCurrentKey];
+    //self.title = [NSString stringWithFormat:@"@%@",[eventDataSource currentKey]];
+    return [eventDataSource numberOfEventsForCurrentKey];
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -60,16 +91,16 @@ static CGFloat cellHeight = 80;
 }
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *currentKey = [sharedDataSource currentKey];
+    NSNumber *currentKey = [eventDataSource currentKey];
     
     NSArray *events;
     
-    BOOL allEventsShown = [sharedDataSource isDisplayingAllEvents];
+    BOOL allEventsShown = [eventDataSource isDisplayingAllEvents];
     
     if(allEventsShown) {
-        events = [sharedDataSource getAllEvents];
+        events = [eventDataSource getAllEvents];
     } else {
-        events = [[sharedDataSource events] objectForKey:currentKey];
+        events = [[eventDataSource events] objectForKey:currentKey];
     }
     
     ListEvent *event = [events objectAtIndex:indexPath.row];
@@ -125,7 +156,7 @@ static CGFloat cellHeight = 80;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:numberOfRows inSection:0];
     
     [self.tableView beginUpdates];
-    [sharedDataSource addEvent:[ListEvent new]];
+    [eventDataSource addEvent:[ListEvent new]];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
 }
@@ -137,7 +168,7 @@ static CGFloat cellHeight = 80;
     
     // can also try recentlyAddedEvent
     ListEvent *event = [self getEventForIndexPath:newCellIndexPath];
-    event.categoryID = [sharedDataSource currentKey];
+    event.categoryID = [eventDataSource currentKey];
     if([event.categoryID isEqualToNumber:@99]) {
         event.categoryID = @0;
     }
@@ -148,7 +179,7 @@ static CGFloat cellHeight = 80;
 
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
     [self.tableView beginUpdates];
-    [sharedDataSource removeEvent:event];
+    [eventDataSource removeEvent:event];
     [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
     [self.tableView endUpdates];
 }
@@ -174,7 +205,7 @@ static CGFloat cellHeight = 80;
 #pragma mark IBActions
 
 - (IBAction)pullUp:(id)sender {
-    NSLog(@"pulled up");
+    if(!isInCreateMode) return;
     
     [self adjustTableViewForInsertion];
     [self scrollToBottomOfTableView];
@@ -184,9 +215,9 @@ static CGFloat cellHeight = 80;
 
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
     // called when swiped left/right
-    [sharedDataSource organizeEvents];
+    [eventDataSource organizeEvents];
     
-    if([[sharedDataSource events] count] <= 1) return;
+    if([[eventDataSource events] count] <= 1) return;
     
     [self.tableView beginUpdates];
     [self switchCategoryWithDirection:gestureRecognizer.direction];
@@ -195,15 +226,15 @@ static CGFloat cellHeight = 80;
 
 - (IBAction)showAllEvents:(id)sender {
     // called when double tapped
-    if([[sharedDataSource events] count] <= 1) return;
+    if([[eventDataSource events] count] <= 1) return;
     
-    if(![sharedDataSource isDisplayingAllEvents]) {
+    if(![eventDataSource isDisplayingAllEvents]) {
         [self.tableView beginUpdates];
         [self deleteAllEventsFromTableView];
-        [sharedDataSource organizeEvents];
-        [sharedDataSource displayAllEvents];
+        [eventDataSource organizeEvents];
+        [eventDataSource displayAllEvents];
         
-        NSArray *allEvents = [sharedDataSource getAllEvents];
+        NSArray *allEvents = [eventDataSource getAllEvents];
         for(int i = 0; i < allEvents.count; ++i)  {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
@@ -212,7 +243,7 @@ static CGFloat cellHeight = 80;
     }
     
     // save data doe
-    //[sharedDataSource saveData];
+    //[eventDataSource saveData];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
@@ -283,11 +314,9 @@ static CGFloat cellHeight = 80;
     [event changeColor];
     //NSNumber *newKey = event.categoryID;
     
-    
-    
     [self.tableView reloadData];
-    //[sharedDataSource changeKeyFor:event fromKey:oldKey toKey:newKey];
-    NSLog(@"events now: %@",sharedDataSource.events);
+    //[eventDataSource changeKeyFor:event fromKey:oldKey toKey:newKey];
+    NSLog(@"events now: %@",eventDataSource.events);
 }
 
 - (void)longPressedCell:(UILongPressGestureRecognizer *)gesutureRecognizer {
@@ -353,13 +382,13 @@ static CGFloat cellHeight = 80;
     [self readjustTableViewBackToNormal];
     [self scrollToBottomOfTableView];
     
-    ListEvent *newEvent = [sharedDataSource recentlyAddedEvent];
+    ListEvent *newEvent = [eventDataSource recentlyAddedEvent];
     newEvent.title = textField.text;
     [self.tableView reloadData];
     textField.text = @"";
     [textField setEnabled:NO];
     [textField resignFirstResponder];
-    //[sharedDataSource organizeEvents];
+    //[eventDataSource organizeEvents];
     return NO;
 }
 
@@ -379,7 +408,12 @@ static CGFloat cellHeight = 80;
 
 - (void)viewDidLoad {
     self.containerView.alpha = 0;
-    sharedDataSource = [ListEventDataSource sharedDataSource];
+    
+    // mmmm data
+    eventDataSource = [ListEventDataSource sharedDataSource];
+    completedDataSource = [CompletedDataSource sharedDataSource];
+    deletedDataSource = [DeletedDataSource sharedDataSource];
+    
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
@@ -398,10 +432,10 @@ static CGFloat cellHeight = 80;
 
 - (ListEvent *)getEventForIndexPath:(NSIndexPath *)indexPath {
     NSArray *events;
-    if([sharedDataSource isDisplayingAllEvents]) {
-        events = [sharedDataSource getAllEvents];
+    if([eventDataSource isDisplayingAllEvents]) {
+        events = [eventDataSource getAllEvents];
     } else {
-        events = [sharedDataSource eventsForCurrentKey];
+        events = [eventDataSource eventsForCurrentKey];
     }
     return [events objectAtIndex:indexPath.row];
 }
@@ -430,11 +464,11 @@ static CGFloat cellHeight = 80;
     }
     
     // increment/decrement key
-    if(shouldIncrement) [sharedDataSource incrementCurrentKey];
-    else [sharedDataSource decrementCurrentKey];
+    if(shouldIncrement) [eventDataSource incrementCurrentKey];
+    else [eventDataSource decrementCurrentKey];
     
     // insert rows
-    NSArray *arr = [sharedDataSource eventsForCurrentKey];
+    NSArray *arr = [eventDataSource eventsForCurrentKey];
     NSIndexPath *indexPath;
     for(int i = 0; i < arr.count; ++i) {
         indexPath = [NSIndexPath indexPathForRow:i inSection:0];
