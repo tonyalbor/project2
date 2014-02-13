@@ -19,16 +19,39 @@ static DeletedDataSource *_sharedDataSource = nil;
 + (DeletedDataSource *)sharedDataSource {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        _sharedDataSource = [[DeletedDataSource alloc] init];
         _sharedDataSource.events = [[NSMapTable alloc] init];
+        _sharedDataSource.currentKey = @0;
         // further initialization
     });
     
     return _sharedDataSource;
 }
 
-- (void)deleteEvent:(ListEvent *)event {
+- (void)incrementKey {
+    if([self isDisplayingAllEvents]) currentKey = @0;
+    else if([currentKey isEqualToNumber:@8]) currentKey = @0;
+    else {
+        NSInteger temp = currentKey.integerValue;
+        ++temp;
+        currentKey = [NSNumber numberWithInteger:temp];
+    }
+    if([[events objectForKey:currentKey] count] == 0) [self incrementKey];
+}
+
+- (void)decrementKey {
+    
+}
+
+- (NSNumber *)currentKey {
+    if(![[events objectForKey:currentKey] count]) [self incrementKey];
+    return currentKey;
+}
+
+- (void)deleteEvent:(ListEvent *)eventToBeDeleted {
     // set current key if nil
-    if(!currentKey) currentKey = @0;
+    if(!eventToBeDeleted.categoryID) currentKey = @0;
+    else currentKey = eventToBeDeleted.categoryID;
     
     // init some stuff
     if(![events objectForKey:currentKey]) {
@@ -36,7 +59,27 @@ static DeletedDataSource *_sharedDataSource = nil;
     }
     
     // delete that mofo
-    [[events objectForKey:currentKey] addObject:event];
+    [[events objectForKey:currentKey] addObject:eventToBeDeleted];
+}
+
+- (int)numberOfEventsForCurrentKey {
+    return [[events objectForKey:currentKey] count];
+}
+
+- (BOOL)isDisplayingAllEvents {
+    return [currentKey isEqualToNumber:@99];
+}
+
+- (NSMutableArray *)getAllEvents {
+    NSMutableArray *allEvents = [[NSMutableArray alloc] init];
+    for(id key in events) {
+        NSArray *category = [events objectForKey:key];
+        for(ListEvent *event in category) {
+            [allEvents addObject:event];
+        }
+    }
+    
+    return allEvents;
 }
 
 @end

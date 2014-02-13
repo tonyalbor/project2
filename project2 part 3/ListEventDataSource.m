@@ -7,6 +7,7 @@
 //
 
 #import "ListEventDataSource.h"
+#import "ListEvent.h"
 
 @implementation ListEventDataSource
 

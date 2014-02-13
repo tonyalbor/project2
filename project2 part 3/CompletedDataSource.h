@@ -20,4 +20,11 @@
 
 - (void)completeEvent:(ListEvent *)event;
 
+- (NSMutableArray *)getAllEvents;
+- (BOOL)isDisplayingAllEvents;
+- (int)numberOfEventsForCurrentKey;
+
+- (void)incrementKey;
+- (void)decrementKey;
+
 @end

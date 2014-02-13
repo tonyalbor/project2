@@ -18,6 +18,13 @@
 
 @property (strong, nonatomic) NSNumber *currentKey;
 
-- (void)deleteEvent:(ListEvent *)event;
+- (void)deleteEvent:(ListEvent *)eventToBeDeleted;
+
+- (int)numberOfEventsForCurrentKey;
+
+- (NSMutableArray *)getAllEvents;
+- (BOOL)isDisplayingAllEvents;
+- (void)incrementKey;
+- (void)decrementKey;
 
 @end

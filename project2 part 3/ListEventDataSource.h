@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ListEvent.h"
+
+@class ListEvent;
 
 @interface ListEventDataSource : NSObject
 
