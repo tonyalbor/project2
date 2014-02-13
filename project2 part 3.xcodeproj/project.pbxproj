@@ -25,6 +25,9 @@
 		EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA33247118A8DDAB00916A7E /* super-rough-nav2.png */; };
 		EA4F39FA18A9E1EA00A94E95 /* CompletedDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4F39F918A9E1EA00A94E95 /* CompletedDataSource.m */; };
 		EA4F39FD18A9E1F700A94E95 /* DeletedDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4F39FC18A9E1F700A94E95 /* DeletedDataSource.m */; };
+		EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */; };
+		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
+		EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */; };
 		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
 		EAFDD8711856F2200049F482 /* save_data.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAFDD8701856F2200049F482 /* save_data.plist */; };
 /* End PBXBuildFile section */
@@ -59,6 +62,10 @@
 		EA4F39F918A9E1EA00A94E95 /* CompletedDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CompletedDataSource.m; sourceTree = "<group>"; };
 		EA4F39FB18A9E1F700A94E95 /* DeletedDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeletedDataSource.h; sourceTree = "<group>"; };
 		EA4F39FC18A9E1F700A94E95 /* DeletedDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeletedDataSource.m; sourceTree = "<group>"; };
+		EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-check.png"; sourceTree = "<group>"; };
+		EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-trash.png"; sourceTree = "<group>"; };
+		EA74F46618AC606700B2B5E9 /* CurrentListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentListHandler.h; sourceTree = "<group>"; };
+		EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrentListHandler.m; sourceTree = "<group>"; };
 		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		EA762F8F17EBA14E00B80123 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		EAFDD8701856F2200049F482 /* save_data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = save_data.plist; sourceTree = "<group>"; };
@@ -123,6 +130,8 @@
 			isa = PBXGroup;
 			children = (
 				EA33247118A8DDAB00916A7E /* super-rough-nav2.png */,
+				EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */,
+				EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */,
 				EA26D37717DD582E0066C43B /* project2 part 3-Info.plist */,
 				EA26D37817DD582E0066C43B /* InfoPlist.strings */,
 				EA26D37B17DD582E0066C43B /* main.m */,
@@ -200,6 +209,8 @@
 				EA4F39F918A9E1EA00A94E95 /* CompletedDataSource.m */,
 				EA4F39FB18A9E1F700A94E95 /* DeletedDataSource.h */,
 				EA4F39FC18A9E1F700A94E95 /* DeletedDataSource.m */,
+				EA74F46618AC606700B2B5E9 /* CurrentListHandler.h */,
+				EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */,
 			);
 			name = datasource;
 			sourceTree = "<group>";
@@ -259,7 +270,9 @@
 				EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */,
 				EAFDD8711856F2200049F482 /* save_data.plist in Resources */,
 				EA26D38217DD582E0066C43B /* Default.png in Resources */,
+				EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */,
 				EA26D38417DD582E0066C43B /* Default@2x.png in Resources */,
+				EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */,
 				EA26D38617DD582E0066C43B /* Default-568h@2x.png in Resources */,
 				EA26D38917DD582E0066C43B /* MainStoryboard.storyboard in Resources */,
 			);
@@ -274,6 +287,7 @@
 			files = (
 				EA4F39FA18A9E1EA00A94E95 /* CompletedDataSource.m in Sources */,
 				EA26D37C17DD582E0066C43B /* main.m in Sources */,
+				EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */,
 				EA26D38017DD582E0066C43B /* AppDelegate.m in Sources */,
 				EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */,
 				EA4F39FD18A9E1F700A94E95 /* DeletedDataSource.m in Sources */,
