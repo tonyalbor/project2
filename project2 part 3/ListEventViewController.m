@@ -10,6 +10,7 @@
 #import "ListEventDataSource.h"
 #import "CompletedDataSource.h"
 #import "DeletedDataSource.h"
+#import "CurrentListHandler.h"
 
 @interface ListEventViewController ()
 
@@ -20,6 +21,7 @@
 @synthesize eventDataSource;
 @synthesize completedDataSource;
 @synthesize deletedDataSource;
+@synthesize listHandler;
 
 static CGFloat cellHeight = 80;
 
@@ -64,6 +66,11 @@ static BOOL isInCreateMode = YES;
      
      That way the key can be either a user-entered string, or just an NSNumber *
      
+     
+     ALSO,
+     
+     List of lists???
+     
      */
     
 }
@@ -74,7 +81,9 @@ static BOOL isInCreateMode = YES;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     //self.title = [NSString stringWithFormat:@"@%@",[eventDataSource currentKey]];
-    return [eventDataSource numberOfEventsForCurrentKey];
+    //return [eventDataSource numberOfEventsForCurrentKey];
+    
+    return [[listHandler currentListDataSource] numberOfEventsForCurrentKey];
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -91,16 +100,20 @@ static BOOL isInCreateMode = YES;
 }
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *currentKey = [eventDataSource currentKey];
+    //NSNumber *currentKey = [eventDataSource currentKey];
+    NSNumber *currentKey = [[listHandler currentListDataSource] currentKey];
     
     NSArray *events;
     
-    BOOL allEventsShown = [eventDataSource isDisplayingAllEvents];
+    //BOOL allEventsShown = [eventDataSource isDisplayingAllEvents];
+    BOOL allEventsShown = [[listHandler currentListDataSource] isDisplayingAllEvents];
     
     if(allEventsShown) {
-        events = [eventDataSource getAllEvents];
+        //events = [eventDataSource getAllEvents];
+        events = [[listHandler currentListDataSource] getAllEvents];
     } else {
-        events = [[eventDataSource events] objectForKey:currentKey];
+        //events = [[eventDataSource events] objectForKey:currentKey];
+        events = [[[listHandler currentListDataSource] events] objectForKey:currentKey];
     }
     
     ListEvent *event = [events objectAtIndex:indexPath.row];
@@ -144,10 +157,27 @@ static BOOL isInCreateMode = YES;
     }
 }
 
-- (void)deleteAllEventsFromTableView {
+- (void)insertEventsFromDataSource:(id)dataSource inDirection:(UITableViewRowAnimation)direction {
+    NSNumber *currentKey = [dataSource currentKey];
+    NSArray *events;// = [[dataSource events] objectForKey:currentKey];
+    
+    if([dataSource isDisplayingAllEvents]) {
+        events = [dataSource getAllEvents];
+    } else {
+        events = [[dataSource events] objectForKey:currentKey];
+    }
+    
+    for(int i = 0; i < events.count; ++i) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
+        //ListEvent *event = [events objectAtIndex:i];
+    }
+}
+
+- (void)deleteAllEventsFromTableViewInDirection:(UITableViewRowAnimation)direction {
     for(int i = 0; i < [self.tableView numberOfRowsInSection:0]; ++ i) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
     }
 }
 
@@ -202,7 +232,7 @@ static BOOL isInCreateMode = YES;
     //self.tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
-#pragma mark IBActions
+#pragma mark UIGestureRecognizer Events
 
 - (IBAction)pullUp:(id)sender {
     if(!isInCreateMode) return;
@@ -230,7 +260,7 @@ static BOOL isInCreateMode = YES;
     
     if(![eventDataSource isDisplayingAllEvents]) {
         [self.tableView beginUpdates];
-        [self deleteAllEventsFromTableView];
+        [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
         [eventDataSource organizeEvents];
         [eventDataSource displayAllEvents];
         
@@ -275,6 +305,30 @@ static BOOL isInCreateMode = YES;
     
 }
 
+- (IBAction)didTapEvents:(id)sender {
+    if([[listHandler currentList] isEqualToNumber:@1]) return;
+    
+    [UIView animateWithDuration:.3 animations:^{
+        // big events
+        // events (105,468)
+        // completed (220,496)
+        // deleted (17, 496)
+        
+        [_eventsImageView setFrame:CGRectMake(105, 468, 110, 100)];
+        [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
+        [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
+    }];
+    
+    UITableViewRowAnimation insertDirection = [self directionToInsert:@1];
+    UITableViewRowAnimation deleteDirection = [self directionToDelete:@1];
+    
+    [listHandler setCurrentList:@1];
+    [self.tableView beginUpdates];
+    [self deleteAllEventsFromTableViewInDirection:deleteDirection];
+    [self insertEventsFromDataSource:eventDataSource inDirection:insertDirection];
+    [self.tableView endUpdates];
+}
+
 #pragma mark Menu Options
 
 - (IBAction)hitButton:(id)sender {
@@ -284,6 +338,58 @@ static BOOL isInCreateMode = YES;
     [UIView animateWithDuration:.5 animations:^{
         self.containerView.alpha = 0;
     }];
+}
+
+#pragma mark UIGestureRecongnizer Deleted
+
+- (IBAction)didTapCompleted:(id)sender {
+    if([[listHandler currentList] isEqualToNumber:@2]) return;
+    
+    [UIView animateWithDuration:.3 animations:^{
+        // big completed
+        // events (105,496)
+        // completed (190,468)
+        // deleted (17,496)
+        
+        [_eventsImageView setFrame:CGRectMake(105, 496, 80, 72)];
+        [_completedImageView setFrame:CGRectMake(190, 468, 110, 100)];
+        [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
+    }];
+    
+    UITableViewRowAnimation insertDirection = [self directionToInsert:@2];
+    UITableViewRowAnimation deleteDirection = [self directionToDelete:@2];
+    
+    [listHandler setCurrentList:@2];
+    [self.tableView beginUpdates];
+    [self deleteAllEventsFromTableViewInDirection:deleteDirection];
+    [self insertEventsFromDataSource:completedDataSource inDirection:insertDirection];
+    [self.tableView endUpdates];
+}
+
+- (IBAction)didTapDeleted:(id)sender {
+    if([[listHandler currentList] isEqualToNumber:@0]) return;
+    
+    [UIView animateWithDuration:.3 animations:^{
+        // big deleted
+        // events (132,496)
+        // completed (220,496)
+        // deleted (20,468)
+        
+        [_eventsImageView setFrame:CGRectMake(132, 496, 80, 72)];
+        [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
+        [_deletedImageView setFrame:CGRectMake(20, 468, 110, 100)];
+    }];
+    
+    UITableViewRowAnimation insertDirection = [self directionToInsert:@0];
+    UITableViewRowAnimation deleteDirection = [self directionToDelete:@0];
+    
+    [listHandler setCurrentList:@0];
+    NSLog(@"%@",[deletedDataSource events]);
+    [self.tableView beginUpdates];
+    [self deleteAllEventsFromTableViewInDirection:deleteDirection];
+    [self insertEventsFromDataSource:deletedDataSource inDirection:insertDirection];
+    [self.tableView endUpdates];
+    
 }
 
 
@@ -296,8 +402,10 @@ static BOOL isInCreateMode = YES;
     ListEvent *eventToBeRemoved = [self getEventForIndexPath:indexPath];
     
     if(swipeDirection == UISwipeGestureRecognizerDirectionLeft) {
+        [deletedDataSource deleteEvent:eventToBeRemoved];
         [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationLeft];
     } else if(swipeDirection == UISwipeGestureRecognizerDirectionRight) {
+        [completedDataSource completeEvent:eventToBeRemoved];
         [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationRight];
     } else {
         // wait, what
@@ -413,6 +521,7 @@ static BOOL isInCreateMode = YES;
     eventDataSource = [ListEventDataSource sharedDataSource];
     completedDataSource = [CompletedDataSource sharedDataSource];
     deletedDataSource = [DeletedDataSource sharedDataSource];
+    listHandler = [CurrentListHandler sharedDataSource];
     
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
@@ -473,6 +582,29 @@ static BOOL isInCreateMode = YES;
     for(int i = 0; i < arr.count; ++i) {
         indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:insertAnimation];
+    }
+}
+
+- (UITableViewRowAnimation)directionToInsert:(NSNumber *)newList {
+    int currentList = [[listHandler currentList] intValue];
+    int newListInt = newList.intValue;
+    
+    if(newListInt > currentList) {
+        return UITableViewRowAnimationRight;
+    } else {
+        return UITableViewRowAnimationLeft;
+    }
+    
+}
+
+- (UITableViewRowAnimation)directionToDelete:(NSNumber *)newList {
+    int currentList = [[listHandler currentList] intValue];
+    int newListInt = newList.intValue;
+    
+    if(newListInt > currentList) {
+        return UITableViewRowAnimationLeft;
+    } else {
+        return UITableViewRowAnimationRight;
     }
 }
 
