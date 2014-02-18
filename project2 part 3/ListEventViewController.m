@@ -11,6 +11,7 @@
 #import "CompletedDataSource.h"
 #import "DeletedDataSource.h"
 #import "CurrentListHandler.h"
+#import "MemoryDataSource.h"
 
 @interface ListEventViewController ()
 
@@ -30,6 +31,8 @@ static CGFloat cellHeight = 80;
 // ADD MORE TO THIS
 static BOOL isInCreateMode = YES;
 
+static BOOL keyboardIsUp = NO;
+
 #pragma mark UITableViewDataSource
 
 - (IBAction)segmentedControlValueDidChange:(UISegmentedControl *)sender {
@@ -44,12 +47,6 @@ static BOOL isInCreateMode = YES;
      
      IDEA TIME
      ---------
-     
-     Maybe instead of the segmented control,
-     I can just have three circles at the bottom,
-     one for each list (deleted, events, completed).
-     
-     And then you can touch one to go to that list.
      
      Oh, and being able to change the name of a category would be cool.
      It would work like this:
@@ -66,10 +63,20 @@ static BOOL isInCreateMode = YES;
      
      That way the key can be either a user-entered string, or just an NSNumber *
      
-     
-     ALSO,
-     
+    
+     ---
      List of lists???
+     ---
+     
+     
+     ---
+     Maybe have a DataSource class that each other data source can inherit from
+     That way, each one of the data source classes does not need to implement a bunch of the same methods,
+     e.g. isDisplayingAllEvents, getAllEvents, and so on
+     
+     I think this would be a good idea, but I'd have to make sure that I do it correctly, maybe one of the
+     data source's implementation of a method is slightly different than an other
+     ---
      
      */
     
@@ -127,8 +134,6 @@ static BOOL isInCreateMode = YES;
     
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
-    
-   
     
     if(cell.gestureRecognizers.count != 4) {
         // 4 is the number of recognizers I'd like to add
@@ -205,6 +210,7 @@ static BOOL isInCreateMode = YES;
    
     [newCell.textField setEnabled:YES];
     [newCell.textField becomeFirstResponder];
+    keyboardIsUp = YES;
 }
 
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
@@ -496,6 +502,7 @@ static BOOL isInCreateMode = YES;
     textField.text = @"";
     [textField setEnabled:NO];
     [textField resignFirstResponder];
+    keyboardIsUp = NO;
     //[eventDataSource organizeEvents];
     return NO;
 }
@@ -515,6 +522,8 @@ static BOOL isInCreateMode = YES;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
+    [[MemoryDataSource sharedDataSource] saveData];
+    
     self.containerView.alpha = 0;
     
     // mmmm data
@@ -530,6 +539,21 @@ static BOOL isInCreateMode = YES;
     UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
     [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
     [self.tableView addGestureRecognizer:pinchRecognizer];
+    
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
+    [tapRecognizer addTarget:self action:@selector(didTapTableView:)];
+    [self.tableView addGestureRecognizer:tapRecognizer];
+}
+
+- (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
+    UITableViewCell *cell = (UITableViewCell *)tapRecognizer.view;
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    NSLog(@"index: %@",indexPath);
+    
+    if(keyboardIsUp) {
+        NSLog(@"keyboard is up");
+    } else NSLog(@"keyboard is not up");
+    
 }
 
 - (void)didReceiveMemoryWarning {
