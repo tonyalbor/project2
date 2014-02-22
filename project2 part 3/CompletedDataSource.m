@@ -29,6 +29,14 @@ static CompletedDataSource *_sharedDataSource = nil;
 }
 
 - (int)numberOfEventsForCurrentKey {
+    if([self isDisplayingAllEvents]) {
+        NSInteger totalNumberOfEvents = 0;
+        for(NSNumber *key in events) {
+            NSArray *array = [events objectForKey:key];
+            totalNumberOfEvents += array.count;
+        }
+        return totalNumberOfEvents;
+    }
     return [[events objectForKey:currentKey] count];
 }
 
@@ -44,6 +52,10 @@ static CompletedDataSource *_sharedDataSource = nil;
     
     // add event to completed events
     [[events objectForKey:currentKey] addObject:event];
+}
+
+- (void)displayAllEvents {
+    currentKey = @99;
 }
 
 - (BOOL)isDisplayingAllEvents {
@@ -62,7 +74,7 @@ static CompletedDataSource *_sharedDataSource = nil;
     return allEvents;
 }
 
-- (void)incrementKey {
+- (void)incrementCurrentKey {
     if([self isDisplayingAllEvents]) currentKey = @0;
     else if([currentKey isEqualToNumber:@8]) currentKey = @0;
     else {
@@ -70,16 +82,32 @@ static CompletedDataSource *_sharedDataSource = nil;
         ++temp;
         currentKey = [NSNumber numberWithInteger:temp];
     }
-    if([[events objectForKey:currentKey] count] == 0) [self incrementKey];
+    if([[events objectForKey:currentKey] count] == 0) [self incrementCurrentKey];
 }
 
-- (void)decrementKey {
-    
+- (void)decrementCurrentKey {
+    if([self isDisplayingAllEvents]) currentKey = @8;
+    else if([currentKey isEqualToNumber:@0]) currentKey = @8;
+    else {
+        NSInteger temp = currentKey.integerValue;
+        --temp;
+        currentKey = [NSNumber numberWithInteger:temp];
+    }
+    if([[events objectForKey:currentKey] count] == 0) [self decrementCurrentKey];
 }
 
 - (NSNumber *)currentKey {
+    if([self isDisplayingAllEvents]) return @99;
     if(![[events objectForKey:currentKey] count]) [self incrementKey];
     return currentKey;
+}
+
+- (NSArray *)eventsForCurrentKey {
+    return [events objectForKey:currentKey];
+}
+
+- (void)organizeEvents {
+    
 }
 
 @end

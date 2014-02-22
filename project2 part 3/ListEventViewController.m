@@ -554,44 +554,14 @@ static BOOL keyboardIsUp = NO;
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    // pinch stuff
-    UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
-    [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
-    [self.tableView addGestureRecognizer:pinchRecognizer];
+    [self UIGestureRecognizersAreFun];
     
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
-    [tapRecognizer addTarget:self action:@selector(didTapTableView:)];
-    [self.tableView addGestureRecognizer:tapRecognizer];
-    
-    UISwipeGestureRecognizer *swipeDeletedNavigationLeft = [[UISwipeGestureRecognizer alloc] init];
-    [swipeDeletedNavigationLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
-    [swipeDeletedNavigationLeft addTarget:self action:@selector(switchCategory:)];
-    [self.deletedImageView addGestureRecognizer:swipeDeletedNavigationLeft];
-    
-    UISwipeGestureRecognizer *swipeDeletedNavigationRight = [[UISwipeGestureRecognizer alloc] init];
-    [swipeDeletedNavigationRight setDirection:UISwipeGestureRecognizerDirectionRight];
-    [swipeDeletedNavigationRight addTarget:self action:@selector(switchCategory:)];
-    [self.deletedImageView addGestureRecognizer:swipeDeletedNavigationRight];
-    
-    UITapGestureRecognizer *doubleTapDeleted = [[UITapGestureRecognizer alloc] init];
-    [doubleTapDeleted setNumberOfTapsRequired:2];
-    [doubleTapDeleted addTarget:self action:@selector(showAllEvents:)];
-    [self.deletedImageView addGestureRecognizer:doubleTapDeleted];
-}
-
-- (id)firstResponderr {
-    for(UIView *subView in self.view.window.subviews) {
-        if([subView isFirstResponder]) { NSLog(@"class: %@",subView.class); return subView; }
-    }
-    
-    NSLog(@"returning nil trolololol");
-    return nil;
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
     if(keyboardIsUp) {
         NSLog(@"keyboard is up");
-        //UITextField *textField = (UITextField *)[self firstResponderr];
+
         int numberOfCells = [self.tableView numberOfRowsInSection:0];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:numberOfCells-1 inSection:0];
         ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
@@ -688,6 +658,46 @@ static BOOL keyboardIsUp = NO;
     [self.tableView reloadData];
     textField.text = @"";
     [textField setEnabled:NO];
+}
+
+- (void)UIGestureRecognizersAreFun {
+    UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
+    [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
+    [self.tableView addGestureRecognizer:pinchRecognizer];
+    
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
+    [tapRecognizer addTarget:self action:@selector(didTapTableView:)];
+    [self.tableView addGestureRecognizer:tapRecognizer];
+    
+    UISwipeGestureRecognizer *swipeDeletedNavigationLeft = [[UISwipeGestureRecognizer alloc] init];
+    [swipeDeletedNavigationLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [swipeDeletedNavigationLeft addTarget:self action:@selector(switchCategory:)];
+    [self.deletedImageView addGestureRecognizer:swipeDeletedNavigationLeft];
+    
+    UISwipeGestureRecognizer *swipeDeletedNavigationRight = [[UISwipeGestureRecognizer alloc] init];
+    [swipeDeletedNavigationRight setDirection:UISwipeGestureRecognizerDirectionRight];
+    [swipeDeletedNavigationRight addTarget:self action:@selector(switchCategory:)];
+    [self.deletedImageView addGestureRecognizer:swipeDeletedNavigationRight];
+    
+    UITapGestureRecognizer *doubleTapDeleted = [[UITapGestureRecognizer alloc] init];
+    [doubleTapDeleted setNumberOfTapsRequired:2];
+    [doubleTapDeleted addTarget:self action:@selector(showAllEvents:)];
+    [self.deletedImageView addGestureRecognizer:doubleTapDeleted];
+    
+    UISwipeGestureRecognizer *swipeCompletedNavigationLeft = [[UISwipeGestureRecognizer alloc] init];
+    [swipeCompletedNavigationLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [swipeCompletedNavigationLeft addTarget:self action:@selector(switchCategory:)];
+    [self.completedImageView addGestureRecognizer:swipeCompletedNavigationLeft];
+    
+    UISwipeGestureRecognizer *swipeCompletedNavigationRight = [[UISwipeGestureRecognizer alloc] init];
+    [swipeCompletedNavigationRight setDirection:UISwipeGestureRecognizerDirectionRight];
+    [swipeCompletedNavigationRight addTarget:self action:@selector(switchCategory:)];
+    [self.completedImageView addGestureRecognizer:swipeCompletedNavigationRight];
+    
+    UITapGestureRecognizer *doubleTapCompleted = [[UITapGestureRecognizer alloc] init];
+    [doubleTapCompleted setNumberOfTapsRequired:2];
+    [doubleTapCompleted addTarget:self action:@selector(showAllEvents:)];
+    [self.completedImageView addGestureRecognizer:doubleTapCompleted];
 }
 
 @end

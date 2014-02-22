@@ -27,4 +27,10 @@
 - (void)incrementKey;
 - (void)decrementKey;
 
+- (void)displayAllEvents;
+
+- (NSArray *)eventsForCurrentKey;
+
+- (void)organizeEvents;
+
 @end

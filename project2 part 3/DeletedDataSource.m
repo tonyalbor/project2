@@ -51,7 +51,6 @@ static DeletedDataSource *_sharedDataSource = nil;
 }
 
 - (void)displayAllEvents {
-    NSLog(@"YES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\n");
     currentKey = @99;
 }
 
@@ -92,7 +91,6 @@ static DeletedDataSource *_sharedDataSource = nil;
 }
 
 - (BOOL)isDisplayingAllEvents {
-    NSLog(@"current key deleted: %@",currentKey);
     return [currentKey isEqualToNumber:@99];
 }
 
