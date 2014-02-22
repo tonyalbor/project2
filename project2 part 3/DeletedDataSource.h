@@ -24,7 +24,11 @@
 
 - (NSMutableArray *)getAllEvents;
 - (BOOL)isDisplayingAllEvents;
-- (void)incrementKey;
-- (void)decrementKey;
+- (void)incrementCurrentKey;
+- (void)decrementCurrentKey;
+- (NSArray *)eventsForCurrentKey;
+- (void)displayAllEvents;
+
+- (void)organizeEvents;
 
 @end

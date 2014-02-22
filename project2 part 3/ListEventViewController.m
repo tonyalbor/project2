@@ -108,21 +108,25 @@ static BOOL keyboardIsUp = NO;
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     //NSNumber *currentKey = [eventDataSource currentKey];
-    NSNumber *currentKey = [[listHandler currentListDataSource] currentKey];
+    id dataSource = [listHandler currentListDataSource];
+    NSNumber *currentKey = [dataSource currentKey];
     
     NSArray *events;
     
     //BOOL allEventsShown = [eventDataSource isDisplayingAllEvents];
-    BOOL allEventsShown = [[listHandler currentListDataSource] isDisplayingAllEvents];
+    BOOL allEventsShown = [dataSource isDisplayingAllEvents];
     
     if(allEventsShown) {
         //events = [eventDataSource getAllEvents];
-        events = [[listHandler currentListDataSource] getAllEvents];
+        events = [dataSource getAllEvents];
     } else {
         //events = [[eventDataSource events] objectForKey:currentKey];
-        events = [[[listHandler currentListDataSource] events] objectForKey:currentKey];
+        events = [[dataSource events] objectForKey:currentKey];
     }
-    
+    for(ListEvent *event in events) {
+        NSLog(@"event: %@",event.title);
+    }
+    NSLog(@"configure cell events count: %d",events.count);
     ListEvent *event = [events objectAtIndex:indexPath.row];
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
@@ -134,6 +138,9 @@ static BOOL keyboardIsUp = NO;
     
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
+    
+    //
+    [cell.textField setTag:indexPath.row];
     
     if(cell.gestureRecognizers.count != 4) {
         // 4 is the number of recognizers I'd like to add
@@ -249,28 +256,43 @@ static BOOL keyboardIsUp = NO;
     [self bringUpKeyboardForNewEvent];
 }
 
+- (id)dataSourceForImageView:(UIImageView *)imageView {
+    if([imageView isEqual:_deletedImageView]) return deletedDataSource;
+    else if([imageView isEqual:_completedImageView]) return completedDataSource;
+    else if([imageView isEqual:_eventsImageView]) return eventDataSource;
+    else return nil;
+}
+
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
-    // called when swiped left/right
-    [eventDataSource organizeEvents];
+    UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
+    id dataSource = [self dataSourceForImageView:imageView];
     
-    if([[eventDataSource events] count] <= 1) return;
+    // called when swiped left/right
+    [dataSource organizeEvents];
+    
+    if([[dataSource events] count] <= 1) return;
     
     [self.tableView beginUpdates];
-    [self switchCategoryWithDirection:gestureRecognizer.direction];
+    [self switchCategoryWithDirection:gestureRecognizer.direction andDataSource:dataSource];
     [self.tableView endUpdates];
 }
 
 - (IBAction)showAllEvents:(id)sender {
-    // called when double tapped
-    if([[eventDataSource events] count] <= 1) return;
+    UITapGestureRecognizer *gestureRecognizer = (UITapGestureRecognizer *)sender;
+    UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
+    id dataSource = [self dataSourceForImageView:imageView];
     
-    if(![eventDataSource isDisplayingAllEvents]) {
+    // called when double tapped
+    if([[dataSource events] count] <= 1) return;
+    
+    if(![dataSource isDisplayingAllEvents]) {
         [self.tableView beginUpdates];
         [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
-        [eventDataSource organizeEvents];
-        [eventDataSource displayAllEvents];
+        [dataSource organizeEvents];
+        [dataSource displayAllEvents];
         
-        NSArray *allEvents = [eventDataSource getAllEvents];
+        NSArray *allEvents = [dataSource getAllEvents];
+        NSLog(@"all events count: %d",allEvents.count);
         for(int i = 0; i < allEvents.count; ++i)  {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
@@ -496,10 +518,7 @@ static BOOL keyboardIsUp = NO;
     [self readjustTableViewBackToNormal];
     [self scrollToBottomOfTableView];
     
-    ListEvent *newEvent = [eventDataSource recentlyAddedEvent];
-    newEvent.title = textField.text;
-    [self.tableView reloadData];
-    textField.text = @"";
+    [self completeCreationOfEventWith:textField];
     [textField setEnabled:NO];
     [textField resignFirstResponder];
     keyboardIsUp = NO;
@@ -543,16 +562,47 @@ static BOOL keyboardIsUp = NO;
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
     [tapRecognizer addTarget:self action:@selector(didTapTableView:)];
     [self.tableView addGestureRecognizer:tapRecognizer];
+    
+    UISwipeGestureRecognizer *swipeDeletedNavigationLeft = [[UISwipeGestureRecognizer alloc] init];
+    [swipeDeletedNavigationLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [swipeDeletedNavigationLeft addTarget:self action:@selector(switchCategory:)];
+    [self.deletedImageView addGestureRecognizer:swipeDeletedNavigationLeft];
+    
+    UISwipeGestureRecognizer *swipeDeletedNavigationRight = [[UISwipeGestureRecognizer alloc] init];
+    [swipeDeletedNavigationRight setDirection:UISwipeGestureRecognizerDirectionRight];
+    [swipeDeletedNavigationRight addTarget:self action:@selector(switchCategory:)];
+    [self.deletedImageView addGestureRecognizer:swipeDeletedNavigationRight];
+    
+    UITapGestureRecognizer *doubleTapDeleted = [[UITapGestureRecognizer alloc] init];
+    [doubleTapDeleted setNumberOfTapsRequired:2];
+    [doubleTapDeleted addTarget:self action:@selector(showAllEvents:)];
+    [self.deletedImageView addGestureRecognizer:doubleTapDeleted];
+}
+
+- (id)firstResponderr {
+    for(UIView *subView in self.view.window.subviews) {
+        if([subView isFirstResponder]) { NSLog(@"class: %@",subView.class); return subView; }
+    }
+    
+    NSLog(@"returning nil trolololol");
+    return nil;
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
-    UITableViewCell *cell = (UITableViewCell *)tapRecognizer.view;
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    NSLog(@"index: %@",indexPath);
-    
     if(keyboardIsUp) {
         NSLog(@"keyboard is up");
-    } else NSLog(@"keyboard is not up");
+        //UITextField *textField = (UITextField *)[self firstResponderr];
+        int numberOfCells = [self.tableView numberOfRowsInSection:0];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:numberOfCells-1 inSection:0];
+        ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        
+        [self completeCreationOfEventWith:cell.textField];
+        [self insertRowAtBottomOfTableView];
+        [self bringUpKeyboardForNewEvent];
+        //[self pullUp:nil];
+    } else {
+        NSLog(@"keyboard is not up");
+    }
     
 }
 
@@ -573,7 +623,7 @@ static BOOL keyboardIsUp = NO;
     return [events objectAtIndex:indexPath.row];
 }
 
-- (void)switchCategoryWithDirection:(UISwipeGestureRecognizerDirection)direction {
+- (void)switchCategoryWithDirection:(UISwipeGestureRecognizerDirection)direction andDataSource:(id)dataSource {
     BOOL shouldIncrement;
     UITableViewRowAnimation insertAnimation;
     UITableViewRowAnimation deleteAnimation;
@@ -597,11 +647,11 @@ static BOOL keyboardIsUp = NO;
     }
     
     // increment/decrement key
-    if(shouldIncrement) [eventDataSource incrementCurrentKey];
-    else [eventDataSource decrementCurrentKey];
+    if(shouldIncrement) [dataSource incrementCurrentKey];
+    else [dataSource decrementCurrentKey];
     
     // insert rows
-    NSArray *arr = [eventDataSource eventsForCurrentKey];
+    NSArray *arr = [dataSource eventsForCurrentKey];
     NSIndexPath *indexPath;
     for(int i = 0; i < arr.count; ++i) {
         indexPath = [NSIndexPath indexPathForRow:i inSection:0];
@@ -630,6 +680,14 @@ static BOOL keyboardIsUp = NO;
     } else {
         return UITableViewRowAnimationRight;
     }
+}
+
+- (void)completeCreationOfEventWith:(UITextField *)textField {
+    ListEvent *newEvent = [eventDataSource recentlyAddedEvent];
+    newEvent.title = textField.text;
+    [self.tableView reloadData];
+    textField.text = @"";
+    [textField setEnabled:NO];
 }
 
 @end

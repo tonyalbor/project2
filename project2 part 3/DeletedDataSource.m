@@ -28,7 +28,7 @@ static DeletedDataSource *_sharedDataSource = nil;
     return _sharedDataSource;
 }
 
-- (void)incrementKey {
+- (void)incrementCurrentKey {
     if([self isDisplayingAllEvents]) currentKey = @0;
     else if([currentKey isEqualToNumber:@8]) currentKey = @0;
     else {
@@ -36,15 +36,32 @@ static DeletedDataSource *_sharedDataSource = nil;
         ++temp;
         currentKey = [NSNumber numberWithInteger:temp];
     }
-    if([[events objectForKey:currentKey] count] == 0) [self incrementKey];
+    if([[events objectForKey:currentKey] count] == 0) [self incrementCurrentKey];
 }
 
-- (void)decrementKey {
-    
+- (void)decrementCurrentKey {
+    if([self isDisplayingAllEvents]) currentKey = @8;
+    else if([currentKey isEqualToNumber:@0]) currentKey = @8;
+    else {
+        NSInteger temp = currentKey.integerValue;
+        --temp;
+        currentKey = [NSNumber numberWithInteger:temp];
+    }
+    if([[events objectForKey:currentKey] count] == 0) [self decrementCurrentKey];
+}
+
+- (void)displayAllEvents {
+    NSLog(@"YES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\nYES\n");
+    currentKey = @99;
+}
+
+- (NSArray *)eventsForCurrentKey {
+    return [events objectForKey:currentKey];
 }
 
 - (NSNumber *)currentKey {
-    if(![[events objectForKey:currentKey] count]) [self incrementKey];
+    if([self isDisplayingAllEvents]) return @99;
+    if(![[events objectForKey:currentKey] count]) [self incrementCurrentKey];
     return currentKey;
 }
 
@@ -63,10 +80,19 @@ static DeletedDataSource *_sharedDataSource = nil;
 }
 
 - (int)numberOfEventsForCurrentKey {
+    if([self isDisplayingAllEvents]) {
+        NSInteger totalNumberOfEvents = 0;
+        for(NSNumber *key in events) {
+            NSArray *array = [events objectForKey:key];
+            totalNumberOfEvents += array.count;
+        }
+        return totalNumberOfEvents;
+    }
     return [[events objectForKey:currentKey] count];
 }
 
 - (BOOL)isDisplayingAllEvents {
+    NSLog(@"current key deleted: %@",currentKey);
     return [currentKey isEqualToNumber:@99];
 }
 
@@ -80,6 +106,10 @@ static DeletedDataSource *_sharedDataSource = nil;
     }
     
     return allEvents;
+}
+
+- (void)organizeEvents {
+    
 }
 
 @end
