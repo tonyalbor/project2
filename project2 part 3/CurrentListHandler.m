@@ -49,4 +49,16 @@ static CurrentListHandler *_sharedDataSource = nil;
     return nil;
 }
 
+- (BOOL)isInEvents {
+    return currentList.intValue == 1;
+}
+
+- (BOOL)isInCompleted {
+    return currentList.intValue == 2;
+}
+
+- (BOOL)isInDeleted {
+    return currentList.intValue == 0;
+}
+
 @end

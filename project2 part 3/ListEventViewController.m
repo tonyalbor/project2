@@ -123,10 +123,7 @@ static BOOL keyboardIsUp = NO;
         //events = [[eventDataSource events] objectForKey:currentKey];
         events = [[dataSource events] objectForKey:currentKey];
     }
-    for(ListEvent *event in events) {
-        NSLog(@"event: %@",event.title);
-    }
-    NSLog(@"configure cell events count: %d",events.count);
+  
     ListEvent *event = [events objectAtIndex:indexPath.row];
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
@@ -166,6 +163,10 @@ static BOOL keyboardIsUp = NO;
         [cell addGestureRecognizer:rightSwipe];
         [cell addGestureRecognizer:tap];
         [cell addGestureRecognizer:longPress];
+    }
+    
+    for(UIGestureRecognizer *gesture in cell.gestureRecognizers) {
+        [gesture setEnabled:[listHandler isInEvents]];
     }
 }
 
@@ -292,7 +293,6 @@ static BOOL keyboardIsUp = NO;
         [dataSource displayAllEvents];
         
         NSArray *allEvents = [dataSource getAllEvents];
-        NSLog(@"all events count: %d",allEvents.count);
         for(int i = 0; i < allEvents.count; ++i)  {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
@@ -424,6 +424,11 @@ static BOOL keyboardIsUp = NO;
 #pragma mark ListEventCell UIGestureRecognizer
 
 - (void)swipedCell:(UISwipeGestureRecognizer *)gestureRecognizer {
+    if(![listHandler isInEvents]) {
+        return;
+    }
+    
+    
     UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];

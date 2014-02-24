@@ -109,11 +109,9 @@ static ListEventDataSource *_sharedDataSource = nil;
 - (void)removeEvent:(ListEvent *)eventToBeRemoved {
     // key for color
     NSNumber *key = eventToBeRemoved.categoryID;
-    NSLog(@"key: %@",eventToBeRemoved.categoryID);
     
     // get all events of the same color
     NSArray *eventsForKey = [events objectForKey:key];
-    NSLog(@"same color count: %d",eventsForKey.count);
     
     // go through events of same color
     for(int i = 0; i < eventsForKey.count; ++i) {

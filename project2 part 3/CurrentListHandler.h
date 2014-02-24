@@ -25,4 +25,8 @@
 // returns the data source for the current list
 - (id)currentListDataSource;
 
+- (BOOL)isInEvents;
+- (BOOL)isInCompleted;
+- (BOOL)isInDeleted;
+
 @end
