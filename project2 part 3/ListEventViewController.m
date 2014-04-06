@@ -299,10 +299,6 @@ static BOOL keyboardIsUp = NO;
         }
         [self.tableView endUpdates];
     }
-    
-    // currently saving when they double tap
-    // tony
-    [MemoryDataSource saveAllEvents];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
@@ -446,7 +442,6 @@ static BOOL keyboardIsUp = NO;
     }
     
     [MemoryDataSource saveAllEvents];
-    //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
 }
 
 - (void)tappedCell:(UITapGestureRecognizer *)gestureRecognizer {
@@ -602,6 +597,7 @@ static BOOL keyboardIsUp = NO;
     } else {
         events = [eventDataSource eventsForCurrentKey];
     }
+    
     return [events objectAtIndex:indexPath.row];
 }
 
@@ -661,7 +657,6 @@ static BOOL keyboardIsUp = NO;
     [self.tableView reloadData];
     textField.text = @"";
     [textField setEnabled:NO];
-    //[MemoryDataSource saveAllEvents];
     [MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
 }
 
