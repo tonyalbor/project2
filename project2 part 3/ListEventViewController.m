@@ -342,6 +342,10 @@ static BOOL keyboardIsUp = NO;
         [_eventsImageView setFrame:CGRectMake(105, 468, 110, 100)];
         [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
         [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
+        
+        [_eventsImageView setAlpha:.7];
+        [_completedImageView setAlpha:.2];
+        [_deletedImageView setAlpha:.2];
     }];
     
     UITableViewRowAnimation insertDirection = [self directionToInsert:@1];
@@ -379,6 +383,10 @@ static BOOL keyboardIsUp = NO;
         [_eventsImageView setFrame:CGRectMake(105, 496, 80, 72)];
         [_completedImageView setFrame:CGRectMake(190, 468, 110, 100)];
         [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
+        
+        [_eventsImageView setAlpha:.2];
+        [_completedImageView setAlpha:.7];
+        [_deletedImageView setAlpha:.2];
     }];
     
     UITableViewRowAnimation insertDirection = [self directionToInsert:@2];
@@ -403,6 +411,10 @@ static BOOL keyboardIsUp = NO;
         [_eventsImageView setFrame:CGRectMake(132, 496, 80, 72)];
         [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
         [_deletedImageView setFrame:CGRectMake(20, 468, 110, 100)];
+        
+        [_eventsImageView setAlpha:.2];
+        [_completedImageView setAlpha:.2];
+        [_deletedImageView setAlpha:.7];
     }];
     
     UITableViewRowAnimation insertDirection = [self directionToInsert:@0];
@@ -563,6 +575,8 @@ static BOOL keyboardIsUp = NO;
     // Do any additional setup after loading the view, typically from a nib.
     
     [self UIGestureRecognizersAreFun];
+    // this method is getting called twice
+    // might have to do something with the image views
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
