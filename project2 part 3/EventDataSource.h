@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+@class ListEvent;
+
 @interface EventDataSource : NSObject
+
+- (NSMutableDictionary *)mapToDictionary:(NSMapTable *)map;
 
 @end

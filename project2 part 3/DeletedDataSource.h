@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "EventDataSource.h"
 
 @class ListEvent;
 
-@interface DeletedDataSource : NSObject
+@interface DeletedDataSource : EventDataSource
 
 @property (strong, nonatomic) NSMapTable *events;
 

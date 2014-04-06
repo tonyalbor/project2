@@ -610,15 +610,13 @@ static BOOL keyboardIsUp = NO;
     UITableViewRowAnimation insertAnimation;
     UITableViewRowAnimation deleteAnimation;
     
-    shouldIncrement = direction == UISwipeGestureRecognizerDirectionRight;
-    
     // determine which direction to insert/delete
     if(direction == UISwipeGestureRecognizerDirectionLeft) {
-        //shouldIncrement = NO;
+        shouldIncrement = NO;
         deleteAnimation = UITableViewRowAnimationLeft;
         insertAnimation = UITableViewRowAnimationRight;
     } else if(direction == UISwipeGestureRecognizerDirectionRight) {
-        //shouldIncrement = YES;
+        shouldIncrement = YES;
         insertAnimation = UITableViewRowAnimationLeft;
         deleteAnimation = UITableViewRowAnimationRight;
     }

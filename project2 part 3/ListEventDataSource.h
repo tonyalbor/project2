@@ -7,11 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "EventDataSource.h"
 
 @class ListEvent;
 @class MemoryDataSource;
 
-@interface ListEventDataSource : NSObject
+@interface ListEventDataSource : EventDataSource
 
 // key: NSNumber id for CustomCellColor
 // object: NSMutableArray containing events for key
