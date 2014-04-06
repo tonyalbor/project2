@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class ListEvent;
+@class MemoryDataSource;
 
 @interface ListEventDataSource : NSObject
 
@@ -46,6 +47,6 @@
 
 - (BOOL)isDisplayingAllEvents;
 
-- (void)saveData;
+- (NSMutableDictionary *)mapToDictionary:(NSMapTable *)map;
 
 @end

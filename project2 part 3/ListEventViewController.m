@@ -23,6 +23,7 @@
 @synthesize completedDataSource;
 @synthesize deletedDataSource;
 @synthesize listHandler;
+@synthesize memoryDataSource;
 
 static CGFloat cellHeight = 80;
 
@@ -300,8 +301,10 @@ static BOOL keyboardIsUp = NO;
         [self.tableView endUpdates];
     }
     
-    // save data doe
-    //[eventDataSource saveData];
+    // currently saving when they double tap
+    NSDictionary *write = [eventDataSource mapToDictionary:[eventDataSource events]];
+    NSString *file = @"to-do.txt";
+    [memoryDataSource saveDataWithDictionary:write toFile:file];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
@@ -546,7 +549,7 @@ static BOOL keyboardIsUp = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
-    [[MemoryDataSource sharedDataSource] saveData];
+    //[[MemoryDataSource sharedDataSource] saveData];
     
     self.containerView.alpha = 0;
     
@@ -555,12 +558,12 @@ static BOOL keyboardIsUp = NO;
     completedDataSource = [CompletedDataSource sharedDataSource];
     deletedDataSource = [DeletedDataSource sharedDataSource];
     listHandler = [CurrentListHandler sharedDataSource];
+    memoryDataSource = [MemoryDataSource sharedDataSource];
     
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
     [self UIGestureRecognizersAreFun];
-    
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {

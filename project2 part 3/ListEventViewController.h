@@ -18,6 +18,8 @@
 
 @class CurrentListHandler;
 
+@class MemoryDataSource;
+
 @interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -27,6 +29,8 @@
 @property (strong, nonatomic) DeletedDataSource *deletedDataSource;
 
 @property (strong, nonatomic) CurrentListHandler *listHandler;
+
+@property (strong, nonatomic) MemoryDataSource *memoryDataSource;
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 

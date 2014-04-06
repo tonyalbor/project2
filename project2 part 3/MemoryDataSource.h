@@ -12,6 +12,9 @@
 
 + (MemoryDataSource *)sharedDataSource;
 
-- (void)saveData;
+- (NSString *)getPathForFile:(NSString *)file;
+
+- (void)saveDataWithDictionary:(NSDictionary *)dictionary toFile:(NSString *)file;
+- (NSDictionary *)readDataFromFile:(NSString *)file;
 
 @end

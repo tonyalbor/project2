@@ -8,6 +8,7 @@
 
 #import "ListEventDataSource.h"
 #import "ListEvent.h"
+#import "MemoryDataSource.h"
 
 @implementation ListEventDataSource
 
@@ -21,12 +22,22 @@ static ListEventDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[ListEventDataSource alloc] init];
-        _sharedDataSource.currentKey = @0;
-        _sharedDataSource.events = [[NSMapTable alloc] init];
+        [self loadEvents];
         _sharedDataSource.eventsAddedToAll = [[NSMutableArray alloc] init];
     });
     
     return _sharedDataSource;
+}
+
++ (void)loadEvents {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:[[MemoryDataSource sharedDataSource] getPathForFile:@"to-do.txt"]]) {
+        _sharedDataSource.currentKey = @99;
+        _sharedDataSource.events = (NSMapTable *)[[MemoryDataSource sharedDataSource] readDataFromFile:@"to-do.txt"];
+    } else {
+        _sharedDataSource.currentKey = @0;
+        _sharedDataSource.events = [[NSMapTable alloc] init];
+    }
 }
 
 - (void)reloadEventsForCurrentKey {
@@ -102,8 +113,6 @@ static ListEventDataSource *_sharedDataSource = nil;
         [events setObject:[[NSMutableArray alloc] init] forKey:currentKey];
     }
     [[events objectForKey:currentKey] addObject:newEvent];
-    NSLog(@"%@",events);
-    NSLog(@"%@",eventsAddedToAll);
 }
 
 - (void)removeEvent:(ListEvent *)eventToBeRemoved {
@@ -123,7 +132,6 @@ static ListEventDataSource *_sharedDataSource = nil;
         }
     }
     
-    NSLog(@"added to all count: %d",eventsAddedToAll.count);
     // if method hasn't returned, that means the event is in eventsAddedToAll
     for(int i = 0; i < eventsAddedToAll.count; ++i) {
         if([eventToBeRemoved isEqual:[eventsAddedToAll objectAtIndex:i]]) {
@@ -247,25 +255,6 @@ static ListEventDataSource *_sharedDataSource = nil;
 
 - (BOOL)isDisplayingAllEvents {
     return [currentKey isEqualToNumber:@99];
-}
-
-- (void)saveData {
-    NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES) lastObject];
-    path = [path stringByAppendingPathComponent:@"save_data.plist"];
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSLog(@"the file exists? %d",[fileManager fileExistsAtPath:path]);
-    
-    if(![fileManager fileExistsAtPath:path]) {
-        NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@"save_data" ofType:@"plist"];
-        [fileManager copyItemAtPath:sourcePath toPath:path error:nil];
-    }
-    NSArray *array = [[NSArray alloc] initWithContentsOfFile:path];
-    NSLog(@"array: %@",array);
-    NSDictionary *d = [self mapToDictionary:events];
-    [d writeToFile:path atomically:YES];
-    NSLog(@"array now: %@",array);
 }
 
 @end

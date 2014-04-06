@@ -14,6 +14,30 @@
 @synthesize date;
 @synthesize categoryID;
 
+
+#define kEncodeKeyTitle       @"kEncodeKeyTitle"
+#define kEncodeKeyDate        @"kEncodeKeyDate"
+#define kEncodeKeyCategoryId  @"kEncodeKeyCategoryId"
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    
+    [aCoder encodeObject:self.title forKey:kEncodeKeyTitle];
+    [aCoder encodeObject:self.date forKey:kEncodeKeyDate];
+    [aCoder encodeInt:self.categoryID.intValue forKey:kEncodeKeyCategoryId];
+    
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    
+    if ((self = [super init])) {
+        self.title = [aDecoder decodeObjectForKey:kEncodeKeyTitle];
+        self.date = [aDecoder decodeObjectForKey:kEncodeKeyDate];
+        self.categoryID = @([aDecoder decodeIntForKey:kEncodeKeyCategoryId]);
+    }
+    
+    return self;
+}
+
 - (id)init {
     if(!self) {
         // inititalization
