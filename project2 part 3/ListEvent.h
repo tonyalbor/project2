@@ -13,6 +13,7 @@
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSString *date;
 @property (strong, nonatomic) NSNumber *categoryID;
+@property (strong, nonatomic) NSNumber *sortId;
 
 - (void)changeColor;
 

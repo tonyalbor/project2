@@ -10,31 +10,9 @@
 #import "EventDataSource.h"
 
 @class ListEvent;
-@class MemoryDataSource;
 
 @interface CompletedDataSource : EventDataSource
 
-@property (strong, nonatomic) NSMapTable *events;
-
-@property (strong, nonatomic) NSNumber *currentKey;
-
-+ (CompletedDataSource *)sharedDataSource;
-
-- (NSString *)fileName;
-
 - (void)completeEvent:(ListEvent *)event;
-
-- (NSMutableArray *)getAllEvents;
-- (BOOL)isDisplayingAllEvents;
-- (int)numberOfEventsForCurrentKey;
-
-- (void)incrementKey;
-- (void)decrementKey;
-
-- (void)displayAllEvents;
-
-- (NSArray *)eventsForCurrentKey;
-
-- (void)organizeEvents;
 
 @end

@@ -8,25 +8,29 @@
 
 #import "ListEventDataSource.h"
 #import "ListEvent.h"
-#import "MemoryDataSource.h"
 
 #define ListEventDataSourceFile @"to-do.txt"
 
 @implementation ListEventDataSource
 
 @synthesize events;
-@synthesize eventsAddedToAll;
 @synthesize currentKey;
+@synthesize recentlyAddedEvent;
+
+- (id)init {
+    if(!self) {
+        self = [super init];
+    }
+    return self;
+}
 
 static ListEventDataSource *_sharedDataSource = nil;
 
-+ (ListEventDataSource *)sharedDataSource {
++ (id)sharedDataSource {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[ListEventDataSource alloc] init];
-        
-        // weird hack for just-added items to list
-        _sharedDataSource.eventsAddedToAll = [[NSMutableArray alloc] init];
+        _sharedDataSource.recentlyAddedEvent = nil;
     });
     
     return _sharedDataSource;
@@ -34,10 +38,6 @@ static ListEventDataSource *_sharedDataSource = nil;
 
 - (NSString *)fileName {
     return ListEventDataSourceFile;
-}
-
-- (void)reloadEventsForCurrentKey {
-    
 }
 
 - (NSMutableArray *)getAllEvents {
@@ -48,98 +48,41 @@ static ListEventDataSource *_sharedDataSource = nil;
         array = [events objectForKey:key];
         for(int i = 0; i < array.count; ++i) {
             currentEvent = [array objectAtIndex:i];
-            [allEvents addObject:currentEvent];
+            if(currentEvent != recentlyAddedEvent) {
+                [allEvents addObject:currentEvent];
+            }
         }
     }
-    for(int i = 0; i < eventsAddedToAll.count; ++i) {
-        ListEvent *currentEvent = [eventsAddedToAll objectAtIndex:i];
-        [allEvents addObject:currentEvent];
-    }
+    if(recentlyAddedEvent) [allEvents addObject:recentlyAddedEvent];
     return allEvents;
 }
 
-- (NSMutableArray *)eventsForCurrentKey {
-    return [events objectForKey:currentKey];
-}
-
-- (NSInteger)numberOfEventsForCurrentKey {
-    if([self isDisplayingAllEvents]) {
-        NSInteger totalNumberOfEvents = 0;
-        for(NSNumber *key in events) {
-            NSArray *array = [events objectForKey:key];
-            totalNumberOfEvents += array.count;
-        }
-        totalNumberOfEvents += eventsAddedToAll.count;
-        return totalNumberOfEvents;
-    }
-    return [[events objectForKey:currentKey] count];
-}
-
-- (ListEvent *)recentlyAddedEvent {
-    if([self isDisplayingAllEvents]) {
-        if(eventsAddedToAll.count > 0) {
-            return [eventsAddedToAll objectAtIndex:eventsAddedToAll.count-1];
-        }
-    }
-    NSArray *eventsForKey = [events objectForKey:currentKey];
-    NSInteger numOfEvents = eventsForKey.count;
-    return [eventsForKey objectAtIndex:numOfEvents - 1];
-}
-
-- (void)addEvent:(ListEvent *)newEvent {
+- (void)addEvent:(ListEvent *)event {
     if(events == nil) {
         // initialize map table
         NSLog(@"what");
         events = [[NSMapTable alloc] init];
     }
     if(currentKey == nil) currentKey = @0;
-
-    if([self isDisplayingAllEvents]) {
-        if(eventsAddedToAll == nil) {
-            eventsAddedToAll = [[NSMutableArray alloc] init];
-        }
-        newEvent.categoryID = @0;
-        [eventsAddedToAll addObject:newEvent];
-        NSLog(@"count of added to all: %d",eventsAddedToAll.count);
-        return;
-    }
+    NSLog(@"list key: %@",currentKey);
+    event.categoryID = [self isDisplayingAllEvents] ? @0 : currentKey;
     
-    if([events objectForKey:currentKey] == nil) {
+    if([events objectForKey:event.categoryID] == nil) {
         // initialize array
-        [events setObject:[[NSMutableArray alloc] init] forKey:currentKey];
+        [events setObject:[[NSMutableArray alloc] init] forKey:event.categoryID];
     }
-    [[events objectForKey:currentKey] addObject:newEvent];
+    [event setSortId:@([[events objectForKey:event.categoryID] count])];
+    [[events objectForKey:event.categoryID] addObject:event];
+    
+    recentlyAddedEvent = event;
 }
 
 - (void)removeEvent:(ListEvent *)eventToBeRemoved {
-    // key for color
-    NSNumber *key = eventToBeRemoved.categoryID;
-    
-    // get all events of the same color
-    NSArray *eventsForKey = [events objectForKey:key];
-    
-    // go through events of same color
-    for(int i = 0; i < eventsForKey.count; ++i) {
-        //NSLog(@"%@",eventToBeRemoved.title);
-        if([eventToBeRemoved isEqual:[eventsForKey objectAtIndex:i]]) {
-            // if eventToBeRemoved is found, then remove it
-            [[events objectForKey:key] removeObjectAtIndex:i];
-            return;
-        }
-    }
-    
-    // if method hasn't returned, that means the event is in eventsAddedToAll
-    for(int i = 0; i < eventsAddedToAll.count; ++i) {
-        if([eventToBeRemoved isEqual:[eventsAddedToAll objectAtIndex:i]]) {
-            [eventsAddedToAll removeObjectAtIndex:i];
-            return;
-        }
-    }
-    
-    // if still not found, just go through it all to find it
+    // just go through it all to find it
     for(NSNumber *key in events) {
         [[events objectForKey:key] removeObject:eventToBeRemoved];
     }
+    
 }
 
 - (void)removeEventAtIndexPath:(NSIndexPath *)indexPath {
@@ -148,52 +91,6 @@ static ListEventDataSource *_sharedDataSource = nil;
 
 - (ListEvent *)eventForIndexPath:(NSIndexPath *)indexPath {
     return [[events objectForKey:currentKey] objectAtIndex:indexPath.row];
-}
-
-- (void)displayAllEvents {
-    currentKey = @99;
-}
-
-- (void)incrementCurrentKey {
-    if([self isDisplayingAllEvents]) currentKey = @0;
-    else if([currentKey isEqualToNumber:@8]) currentKey = @0;
-    else {
-        NSInteger temp = currentKey.integerValue;
-        ++temp;
-        currentKey = [NSNumber numberWithInteger:temp];
-    }
-    if([[events objectForKey:currentKey] count] == 0) [self incrementCurrentKey];
-}
-
-- (void)decrementCurrentKey {
-    if([self isDisplayingAllEvents]) currentKey = @8;
-    else if([currentKey isEqualToNumber:@0]) currentKey = @8;
-    else {
-        NSInteger temp = currentKey.integerValue;
-        --temp;
-        currentKey = [NSNumber numberWithInteger:temp];
-    }
-    if([[events objectForKey:currentKey] count] == 0) [self decrementCurrentKey];
-}
-
-- (void)changeKeyFor:(ListEvent *)event fromKey:(NSNumber *)before toKey:(NSNumber *)after {
-    // get all events for the same before color
-    NSArray *eventsForOldKey = [events objectForKey:before];
-    
-    // find it in events and remove it
-    for(ListEvent *eventEnum in eventsForOldKey) {
-        if([event isEqual:eventEnum]) {
-            [[events objectForKey:before] removeObject:event];
-        }
-    }
-    
-    // initialize array if nil
-    if(![events objectForKey:after]) {
-        [events setObject:[NSMutableArray new] forKey:after];
-    }
-    
-    // place event in after key
-    [[events objectForKey:after] addObject:event];
 }
 
 - (void)organizeEvents {
@@ -222,20 +119,6 @@ static ListEventDataSource *_sharedDataSource = nil;
             [[events objectForKey:eventKey] addObject:currentEvent];
         }
     }
-    if(eventsAddedToAll.count > 0) {
-        //[events setObject:[[NSMutableArray alloc] init] forKey:@0];
-        for(int i = 0; i < eventsAddedToAll.count; ++i) {
-            ListEvent *event = [eventsAddedToAll objectAtIndex:i];
-            NSNumber *key = event.categoryID;
-            if([events objectForKey:key] == nil) [events setObject:[[NSMutableArray alloc] init] forKey:key];
-            [[events objectForKey:key] addObject:event];
-        }
-        [eventsAddedToAll removeAllObjects];
-    }
-}
-
-- (BOOL)isDisplayingAllEvents {
-    return [currentKey isEqualToNumber:@99];
 }
 
 @end

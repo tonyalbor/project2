@@ -87,10 +87,10 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    //self.title = [NSString stringWithFormat:@"@%@",[eventDataSource currentKey]];
-    //return [eventDataSource numberOfEventsForCurrentKey];
-    
-    return [[listHandler currentListDataSource] numberOfEventsForCurrentKey];
+    id datasource = [listHandler currentListDataSource];
+    self.title = [NSString stringWithFormat:@"@%@",[datasource currentKey]];
+    NSLog(@"%d",[datasource numberOfEventsForCurrentKey]);
+    return [datasource numberOfEventsForCurrentKey];
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -107,28 +107,27 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"configure cell");
     //NSNumber *currentKey = [eventDataSource currentKey];
     id dataSource = [listHandler currentListDataSource];
     NSNumber *currentKey = [dataSource currentKey];
     
-    NSArray *events;
-    
     //BOOL allEventsShown = [eventDataSource isDisplayingAllEvents];
     BOOL allEventsShown = [dataSource isDisplayingAllEvents];
     
-    if(allEventsShown) {
-        //events = [eventDataSource getAllEvents];
-        events = [dataSource getAllEvents];
-    } else {
-        //events = [[eventDataSource events] objectForKey:currentKey];
-        events = [[dataSource events] objectForKey:currentKey];
+    NSMutableArray *events = allEventsShown ? [dataSource getAllEvents] : [[dataSource events] objectForKey:currentKey];
+    for(ListEvent *e in events) {
+        NSLog(@"title: %@, cid: %@",e.title, e.categoryID);
     }
   
+    //ListEvent *event = [dataSource eventForSortId:indexPath.row];
     ListEvent *event = [events objectAtIndex:indexPath.row];
+    
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
     [cell.eventLabel setText:event.title];
+    NSLog(@"%@",event.title);
     
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
     //NSLog(@"category id for event: %@",event.categoryID);
@@ -202,22 +201,20 @@ static BOOL keyboardIsUp = NO;
     [eventDataSource addEvent:[ListEvent new]];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
+    NSLog(@"inserted new row: %d",numberOfRows);
 }
 
 - (void)bringUpKeyboardForNewEvent {
     NSInteger newCellIndex = [self.tableView numberOfRowsInSection:0] - 1;
+    NSLog(@"new cell index: %d",newCellIndex);
     NSIndexPath *newCellIndexPath = [NSIndexPath indexPathForRow:newCellIndex inSection:0];
     ListEventCell *newCell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:newCellIndexPath];
-    
-    // can also try recentlyAddedEvent
-    ListEvent *event = [self getEventForIndexPath:newCellIndexPath];
-    event.categoryID = [eventDataSource currentKey];
-    if([event.categoryID isEqualToNumber:@99]) {
-        event.categoryID = @0;
-    }
    
     [newCell.textField setEnabled:YES];
-    [newCell.textField becomeFirstResponder];
+    BOOL t = [newCell.textField becomeFirstResponder];
+    BOOL r = [newCell.textField isFirstResponder];
+    NSLog(@"%d",t);
+    NSLog(@"%d",r);
     keyboardIsUp = YES;
 }
 
@@ -458,9 +455,6 @@ static BOOL keyboardIsUp = NO;
     
     // save events for current data source
     [MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
-    
-    //[eventDataSource changeKeyFor:event fromKey:oldKey toKey:newKey];
-    NSLog(@"events now: %@",eventDataSource.events);
 }
 
 - (void)longPressedCell:(UILongPressGestureRecognizer *)gesutureRecognizer {
@@ -549,7 +543,7 @@ static BOOL keyboardIsUp = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
-    [MemoryDataSource loadAllEvents];
+    //[MemoryDataSource loadAllEvents];
     
     self.containerView.alpha = 0;
     
@@ -625,8 +619,8 @@ static BOOL keyboardIsUp = NO;
     }
     
     // increment/decrement key
-    if(shouldIncrement) [dataSource incrementCurrentKey];
-    else [dataSource decrementCurrentKey];
+    if(shouldIncrement) [dataSource incrementKey];
+    else [dataSource decrementKey];
     
     // insert rows
     NSArray *arr = [dataSource eventsForCurrentKey];
@@ -658,6 +652,7 @@ static BOOL keyboardIsUp = NO;
     textField.text = @"";
     [textField setEnabled:NO];
     [MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
+    //eventDataSource.recentlyAddedEvent = nil;
 }
 
 - (void)UIGestureRecognizersAreFun {
