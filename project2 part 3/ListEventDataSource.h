@@ -26,6 +26,9 @@
 // datasource
 + (ListEventDataSource *)sharedDataSource;
 
+// file name to read from and write to
+- (NSString *)fileName;
+
 - (NSMutableArray *)eventsForCurrentKey;
 - (NSInteger)numberOfEventsForCurrentKey;
 - (ListEvent *)recentlyAddedEvent;

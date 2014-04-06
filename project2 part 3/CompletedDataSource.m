@@ -8,6 +8,9 @@
 
 #import "CompletedDataSource.h"
 #import "ListEvent.h"
+#import "MemoryDataSource.h"
+
+#define CompletedDataSourceFile @"completed.txt"
 
 @implementation CompletedDataSource
 
@@ -20,12 +23,14 @@ static CompletedDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[CompletedDataSource alloc] init];
-        _sharedDataSource.events = [[NSMapTable alloc] init];
-        _sharedDataSource.currentKey = @0;
         // further initialization
     });
     
     return _sharedDataSource;
+}
+
+- (NSString *)fileName {
+    return CompletedDataSourceFile;
 }
 
 - (int)numberOfEventsForCurrentKey {

@@ -12,11 +12,13 @@
 
 @interface DeletedDataSource : NSObject
 
-+ (DeletedDataSource *)sharedDataSource;
-
 @property (strong, nonatomic) NSMapTable *events;
 
 @property (strong, nonatomic) NSNumber *currentKey;
+
++ (DeletedDataSource *)sharedDataSource;
+
+- (NSString *)fileName;
 
 - (void)deleteEvent:(ListEvent *)eventToBeDeleted;
 

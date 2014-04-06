@@ -7,31 +7,54 @@
 //
 
 #import "MemoryDataSource.h"
+#import "ListEventDataSource.h"
+#import "CompletedDataSource.h"
+#import "DeletedDataSource.h"
 
 @implementation MemoryDataSource
 
-static MemoryDataSource *_sharedDataSource = nil;
-
-+ (MemoryDataSource *)sharedDataSource {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _sharedDataSource = [[MemoryDataSource alloc] init];
-    });
-    return _sharedDataSource;
-}
-
-- (NSString *)getPathForFile:(NSString *)file {
++ (NSString *)getPathForFile:(NSString *)file {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths firstObject];
     return [documentsDirectory stringByAppendingPathComponent:file];
 }
 
-- (void)saveDataWithDictionary:(NSDictionary *)dictionary toFile:(NSString *)file {
++ (void)writeDataWithDictionary:(NSDictionary *)dictionary toFile:(NSString *)file {
     [NSKeyedArchiver archiveRootObject:dictionary toFile:[self getPathForFile:file]];
 }
 
-- (NSDictionary *)readDataFromFile:(NSString *)file {
++ (NSDictionary *)readDataFromFile:(NSString *)file {
     return [NSKeyedUnarchiver unarchiveObjectWithFile:[self getPathForFile:file]];
+}
+
++ (void)loadEventsForDataSource:(id)sharedDataSource {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:[self getPathForFile:@"completed.txt"]]) {
+        [sharedDataSource setCurrentKey:@99];
+        [sharedDataSource setEvents:(NSMapTable *)[sharedDataSource readDataFromFile:[sharedDataSource fileName]]];
+    } else {
+        [sharedDataSource setCurrentKey:@0];
+        [sharedDataSource setEvents:[[NSMapTable alloc] init]];
+    }
+    NSLog(@"%@: %@",[sharedDataSource fileName], [sharedDataSource events]);
+}
+
++ (void)saveEventsForDataSource:(id)sharedDataSource {
+    NSDictionary *write = [sharedDataSource mapToDictionary:[sharedDataSource events]];
+    NSString *file = [sharedDataSource fileName];
+    [self writeDataWithDictionary:write toFile:file];
+}
+
++ (void)loadAllEvents {
+    [self loadEventsForDataSource:[ListEventDataSource sharedDataSource]];
+    [self loadEventsForDataSource:[CompletedDataSource sharedDataSource]];
+    [self loadEventsForDataSource:[DeletedDataSource sharedDataSource]];
+}
+
++ (void)saveAllEvents {
+    [self saveEventsForDataSource:[ListEventDataSource sharedDataSource]];
+    [self saveEventsForDataSource:[CompletedDataSource sharedDataSource]];
+    [self saveEventsForDataSource:[DeletedDataSource sharedDataSource]];
 }
 
 @end

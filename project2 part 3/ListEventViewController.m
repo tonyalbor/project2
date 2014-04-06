@@ -23,7 +23,6 @@
 @synthesize completedDataSource;
 @synthesize deletedDataSource;
 @synthesize listHandler;
-@synthesize memoryDataSource;
 
 static CGFloat cellHeight = 80;
 
@@ -302,9 +301,8 @@ static BOOL keyboardIsUp = NO;
     }
     
     // currently saving when they double tap
-    NSDictionary *write = [eventDataSource mapToDictionary:[eventDataSource events]];
-    NSString *file = @"to-do.txt";
-    [memoryDataSource saveDataWithDictionary:write toFile:file];
+    // tony
+    [MemoryDataSource saveAllEvents];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
@@ -446,6 +444,9 @@ static BOOL keyboardIsUp = NO;
     } else {
         // wait, what
     }
+    
+    [MemoryDataSource saveAllEvents];
+    //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
 }
 
 - (void)tappedCell:(UITapGestureRecognizer *)gestureRecognizer {
@@ -459,6 +460,10 @@ static BOOL keyboardIsUp = NO;
     //NSNumber *newKey = event.categoryID;
     
     [self.tableView reloadData];
+    
+    // save events for current data source
+    [MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
+    
     //[eventDataSource changeKeyFor:event fromKey:oldKey toKey:newKey];
     NSLog(@"events now: %@",eventDataSource.events);
 }
@@ -549,7 +554,7 @@ static BOOL keyboardIsUp = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
-    //[[MemoryDataSource sharedDataSource] saveData];
+    [MemoryDataSource loadAllEvents];
     
     self.containerView.alpha = 0;
     
@@ -558,7 +563,6 @@ static BOOL keyboardIsUp = NO;
     completedDataSource = [CompletedDataSource sharedDataSource];
     deletedDataSource = [DeletedDataSource sharedDataSource];
     listHandler = [CurrentListHandler sharedDataSource];
-    memoryDataSource = [MemoryDataSource sharedDataSource];
     
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
@@ -606,13 +610,15 @@ static BOOL keyboardIsUp = NO;
     UITableViewRowAnimation insertAnimation;
     UITableViewRowAnimation deleteAnimation;
     
+    shouldIncrement = direction == UISwipeGestureRecognizerDirectionRight;
+    
     // determine which direction to insert/delete
     if(direction == UISwipeGestureRecognizerDirectionLeft) {
-        shouldIncrement = NO;
+        //shouldIncrement = NO;
         deleteAnimation = UITableViewRowAnimationLeft;
         insertAnimation = UITableViewRowAnimationRight;
     } else if(direction == UISwipeGestureRecognizerDirectionRight) {
-        shouldIncrement = YES;
+        //shouldIncrement = YES;
         insertAnimation = UITableViewRowAnimationLeft;
         deleteAnimation = UITableViewRowAnimationRight;
     }
@@ -641,23 +647,14 @@ static BOOL keyboardIsUp = NO;
     int currentList = [[listHandler currentList] intValue];
     int newListInt = newList.intValue;
     
-    if(newListInt > currentList) {
-        return UITableViewRowAnimationRight;
-    } else {
-        return UITableViewRowAnimationLeft;
-    }
-    
+    return newListInt > currentList ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft;
 }
 
 - (UITableViewRowAnimation)directionToDelete:(NSNumber *)newList {
     int currentList = [[listHandler currentList] intValue];
     int newListInt = newList.intValue;
     
-    if(newListInt > currentList) {
-        return UITableViewRowAnimationLeft;
-    } else {
-        return UITableViewRowAnimationRight;
-    }
+    return newListInt > currentList ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight;
 }
 
 - (void)completeCreationOfEventWith:(UITextField *)textField {
@@ -666,6 +663,8 @@ static BOOL keyboardIsUp = NO;
     [self.tableView reloadData];
     textField.text = @"";
     [textField setEnabled:NO];
+    //[MemoryDataSource saveAllEvents];
+    [MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
 }
 
 - (void)UIGestureRecognizersAreFun {

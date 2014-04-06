@@ -10,11 +10,10 @@
 
 @interface MemoryDataSource : NSObject
 
-+ (MemoryDataSource *)sharedDataSource;
++ (void)loadEventsForDataSource:(id)sharedDataSource;
++ (void)saveEventsForDataSource:(id)sharedDataSource;
 
-- (NSString *)getPathForFile:(NSString *)file;
-
-- (void)saveDataWithDictionary:(NSDictionary *)dictionary toFile:(NSString *)file;
-- (NSDictionary *)readDataFromFile:(NSString *)file;
++ (void)loadAllEvents;
++ (void)saveAllEvents;
 
 @end

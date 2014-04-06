@@ -9,14 +9,17 @@
 #import <Foundation/Foundation.h>
 
 @class ListEvent;
+@class MemoryDataSource;
 
 @interface CompletedDataSource : NSObject
-
-+ (CompletedDataSource *)sharedDataSource;
 
 @property (strong, nonatomic) NSMapTable *events;
 
 @property (strong, nonatomic) NSNumber *currentKey;
+
++ (CompletedDataSource *)sharedDataSource;
+
+- (NSString *)fileName;
 
 - (void)completeEvent:(ListEvent *)event;
 

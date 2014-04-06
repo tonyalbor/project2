@@ -8,6 +8,9 @@
 
 #import "DeletedDataSource.h"
 #import "ListEvent.h"
+#import "MemoryDataSource.h"
+
+#define DeletedDataSourceFile @"deleted.txt"
 
 @implementation DeletedDataSource
 
@@ -20,12 +23,14 @@ static DeletedDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[DeletedDataSource alloc] init];
-        _sharedDataSource.events = [[NSMapTable alloc] init];
-        _sharedDataSource.currentKey = @0;
         // further initialization
     });
     
     return _sharedDataSource;
+}
+
+- (NSString *)fileName {
+    return DeletedDataSourceFile;
 }
 
 - (void)incrementCurrentKey {

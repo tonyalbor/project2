@@ -10,6 +10,8 @@
 #import "ListEvent.h"
 #import "MemoryDataSource.h"
 
+#define ListEventDataSourceFile @"to-do.txt"
+
 @implementation ListEventDataSource
 
 @synthesize events;
@@ -22,22 +24,16 @@ static ListEventDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[ListEventDataSource alloc] init];
-        [self loadEvents];
+        
+        // weird hack for just-added items to list
         _sharedDataSource.eventsAddedToAll = [[NSMutableArray alloc] init];
     });
     
     return _sharedDataSource;
 }
 
-+ (void)loadEvents {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:[[MemoryDataSource sharedDataSource] getPathForFile:@"to-do.txt"]]) {
-        _sharedDataSource.currentKey = @99;
-        _sharedDataSource.events = (NSMapTable *)[[MemoryDataSource sharedDataSource] readDataFromFile:@"to-do.txt"];
-    } else {
-        _sharedDataSource.currentKey = @0;
-        _sharedDataSource.events = [[NSMapTable alloc] init];
-    }
+- (NSString *)fileName {
+    return ListEventDataSourceFile;
 }
 
 - (void)reloadEventsForCurrentKey {
