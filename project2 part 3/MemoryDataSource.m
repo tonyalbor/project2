@@ -29,14 +29,13 @@
 
 + (void)loadEventsForDataSource:(id)sharedDataSource {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:[self getPathForFile:@"completed.txt"]]) {
+    if([fileManager fileExistsAtPath:[self getPathForFile:[sharedDataSource fileName]]]) {
         [sharedDataSource setCurrentKey:@99];
-        [sharedDataSource setEvents:(NSMapTable *)[sharedDataSource readDataFromFile:[sharedDataSource fileName]]];
+        [sharedDataSource setEvents:(NSMapTable *)[self readDataFromFile:[sharedDataSource fileName]]];
     } else {
         [sharedDataSource setCurrentKey:@0];
         [sharedDataSource setEvents:[[NSMapTable alloc] init]];
     }
-    NSLog(@"%@: %@",[sharedDataSource fileName], [sharedDataSource events]);
 }
 
 + (void)saveEventsForDataSource:(id)sharedDataSource {
