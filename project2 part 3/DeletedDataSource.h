@@ -13,25 +13,6 @@
 
 @interface DeletedDataSource : EventDataSource
 
-@property (strong, nonatomic) NSMapTable *events;
-
-@property (strong, nonatomic) NSNumber *currentKey;
-
-+ (DeletedDataSource *)sharedDataSource;
-
-- (NSString *)fileName;
-
 - (void)deleteEvent:(ListEvent *)eventToBeDeleted;
-
-- (int)numberOfEventsForCurrentKey;
-
-- (NSMutableArray *)getAllEvents;
-- (BOOL)isDisplayingAllEvents;
-- (void)incrementCurrentKey;
-- (void)decrementCurrentKey;
-- (NSArray *)eventsForCurrentKey;
-- (void)displayAllEvents;
-
-- (void)organizeEvents;
 
 @end

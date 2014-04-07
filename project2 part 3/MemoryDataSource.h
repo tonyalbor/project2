@@ -16,4 +16,6 @@
 + (void)loadAllEvents;
 + (void)saveAllEvents;
 
++ (void)clearEverything;
+
 @end
