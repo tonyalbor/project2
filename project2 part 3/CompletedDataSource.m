@@ -19,7 +19,6 @@ static CompletedDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[CompletedDataSource alloc] init];
-        //_sharedDataSource = [[CompletedDataSource alloc] initWithEvents:nil andCurrentKey:nil];
         // further initialization
     });
     

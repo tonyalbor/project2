@@ -20,7 +20,6 @@ static DeletedDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[DeletedDataSource alloc] init];
-        //_sharedDataSource = [[DeletedDataSource alloc] initWithEvents:nil andCurrentKey:nil];
         // further initialization
     });
     
