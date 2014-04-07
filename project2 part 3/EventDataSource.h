@@ -10,7 +10,10 @@
 
 @class ListEvent;
 @class ListEventDataSource;
-@interface EventDataSource : NSObject
+@interface EventDataSource : NSObject {
+    NSMapTable *_events;
+    NSNumber *_currentKey;
+}
 
 // key: NSNumber id for CustomCellColor
 // object: NSMutableArray containing events for key

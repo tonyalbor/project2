@@ -13,9 +13,6 @@
 
 @implementation EventDataSource
 
-@synthesize events;
-@synthesize currentKey;
-
 + (id)sharedDataSource {
     return nil;
 }
@@ -26,25 +23,26 @@
 
 - (void)addEvent:(ListEvent *)event {
     // set events if nil
-    if(!events) events = [[NSMapTable alloc] init];
+    if(!_events) _events = [[NSMapTable alloc] init];
     
     // make sure there is a key set
-    if(!event.categoryID) currentKey = @0;
-    else currentKey = event.categoryID;
+    if(!event.categoryID) _currentKey = @0;
+    else _currentKey = event.categoryID;
     
     // initialize array if nil
-    if(![events objectForKey:currentKey]) {
-        [events setObject:[NSMutableArray new] forKey:currentKey];
+    if(![_events objectForKey:_currentKey]) {
+        [_events setObject:[NSMutableArray new] forKey:_currentKey];
     }
     
+    event.sortId = @([[_events objectForKey:_currentKey] count]);
     // add event to data source
-    [[events objectForKey:currentKey] addObject:event];
+    [[_events objectForKey:_currentKey] addObject:event];
 }
 
 - (ListEvent *)eventForSortId:(NSInteger)sort {
     BOOL allEventsShown = [self isDisplayingAllEvents];
     
-    NSArray *eventsDisplayed = allEventsShown ? [self getAllEvents] : [events objectForKey:currentKey];
+    NSArray *eventsDisplayed = allEventsShown ? [self getAllEvents] : [_events objectForKey:_currentKey];
     for(ListEvent *event in eventsDisplayed) {
         if([event.sortId isEqualToNumber:@(sort)]) return event;
     }
@@ -54,8 +52,8 @@
 
 - (NSMutableArray *)getAllEvents {
     NSMutableArray *allEvents = [[NSMutableArray alloc] init];
-    for(id key in events) {
-        NSArray *category = [events objectForKey:key];
+    for(id key in _events) {
+        NSArray *category = [_events objectForKey:key];
         for(int i = 0; i < category.count; ++i) {
             ListEvent *event = [category objectAtIndex:i];
             [allEvents addObject:event];
@@ -66,56 +64,61 @@
 }
 
 - (void)incrementKey {
-    if([self isDisplayingAllEvents]) currentKey = @0;
-    else if([currentKey isEqualToNumber:@8]) currentKey = @0;
+    if([self isDisplayingAllEvents]) _currentKey = 0;
+    else if([_currentKey isEqualToNumber:@8]) _currentKey = @0;
     else {
-        NSInteger temp = currentKey.integerValue;
+        NSInteger temp = _currentKey.integerValue;
         ++temp;
-        currentKey = [NSNumber numberWithInteger:temp];
+        _currentKey = [NSNumber numberWithInteger:temp];
     }
-    if([[events objectForKey:currentKey] count] == 0) [self incrementKey];
+    //NSLog(@"events: %@ \ncurrentKey: %@",_events, _currentKey);
+    if([[_events objectForKey:_currentKey] count] == 0) [self incrementKey];
 }
 
 - (void)decrementKey {
-    if([self isDisplayingAllEvents]) currentKey = @8;
-    else if([currentKey isEqualToNumber:@0]) currentKey = @8;
+    if([self isDisplayingAllEvents]) _currentKey = @8;
+    else if([_currentKey isEqualToNumber:@0]) _currentKey = @8;
     else {
-        NSInteger temp = currentKey.integerValue;
+        NSInteger temp = _currentKey.integerValue;
         --temp;
-        currentKey = [NSNumber numberWithInteger:temp];
+        _currentKey = [NSNumber numberWithInteger:temp];
     }
-    if([[events objectForKey:currentKey] count] == 0) [self decrementKey];
+    if([[_events objectForKey:_currentKey] count] == 0) [self decrementKey];
 }
 
 - (NSNumber *)currentKey {
     if([self isDisplayingAllEvents]) return @99;
-    if(![[events objectForKey:currentKey] count]) [self incrementKey];
-    return currentKey;
+    if(![[_events objectForKey:_currentKey] count]) [self incrementKey];
+    return _currentKey;
+}
+
+- (void)setCurrentKey:(NSNumber *)key {
+    _currentKey = key;
 }
 
 - (int)numberOfEventsForCurrentKey {
-    NSLog(@"current key: %@",currentKey);
+    NSLog(@"current key: %@",_currentKey);
     if([self isDisplayingAllEvents]) {
         NSInteger totalNumberOfEvents = 0;
-        for(NSNumber *key in events) {
-            NSArray *array = [events objectForKey:key];
+        for(NSNumber *key in _events) {
+            NSArray *array = [_events objectForKey:key];
             totalNumberOfEvents += array.count;
         }
         return totalNumberOfEvents;
     }
-    return [[events objectForKey:currentKey] count];
+    return [[_events objectForKey:_currentKey] count];
 }
 
 - (NSMutableArray *)eventsForCurrentKey {
-    return [events objectForKey:currentKey];
+    return [_events objectForKey:_currentKey];
 }
 
 - (BOOL)isDisplayingAllEvents {
-    return [currentKey isEqualToNumber:@99];
+    return [_currentKey isEqualToNumber:@99];
 }
 
 - (void)displayAllEvents {
-    currentKey = @99;
+    _currentKey = @99;
 }
 
 - (NSMutableDictionary *)mapToDictionary:(NSMapTable *)map {

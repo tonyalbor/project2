@@ -13,20 +13,11 @@
 
 @implementation ListEventDataSource
 
-@synthesize events;
-@synthesize currentKey;
 @synthesize recentlyAddedEvent;
-
-- (id)init {
-    if(!self) {
-        self = [super init];
-    }
-    return self;
-}
 
 static ListEventDataSource *_sharedDataSource = nil;
 
-+ (id)sharedDataSource {
++ (ListEventDataSource *)sharedDataSource {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[ListEventDataSource alloc] init];
@@ -44,8 +35,8 @@ static ListEventDataSource *_sharedDataSource = nil;
     NSMutableArray *allEvents = [[NSMutableArray alloc] init];
     ListEvent *currentEvent;
     NSArray *array;
-    for(NSNumber *key in events) {
-        array = [events objectForKey:key];
+    for(NSNumber *key in _events) {
+        array = [_events objectForKey:key];
         for(int i = 0; i < array.count; ++i) {
             currentEvent = [array objectAtIndex:i];
             if(currentEvent != recentlyAddedEvent) {
@@ -58,44 +49,44 @@ static ListEventDataSource *_sharedDataSource = nil;
 }
 
 - (void)addEvent:(ListEvent *)event {
-    if(events == nil) {
+    if(_events == nil) {
         // initialize map table
         NSLog(@"what");
-        events = [[NSMapTable alloc] init];
+        _events = [[NSMapTable alloc] init];
     }
-    if(currentKey == nil) currentKey = @0;
-    NSLog(@"list key: %@",currentKey);
-    event.categoryID = [self isDisplayingAllEvents] ? @0 : currentKey;
+    if(_currentKey == nil) _currentKey = @0;
+    NSLog(@"list key: %@",_currentKey);
+    event.categoryID = [self isDisplayingAllEvents] ? @0 : _currentKey;
     
-    if([events objectForKey:event.categoryID] == nil) {
+    if([_events objectForKey:event.categoryID] == nil) {
         // initialize array
-        [events setObject:[[NSMutableArray alloc] init] forKey:event.categoryID];
+        [_events setObject:[[NSMutableArray alloc] init] forKey:event.categoryID];
     }
-    [event setSortId:@([[events objectForKey:event.categoryID] count])];
-    [[events objectForKey:event.categoryID] addObject:event];
+    [event setSortId:@([[_events objectForKey:event.categoryID] count])];
+    [[_events objectForKey:event.categoryID] addObject:event];
     
     recentlyAddedEvent = event;
 }
 
 - (void)removeEvent:(ListEvent *)eventToBeRemoved {
     // just go through it all to find it
-    for(NSNumber *key in events) {
-        [[events objectForKey:key] removeObject:eventToBeRemoved];
+    for(NSNumber *key in _events) {
+        [[_events objectForKey:key] removeObject:eventToBeRemoved];
     }
     
 }
 
 - (void)removeEventAtIndexPath:(NSIndexPath *)indexPath {
-    [[events objectForKey:currentKey] removeObjectAtIndex:indexPath.row];
+    [[_events objectForKey:_currentKey] removeObjectAtIndex:indexPath.row];
 }
 
 - (ListEvent *)eventForIndexPath:(NSIndexPath *)indexPath {
-    return [[events objectForKey:currentKey] objectAtIndex:indexPath.row];
+    return [[_events objectForKey:_currentKey] objectAtIndex:indexPath.row];
 }
 
 - (void)organizeEvents {
-    NSMutableDictionary *temp = [self mapToDictionary:events];
-    [events removeAllObjects];
+    NSMutableDictionary *temp = [self mapToDictionary:_events];
+    [_events removeAllObjects];
     ListEvent *currentEvent = [[ListEvent alloc] init];
     NSNumber *eventKey;
     // go through all 'keys' in events
@@ -111,12 +102,12 @@ static ListEventDataSource *_sharedDataSource = nil;
             
             // it there is no key in events that matches the event key,
             // create a new array for it
-            if([events objectForKey:eventKey] == nil) {
-                [events setObject:[[NSMutableArray alloc] init] forKey:eventKey];
+            if([_events objectForKey:eventKey] == nil) {
+                [_events setObject:[[NSMutableArray alloc] init] forKey:eventKey];
             }
             
             // add current event to events with its ID
-            [[events objectForKey:eventKey] addObject:currentEvent];
+            [[_events objectForKey:eventKey] addObject:currentEvent];
         }
     }
 }

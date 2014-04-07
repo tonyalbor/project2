@@ -88,7 +88,7 @@ static BOOL keyboardIsUp = NO;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     id datasource = [listHandler currentListDataSource];
-    self.title = [NSString stringWithFormat:@"@%@",[datasource currentKey]];
+    //self.title = [NSString stringWithFormat:@"@%@",[datasource currentKey]];
     NSLog(@"%d",[datasource numberOfEventsForCurrentKey]);
     return [datasource numberOfEventsForCurrentKey];
 }
@@ -119,8 +119,7 @@ static BOOL keyboardIsUp = NO;
     for(ListEvent *e in events) {
         NSLog(@"title: %@, cid: %@",e.title, e.categoryID);
     }
-  
-    //ListEvent *event = [dataSource eventForSortId:indexPath.row];
+    
     ListEvent *event = [events objectAtIndex:indexPath.row];
     
     // date still unimplemented
@@ -543,7 +542,7 @@ static BOOL keyboardIsUp = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
-    //[MemoryDataSource loadAllEvents];
+    [MemoryDataSource loadAllEvents];
     
     self.containerView.alpha = 0;
     

@@ -14,7 +14,6 @@
 @interface ListEventDataSource : EventDataSource
 
 @property (strong, nonatomic) ListEvent *recentlyAddedEvent;
-//@property (strong, nonatomic) NSNumber *currentKey;
 
 - (void)removeEvent:(ListEvent *)eventToBeRemoved;
 - (void)removeEventAtIndexPath:(NSIndexPath *)indexPath;

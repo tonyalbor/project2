@@ -56,4 +56,19 @@
     [self saveEventsForDataSource:[DeletedDataSource sharedDataSource]];
 }
 
++ (void)deleteFile:(NSString *)file {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:file]) [fileManager removeItemAtPath:file error:nil];
+}
+
++ (void)clearEverything {
+    NSString *list = [self getPathForFile:[[ListEventDataSource sharedDataSource] fileName]];
+    NSString *completed = [self getPathForFile:[[CompletedDataSource sharedDataSource] fileName]];
+    NSString *deleted = [self getPathForFile:[[DeletedDataSource sharedDataSource] fileName]];
+    
+    [self deleteFile:list];
+    [self deleteFile:completed];
+    [self deleteFile:deleted];
+}
+
 @end
