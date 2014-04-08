@@ -30,6 +30,8 @@
 
 @property (strong, nonatomic) CurrentListHandler *listHandler;
 
+@property (strong, nonatomic) NSMutableArray *cells;
+
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 
 @property (weak, nonatomic) IBOutlet UIImageView *deletedImageView;
