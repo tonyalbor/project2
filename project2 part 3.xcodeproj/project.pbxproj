@@ -31,6 +31,8 @@
 		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
 		EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */; };
 		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
+		EAEB577E18F67A2D006C42F8 /* ListSet.m in Sources */ = {isa = PBXBuildFile; fileRef = EAEB577D18F67A2D006C42F8 /* ListSet.m */; };
+		EAEB578118F67CFA006C42F8 /* ListSetDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */; };
 		EAFDD8711856F2200049F482 /* save_data.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAFDD8701856F2200049F482 /* save_data.plist */; };
 /* End PBXBuildFile section */
 
@@ -74,6 +76,10 @@
 		EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrentListHandler.m; sourceTree = "<group>"; };
 		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		EA762F8F17EBA14E00B80123 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		EAEB577C18F67A2D006C42F8 /* ListSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSet.h; sourceTree = "<group>"; };
+		EAEB577D18F67A2D006C42F8 /* ListSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListSet.m; sourceTree = "<group>"; };
+		EAEB577F18F67CFA006C42F8 /* ListSetDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSetDataSource.h; sourceTree = "<group>"; };
+		EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListSetDataSource.m; sourceTree = "<group>"; };
 		EAFDD8701856F2200049F482 /* save_data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = save_data.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -200,6 +206,8 @@
 			children = (
 				EA26D39C17DD5B370066C43B /* ListEvent.h */,
 				EA26D39D17DD5B370066C43B /* ListEvent.m */,
+				EAEB577C18F67A2D006C42F8 /* ListSet.h */,
+				EAEB577D18F67A2D006C42F8 /* ListSet.m */,
 				EA26D3A317DD5E220066C43B /* CustomCellColor.h */,
 				EA26D3A417DD5E220066C43B /* CustomCellColor.m */,
 			);
@@ -209,6 +217,8 @@
 		EA26D39F17DD5CDE0066C43B /* datasource */ = {
 			isa = PBXGroup;
 			children = (
+				EAEB577F18F67CFA006C42F8 /* ListSetDataSource.h */,
+				EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */,
 				EA3879F418F11B4C00188347 /* EventDataSource.h */,
 				EA3879F518F11B4C00188347 /* EventDataSource.m */,
 				EA26D3A017DD5D600066C43B /* ListEventDataSource.h */,
@@ -295,12 +305,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAEB577E18F67A2D006C42F8 /* ListSet.m in Sources */,
 				EA4F39FA18A9E1EA00A94E95 /* CompletedDataSource.m in Sources */,
 				EA23A77718ACCB1900AD2BF3 /* MemoryDataSource.m in Sources */,
 				EA26D37C17DD582E0066C43B /* main.m in Sources */,
 				EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */,
 				EA26D38017DD582E0066C43B /* AppDelegate.m in Sources */,
 				EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */,
+				EAEB578118F67CFA006C42F8 /* ListSetDataSource.m in Sources */,
 				EA4F39FD18A9E1F700A94E95 /* DeletedDataSource.m in Sources */,
 				EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */,
 				EA3879F618F11B4C00188347 /* EventDataSource.m in Sources */,
