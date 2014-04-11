@@ -10,6 +10,8 @@
 #import "ListEventDataSource.h"
 #import "CompletedDataSource.h"
 #import "DeletedDataSource.h"
+#import "ListSetDataSource.h"
+#import "ListSet.h"
 
 @implementation MemoryDataSource
 

@@ -14,6 +14,7 @@
 @property (strong, nonatomic) id completed;
 @property (strong, nonatomic) id deleted;
 
+// will be used for title of list set
 @property (strong, nonatomic) id key;
 
 @end

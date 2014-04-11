@@ -17,7 +17,17 @@
 // data source
 + (ListSetDataSource *)sharedDataSource;
 
+// adding/removing sets
 - (void)addSet:(ListSet *)set;
 - (void)removeSet:(ListSet *)set;
+
+// current key stuff
+- (void)currentKey;
+- (void)incrementKey;
+- (void)decrementKey;
+- (ListSet *)listSetForCurrentKey;
+
+// not even sure if I'll need this
+- (NSArray *)getAllSets;
 
 @end
