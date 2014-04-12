@@ -10,6 +10,8 @@
 #import "ListEventDataSource.h"
 #import "CompletedDataSource.h"
 #import "DeletedDataSource.h"
+#import "ListSetDataSource.h"
+#import "ListSet.h"
 
 @implementation MemoryDataSource
 
@@ -25,6 +27,23 @@
 
 + (NSDictionary *)readDataFromFile:(NSString *)file {
     return [NSKeyedUnarchiver unarchiveObjectWithFile:[self getPathForFile:file]];
+}
+
++ (void)loadListSetData {
+    id datasource = [ListSetDataSource sharedDataSource];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:[self getPathForFile:@"list-sets.txt"]]) {
+        // file exists, do some cool stuff
+        [datasource setSets:(NSMutableDictionary *)[self readDataFromFile:@"list-sets.txt"]];
+    } else {
+        [datasource setSets:[[NSMutableDictionary alloc] init]];
+    }
+}
+
++ (void)saveListSetData {
+    NSDictionary *write = [ListSetDataSource sharedDataSource].sets;
+    NSString *file = @"list-sets.txt";
+    [self writeDataWithDictionary:write toFile:file];
 }
 
 + (void)loadEventsForDataSource:(id)sharedDataSource {
@@ -45,15 +64,30 @@
 }
 
 + (void)loadAllEvents {
-    [self loadEventsForDataSource:[ListEventDataSource sharedDataSource]];
-    [self loadEventsForDataSource:[CompletedDataSource sharedDataSource]];
-    [self loadEventsForDataSource:[DeletedDataSource sharedDataSource]];
+    [self loadListSetData];
+    id datasource = [ListSetDataSource sharedDataSource];
+    for(id key in [datasource sets]) {
+        ListSet *set = [[datasource sets] objectForKey:key];
+        [self loadEventsForDataSource:set.due];
+        [self loadEventsForDataSource:set.completed];
+        [self loadEventsForDataSource:set.deleted];
+    }
 }
 
 + (void)saveAllEvents {
-    [self saveEventsForDataSource:[ListEventDataSource sharedDataSource]];
-    [self saveEventsForDataSource:[CompletedDataSource sharedDataSource]];
-    [self saveEventsForDataSource:[DeletedDataSource sharedDataSource]];
+    id datasource = [ListSetDataSource sharedDataSource];
+    for(id key in [datasource sets]) {
+        ListSet *set = [[datasource sets] objectForKey:key];
+        [self saveEventsForDataSource:set.due];
+        [self saveEventsForDataSource:set.completed];
+        [self saveEventsForDataSource:set.deleted];
+    }
+}
+
++ (void)saveAllEventsForListSet:(ListSet *)set {
+    [self saveEventsForDataSource:set.due];
+    [self saveEventsForDataSource:set.completed];
+    [self saveEventsForDataSource:set.deleted];
 }
 
 + (void)deleteFile:(NSString *)file {

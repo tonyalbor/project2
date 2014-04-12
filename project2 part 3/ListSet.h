@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ListSet : NSObject
+@interface ListSet : NSObject <NSCoding>
 
 @property (strong, nonatomic) id due;
 @property (strong, nonatomic) id completed;
 @property (strong, nonatomic) id deleted;
 
-@property (strong, nonatomic) id key;
+@property (strong, nonatomic) NSNumber *key;
+
+@property (strong, nonatomic) NSString *title;
 
 @end

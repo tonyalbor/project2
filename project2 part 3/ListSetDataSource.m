@@ -21,15 +21,48 @@ static ListSetDataSource *_sharedDataSource = nil;
     return _sharedDataSource;
 }
 
+- (NSString *)prefixFileName {
+    return [[_sets objectForKey:_currentKey] title];
+}
+
 - (void)addSet:(ListSet *)set {
     if(!_sets) _sets = [[NSMutableDictionary alloc] init];
     [_sets setObject:set forKey:set.key];
 }
 
 - (void)removeSet:(ListSet *)set {
-    if(_sets) [_sets removeObjectForKey:set.key];
+    for(int key = set.key.intValue; [_sets objectForKey:@(key)]; ++key) {
+        if([_sets objectForKey:@(key+1)]) {
+            // replace
+            [_sets setObject:[_sets objectForKey:@(key+1)] forKey:@(key)];
+        } else {
+            // delete
+            [_sets removeObjectForKey:@(key)];
+        }
+    }
 }
 
+- (id)currentKey {
+    return _currentKey;
+}
 
+- (void)incrementKey {
+    NSNumber *nextKey = @(_currentKey.intValue + 1);
+    _currentKey = [_sets objectForKey:nextKey] ? nextKey : @0;
+}
+
+- (void)decrementKey {
+    _currentKey = [_currentKey isEqualToNumber:@0] ? @(_sets.count-1) : @(_currentKey.intValue-1);
+}
+
+- (ListSet *)listSetForCurrentKey {
+    return [_sets objectForKey:_currentKey];
+}
+
+- (NSArray *)getAllSets {
+    NSMutableArray *setsArray = [[NSMutableArray alloc] init];
+    for(id key in _sets) [setsArray addObject:[_sets objectForKey:key]];
+    return setsArray;
+}
 
 @end

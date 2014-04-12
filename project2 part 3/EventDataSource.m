@@ -104,9 +104,9 @@
             NSArray *array = [_events objectForKey:key];
             totalNumberOfEvents += array.count;
         }
-        return totalNumberOfEvents;
+        return (int)totalNumberOfEvents;
     }
-    return [[_events objectForKey:_currentKey] count];
+    return (int)[[_events objectForKey:_currentKey] count];
 }
 
 - (NSMutableArray *)eventsForCurrentKey {
