@@ -8,10 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class ListEventDataSource;
-@class CompletedDataSource;
-@class DeletedDataSource;
-
 @interface CurrentListHandler : NSObject
 
 // shared data source to be used throughout the entire app
