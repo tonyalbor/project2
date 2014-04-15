@@ -46,7 +46,7 @@
 - (NSMutableArray *)eventsForCurrentKey;
 
 // all events
-- (NSMutableArray *)getAllEvents;
+- (NSMutableArray *)getAllEventsForList:(NSMutableDictionary *)list;
 - (void)displayAllEvents;
 - (BOOL)isDisplayingAllEvents;
 
