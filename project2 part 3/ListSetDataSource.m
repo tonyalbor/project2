@@ -27,11 +27,11 @@ static ListSetDataSource *_sharedDataSource = nil;
 
 - (void)addSet:(ListSet *)set {
     if(!_sets) _sets = [[NSMutableDictionary alloc] init];
-    [_sets setObject:set forKey:set.key];
+    [_sets setObject:set forKey:set.currentKey];
 }
 
 - (void)removeSet:(ListSet *)set {
-    for(int key = set.key.intValue; [_sets objectForKey:@(key)]; ++key) {
+    for(int key = set.currentKey.intValue; [_sets objectForKey:@(key)]; ++key) {
         if([_sets objectForKey:@(key+1)]) {
             // replace
             [_sets setObject:[_sets objectForKey:@(key+1)] forKey:@(key)];
