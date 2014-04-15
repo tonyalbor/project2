@@ -10,12 +10,8 @@
 
 @interface MemoryDataSource : NSObject
 
-+ (void)loadEventsForDataSource:(id)sharedDataSource;
-+ (void)saveEventsForDataSource:(id)sharedDataSource;
-
-+ (void)loadAllEvents;
-+ (void)saveAllEvents;
-
-+ (void)clearEverything;
++ (void)load;
++ (void)save;
++ (void)clear;
 
 @end

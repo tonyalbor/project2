@@ -15,94 +15,49 @@
 
 @implementation MemoryDataSource
 
+#pragma mark I/O
+
 + (NSString *)getPathForFile:(NSString *)file {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths firstObject];
     return [documentsDirectory stringByAppendingPathComponent:file];
 }
 
-+ (void)writeDataWithDictionary:(NSDictionary *)dictionary toFile:(NSString *)file {
-    [NSKeyedArchiver archiveRootObject:dictionary toFile:[self getPathForFile:file]];
++ (void)writeData:(id)data toFile:(NSString *)file {
+    [NSKeyedArchiver archiveRootObject:data toFile:[self getPathForFile:file]];
 }
 
-+ (NSDictionary *)readDataFromFile:(NSString *)file {
++ (id)readDataFromFile:(NSString *)file {
     return [NSKeyedUnarchiver unarchiveObjectWithFile:[self getPathForFile:file]];
 }
 
-+ (void)loadListSetData {
+#pragma mark ListSet
+
++ (void)load {
     id datasource = [ListSetDataSource sharedDataSource];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:[self getPathForFile:@"list-sets.txt"]]) {
-        // file exists, do some cool stuff
-        [datasource setSets:(NSMutableDictionary *)[self readDataFromFile:@"list-sets.txt"]];
-    } else {
-        [datasource setSets:[[NSMutableDictionary alloc] init]];
-    }
-}
-
-+ (void)saveListSetData {
-    NSDictionary *write = [ListSetDataSource sharedDataSource].sets;
-    NSString *file = @"list-sets.txt";
-    [self writeDataWithDictionary:write toFile:file];
-}
-
-+ (void)loadEventsForDataSource:(id)sharedDataSource {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:[self getPathForFile:[sharedDataSource fileName]]]) {
-        [sharedDataSource setCurrentKey:@99];
-        [sharedDataSource setEvents:(NSMapTable *)[self readDataFromFile:[sharedDataSource fileName]]];
-    } else {
-        [sharedDataSource setCurrentKey:@0];
-        [sharedDataSource setEvents:[[NSMapTable alloc] init]];
-    }
-}
-
-+ (void)saveEventsForDataSource:(id)sharedDataSource {
-    NSDictionary *write = [sharedDataSource mapToDictionary:[sharedDataSource events]];
-    NSString *file = [sharedDataSource fileName];
-    [self writeDataWithDictionary:write toFile:file];
-}
-
-+ (void)loadAllEvents {
-    [self loadListSetData];
-    id datasource = [ListSetDataSource sharedDataSource];
-    for(id key in [datasource sets]) {
-        ListSet *set = [[datasource sets] objectForKey:key];
-        [self loadEventsForDataSource:set.due];
-        [self loadEventsForDataSource:set.completed];
-        [self loadEventsForDataSource:set.deleted];
-    }
-}
-
-+ (void)saveAllEvents {
-    id datasource = [ListSetDataSource sharedDataSource];
-    for(id key in [datasource sets]) {
-        ListSet *set = [[datasource sets] objectForKey:key];
-        [self saveEventsForDataSource:set.due];
-        [self saveEventsForDataSource:set.completed];
-        [self saveEventsForDataSource:set.deleted];
-    }
-}
-
-+ (void)saveAllEventsForListSet:(ListSet *)set {
-    [self saveEventsForDataSource:set.due];
-    [self saveEventsForDataSource:set.completed];
-    [self saveEventsForDataSource:set.deleted];
-}
-
-+ (void)deleteFile:(NSString *)file {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:file]) [fileManager removeItemAtPath:file error:nil];
-}
-
-+ (void)clearEverything {
-    NSString *list = [self getPathForFile:[[ListEventDataSource sharedDataSource] fileName]];
-    NSString *completed = [self getPathForFile:[[CompletedDataSource sharedDataSource] fileName]];
-    NSString *deleted = [self getPathForFile:[[DeletedDataSource sharedDataSource] fileName]];
+    [datasource setSets:[[NSMutableDictionary alloc] init]];
     
-    [self deleteFile:list];
-    [self deleteFile:completed];
-    [self deleteFile:deleted];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
+        // set datasource sets
+        [[datasource sets] setObject:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
+        
+        // current key will be set via user default, app delegate when closing app
+    }
+}
+
++ (void)save {
+    NSMutableDictionary *sets = [[ListSetDataSource sharedDataSource] sets];
+    for(id key in sets) {
+        [self writeData:(ListSet *)[sets objectForKey:key] toFile:[NSString stringWithFormat:@"%@.txt",key]];
+    }
+}
+
++ (void)clear {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    for(id key in [[ListEventDataSource sharedDataSource] sets]) {
+        [fileManager removeItemAtPath:[NSString stringWithFormat:@"%@.txt",key] error:nil];
+    }
 }
 
 @end
