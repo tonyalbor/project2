@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class ListSet;
+
 @interface CurrentListHandler : NSObject
 
 // shared data source to be used throughout the entire app
@@ -19,7 +21,7 @@
 @property (strong, nonatomic) NSNumber *currentList;
 
 // returns the data source for the current list
-- (id)currentListDataSource;
+- (NSDictionary *)currentListForSet:(ListSet *)set;
 
 - (BOOL)isInEvents;
 - (BOOL)isInCompleted;

@@ -12,23 +12,13 @@
 #import "CustomCellColor.h"
 #import "DetailViewController.h"
 
-@class ListEventDataSource;
-@class CompletedDataSource;
-@class DeletedDataSource;
-
-@class CurrentListHandler;
-
-@class MemoryDataSource;
+@class ListSetDataSource;
 
 @interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (strong, nonatomic) ListEventDataSource *eventDataSource;
-@property (strong, nonatomic) CompletedDataSource *completedDataSource;
-@property (strong, nonatomic) DeletedDataSource *deletedDataSource;
-
-@property (strong, nonatomic) CurrentListHandler *listHandler;
+@property (strong, nonatomic) ListSetDataSource *listSetDataSource;
 
 @property (strong, nonatomic) NSMutableArray *cells;
 

@@ -40,7 +40,7 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
         // set datasource sets
-        [[datasource sets] setObject:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
+        [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
         
         // current key will be set via user default, app delegate when closing app
     }
@@ -54,8 +54,10 @@
 }
 
 + (void)clear {
+    id datasource = [ListSetDataSource sharedDataSource];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    for(id key in [[ListEventDataSource sharedDataSource] sets]) {
+    for(id key in [datasource sets]) {
+        [datasource removeSet:[datasource listSetForCurrentKey]];
         [fileManager removeItemAtPath:[NSString stringWithFormat:@"%@.txt",key] error:nil];
     }
 }

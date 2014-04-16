@@ -25,13 +25,14 @@ static ListSetDataSource *_sharedDataSource = nil;
     return [[_sets objectForKey:_currentKey] title];
 }
 
-- (void)addSet:(ListSet *)set {
+- (void)addSet:(ListSet *)set forKey:(NSNumber *)key{
     if(!_sets) _sets = [[NSMutableDictionary alloc] init];
-    [_sets setObject:set forKey:set.currentKey];
+    set.dataSourceKey = key;
+    [_sets setObject:set forKey:key];
 }
 
 - (void)removeSet:(ListSet *)set {
-    for(int key = set.currentKey.intValue; [_sets objectForKey:@(key)]; ++key) {
+    for(int key = set.dataSourceKey.intValue; [_sets objectForKey:@(key)]; ++key) {
         if([_sets objectForKey:@(key+1)]) {
             // replace
             [_sets setObject:[_sets objectForKey:@(key+1)] forKey:@(key)];
