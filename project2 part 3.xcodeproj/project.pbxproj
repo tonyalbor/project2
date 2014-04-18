@@ -268,6 +268,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = tonyalbor;
+				TargetAttributes = {
+					EA26D36B17DD582E0066C43B = {
+						DevelopmentTeam = 998B9U96MF;
+					};
+				};
 			};
 			buildConfigurationList = EA26D36717DD582E0066C43B /* Build configuration list for PBXProject "project2 part 3" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -410,10 +415,13 @@
 		EA26D39017DD582E0066C43B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "project2 part 3/project2 part 3-Prefix.pch";
 				INFOPLIST_FILE = "project2 part 3/project2 part 3-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -421,10 +429,13 @@
 		EA26D39117DD582E0066C43B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "project2 part 3/project2 part 3-Prefix.pch";
 				INFOPLIST_FILE = "project2 part 3/project2 part 3-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

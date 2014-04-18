@@ -16,16 +16,33 @@
 #define kEncodeKeyCurrentList  @"kEncodeKeyCurrentList"
 #define kEncodeKeyTitle       @"kEncodeKeyTitle"
 
+#define EVENTS_DELETED @0
+#define EVENTS_DUE @1
+#define EVENTS_COMPLETED @2
+
 @implementation ListSet
+
+- (id)init {
+    self.due = [[List alloc] init];
+    self.completed = [[List alloc] init];
+    self.deleted = [[List alloc] init];
+    _currentListVar = EVENTS_DUE;
+    
+    // TODO :: figure out when i can set this
+    if(self.dataSourceKey == nil) self.dataSourceKey = @99;
+    
+    self.title = [NSString stringWithFormat:@"Untitled%@",self.dataSourceKey];
+    return self;
+}
 
 #pragma mark Current List
 
 - (void)setCurrentList:(NSNumber *)list {
-    _currentList = list;
+    _currentListVar = list;
 }
 
 - (List *)currentList {
-    switch(_currentList.intValue) {
+    switch(_currentListVar.intValue) {
         case 0: return self.deleted;
         case 1: return self.due;
         case 2: return self.completed;
@@ -34,7 +51,8 @@
 }
 
 - (NSNumber *)_currentList {
-    return _currentList;
+    if(_currentListVar == nil) _currentListVar = @0;
+    return _currentListVar;
 }
 
 #pragma mark NSCoding
@@ -93,15 +111,15 @@
 #pragma mark Check For Current List
 
 - (BOOL)isInDue {
-    return [_currentList isEqualToNumber:@1];
+    return [_currentListVar isEqualToNumber:EVENTS_DUE];
 }
 
 - (BOOL)isInDeleted {
-    return [_currentList isEqualToNumber:@0];
+    return [_currentListVar isEqualToNumber:EVENTS_DELETED];
 }
 
 - (BOOL)isInCompleted {
-    return [_currentList isEqualToNumber:@2];
+    return [_currentListVar isEqualToNumber:EVENTS_COMPLETED];
 }
 
 @end

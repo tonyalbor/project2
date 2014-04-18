@@ -13,6 +13,15 @@
 
 @implementation List
 
+- (id)init {
+    if(!self) {
+        self.events = [[NSMutableDictionary alloc] init];
+        self.currentCategory = @0;
+        self.recentlyAddedEvent = nil;
+    }
+    return self;
+}
+
 #pragma mark NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -52,14 +61,14 @@
 #pragma mark Current Category
 
 - (void)incrementCategory {
-    if([self isDisplayingAllEvents]) _currentCategory = 0;
+    if([self isDisplayingAllEvents]) _currentCategory = @0;
     else if([_currentCategory isEqualToNumber:@8]) _currentCategory = @0;
     else {
         NSInteger temp = _currentCategory.integerValue;
         ++temp;
         _currentCategory = [NSNumber numberWithInteger:temp];
     }
-    if([[_events objectForKey:_currentCategory] count] == 0) [self incrementCategory];
+    if(![_events objectForKey:_currentCategory]) [self incrementCategory];
 }
 
 - (void)decrementCategory {
@@ -70,7 +79,7 @@
         --temp;
         _currentCategory = [NSNumber numberWithInteger:temp];
     }
-    if([[_events objectForKey:_currentCategory] count] == 0) [self decrementCategory];
+    if(![_events objectForKey:_currentCategory]) [self decrementCategory];
 }
 
 - (int)numberOfEventsForCurrentCategory {
@@ -85,7 +94,7 @@
     return (int)[[_events objectForKey:_currentCategory] count];
 }
 
-- (NSArray *)eventsForCurrentCategory {
+- (NSMutableArray *)eventsForCurrentCategory {
     return [_events objectForKey:_currentCategory];
 }
 
@@ -99,7 +108,7 @@
     return [_currentCategory isEqualToNumber:@99];
 }
 
-- (NSArray *)getAllEvents {
+- (NSMutableArray *)getAllEvents {
     NSMutableArray *allEvents = [[NSMutableArray alloc] init];
     for(id key in _events) {
         NSArray *category = [_events objectForKey:key];
@@ -123,8 +132,27 @@
     return total;
 }
 
+/*
+ *   While events are added in, they might not be placed into the appropriate
+ *   key so that the event can show up on screen. Otherwise the event might not
+ *   show up if it is placed into a key that isn't currently being displayed.
+ *
+ *   This method is called once there needs to be an update to the UI, such as
+ *   switching categories, so that the events can show up for the right key.
+ */
 - (void)organizeEvents {
+    NSMutableDictionary *temp = [NSMutableDictionary dictionaryWithDictionary:_events];
+    [_events removeAllObjects];
     
+    for(id key in temp) {
+        NSArray *category = [temp objectForKey:key];
+        for(ListEvent *event in category) {
+            if(![_events objectForKey:event.categoryID]) {
+                [_events setObject:[[NSMutableArray alloc] init] forKey:event.categoryID];
+            }
+            [[_events objectForKey:event.categoryID] addObject:event];
+        }
+    }
 }
 
 @end

@@ -17,6 +17,8 @@ static ListSetDataSource *_sharedDataSource = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedDataSource = [[ListSetDataSource alloc] init];
+        _sharedDataSource.sets = [[NSMutableDictionary alloc] init];
+        _sharedDataSource.currentKey = @0;
     });
     return _sharedDataSource;
 }

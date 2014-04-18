@@ -83,10 +83,10 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return _cells.count;
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    List *list = [currentSet currentList];
     self.title = [currentSet title];
-    return [list numberOfEventsForCurrentCategory];
+    return _cells.count; // or [[currentSet currentList] numberOfEventsForCurrentCategory]
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -103,7 +103,6 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"configure cell");
     
     ListEvent *event = [_cells objectAtIndex:indexPath.row];
     
@@ -111,10 +110,8 @@ static BOOL keyboardIsUp = NO;
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
     [cell.eventLabel setText:event.title];
-    NSLog(@"%@",event.title);
     
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
-    //NSLog(@"category id for event: %@",event.categoryID);
     
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
@@ -159,7 +156,8 @@ static BOOL keyboardIsUp = NO;
     // leave this for reference, delete later
     //NSArray *events = [set isDisplayingAllEvents] ? [ListSet getAllEventsForList:list] : [list objectForKey:[set currentKey]];
     
-    NSArray *events = [list isDisplayingAllEvents] ? [list getAllEvents] : [list eventsForCurrentCategory];
+    
+    NSArray *events = [NSArray arrayWithArray:[list isDisplayingAllEvents] ? [list getAllEvents] : [list eventsForCurrentCategory]];
     
     for(int i = 0; i < events.count; ++i) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
@@ -179,10 +177,11 @@ static BOOL keyboardIsUp = NO;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:numberOfRows inSection:0];
     
     List *list = [[listSetDataSource listSetForCurrentKey] currentList];
+    ListEvent *event = [[ListEvent alloc] init];
     
     [self.tableView beginUpdates];
-    [list addEvent:[ListEvent new]];
-    [_cells addObject:[ListEvent new]];
+    [list addEvent:event];
+    [_cells addObject:event];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
     NSLog(@"inserted new row: %d",numberOfRows);
@@ -190,7 +189,6 @@ static BOOL keyboardIsUp = NO;
 
 - (void)bringUpKeyboardForNewEvent {
     int newCellIndex = (int)[self.tableView numberOfRowsInSection:0] - 1;
-    NSLog(@"new cell index: %d",newCellIndex);
     NSIndexPath *newCellIndexPath = [NSIndexPath indexPathForRow:newCellIndex inSection:0];
     ListEventCell *newCell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:newCellIndexPath];
    
@@ -249,14 +247,15 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
+    // called when image view is swiped left/right
     UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
     List *list = [self listForImageView:imageView];
-   
-    // called when swiped left/right
-    //[dataSource organizeEvents];
-    [list organizeEvents];
     
-    if([list numberOfEventsForCurrentCategory] <= 1) return;
+    // link up the events to the right category key
+    [list organizeEvents];
+
+    // nowhere to switch to
+    if([list numberOfEvents] <= 1) return;
     
     [self.tableView beginUpdates];
     [self switchCategoryWithDirection:gestureRecognizer.direction andList:list];
@@ -273,7 +272,7 @@ static BOOL keyboardIsUp = NO;
     
     // called when double tapped
     //if([[dataSource events] count] <= 1) return;
-    if([list numberOfEventsForCurrentCategory] <= 1) return;
+    if([list numberOfEvents] <= 1) return;
     
     if(![list isDisplayingAllEvents]) {
         // TODO :: investigate recentlyadded
@@ -610,7 +609,7 @@ static BOOL keyboardIsUp = NO;
 - (void)loadEventsIntoCellsArray {
     List *list = [[listSetDataSource listSetForCurrentKey] currentList];
     BOOL allEventsShown = [list isDisplayingAllEvents];
-    _cells = (NSMutableArray *)(allEventsShown ? [list getAllEvents] : [list eventsForCurrentCategory]);
+    _cells = [NSMutableArray arrayWithArray:(allEventsShown ? [list getAllEvents] : [list eventsForCurrentCategory])];
 }
 /*
  
@@ -680,6 +679,7 @@ static BOOL keyboardIsUp = NO;
 
 - (void)completeCreationOfEventWith:(UITextField *)textField {
     List *list = [[listSetDataSource listSetForCurrentKey] currentList];
+    
     ListEvent *newEvent = [list recentlyAddedEvent];
     newEvent.title = textField.text;
     [self.tableView reloadData];

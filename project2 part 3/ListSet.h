@@ -12,7 +12,7 @@
 @class List;
 
 @interface ListSet : NSObject <NSCoding> {
-    NSNumber *_currentList;
+    NSNumber *_currentListVar;
 }
 
 // dictionaries for where the events are stored

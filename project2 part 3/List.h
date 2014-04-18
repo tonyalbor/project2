@@ -29,15 +29,15 @@
 - (void)incrementCategory;
 - (void)decrementCategory;
 - (int)numberOfEventsForCurrentCategory;
-- (NSArray *)eventsForCurrentCategory;
+- (NSMutableArray *)eventsForCurrentCategory;
 
 // all events
 - (void)displayAllEvents;
 - (BOOL)isDisplayingAllEvents;
-- (NSArray *)getAllEvents;
+- (NSMutableArray *)getAllEvents;
 - (int)numberOfEvents;
 
-// TODO :: figure out if i need organization of the events
+// match events to category key
 - (void)organizeEvents;
 
 @end
