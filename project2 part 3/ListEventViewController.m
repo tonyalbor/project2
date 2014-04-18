@@ -22,61 +22,14 @@
 
 static CGFloat cellHeight = 80;
 
-// ADD MORE TO THIS
-// ADD MORE TO THIS
-// ADD MORE TO THIS
+// hmmm, doesn't seem like I'm using this
+// TODO :: check to see if i really need this
+// will probably delete later
 static BOOL isInCreateMode = YES;
 
 static BOOL keyboardIsUp = NO;
 
 #pragma mark UITableViewDataSource
-
-- (IBAction)segmentedControlValueDidChange:(UISegmentedControl *)sender {
-    //[eventDataSource setCurrentList:@([sender selectedSegmentIndex])];
-    
-    
-    // 0 - deleted
-    // 1 - events
-    // 2 - completed
-    
-    /*
-     
-     IDEA TIME
-     ---------
-     
-     Oh, and being able to change the name of a category would be cool.
-     It would work like this:
-     
-        Tap on the navigation item title and enter the name from there.
-     
-     And then just make sure that everywhere where I have been doing:
-     
-        for(NSNumber *key in events) ...
-     
-     I would need to change it to:
-     
-        for(id key in events) ...
-     
-     That way the key can be either a user-entered string, or just an NSNumber *
-     
-    
-     ---
-     List of lists???
-     ---
-     
-     
-     ---
-     Maybe have a DataSource class that each other data source can inherit from
-     That way, each one of the data source classes does not need to implement a bunch of the same methods,
-     e.g. isDisplayingAllEvents, getAllEvents, and so on
-     
-     I think this would be a good idea, but I'd have to make sure that I do it correctly, maybe one of the
-     data source's implementation of a method is slightly different than an other
-     ---
-     
-     */
-    
-}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return cellHeight;
@@ -155,7 +108,6 @@ static BOOL keyboardIsUp = NO;
     // TODO :: check if this works
     // leave this for reference, delete later
     //NSArray *events = [set isDisplayingAllEvents] ? [ListSet getAllEventsForList:list] : [list objectForKey:[set currentKey]];
-    
     
     NSArray *events = [NSArray arrayWithArray:[list isDisplayingAllEvents] ? [list getAllEvents] : [list eventsForCurrentCategory]];
     
@@ -264,14 +216,11 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (IBAction)showAllEvents:(id)sender {
+    // called when double tapped
     UITapGestureRecognizer *gestureRecognizer = (UITapGestureRecognizer *)sender;
     UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
     List *list = [self listForImageView:imageView];
     
-    //ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    
-    // called when double tapped
-    //if([[dataSource events] count] <= 1) return;
     if([list numberOfEvents] <= 1) return;
     
     if(![list isDisplayingAllEvents]) {
@@ -344,7 +293,7 @@ static BOOL keyboardIsUp = NO;
     UITableViewRowAnimation deleteDirection = [self directionToDelete:@1];
     
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    [currentSet setCurrentList:@1];
+    [currentSet setCurrentList:EVENTS_DUE];
     [self.tableView beginUpdates];
     [self deleteAllEventsFromTableViewInDirection:deleteDirection];
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
@@ -387,7 +336,7 @@ static BOOL keyboardIsUp = NO;
     UITableViewRowAnimation deleteDirection = [self directionToDelete:@2];
     
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    [currentSet setCurrentList:@2];
+    [currentSet setCurrentList:EVENTS_COMPLETED];
     [self.tableView beginUpdates];
     [self deleteAllEventsFromTableViewInDirection:deleteDirection];
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
@@ -415,9 +364,9 @@ static BOOL keyboardIsUp = NO;
     
     UITableViewRowAnimation insertDirection = [self directionToInsert:@0];
     UITableViewRowAnimation deleteDirection = [self directionToDelete:@0];
-    
+
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    [currentSet setCurrentList:@0];
+    [currentSet setCurrentList:EVENTS_DELETED];
     [self.tableView beginUpdates];
     [self deleteAllEventsFromTableViewInDirection:deleteDirection];
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
@@ -432,11 +381,9 @@ static BOOL keyboardIsUp = NO;
 - (void)swipedCell:(UISwipeGestureRecognizer *)gestureRecognizer {
     if(![[listSetDataSource listSetForCurrentKey] isInDue]) return;
     
-    
     UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    //ListEvent *eventToBeRemoved = [self getEventForIndexPath:indexPath];
     ListEvent *eventToBeRemoved = [_cells objectAtIndex:indexPath.row];
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     
@@ -459,11 +406,8 @@ static BOOL keyboardIsUp = NO;
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *event = [_cells objectAtIndex:indexPath.row];
-    //ListEvent *event = [self getEventForIndexPath:indexPath];
     
-    //NSNumber *oldKey = event.categoryID;
     [event changeColor];
-    //NSNumber *newKey = event.categoryID;
     [self loadEventsIntoCellsArray];
     [self.tableView reloadData];
     
@@ -471,16 +415,13 @@ static BOOL keyboardIsUp = NO;
     // save events for current data source
     //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
 }
-/*
+
 - (void)longPressedCell:(UILongPressGestureRecognizer *)gesutureRecognizer {
-    //[self.tableView setEditing:YES animated:1];
-    NSLog(@"long press");
     if(gesutureRecognizer.state == UIGestureRecognizerStateBegan) {
         NSLog(@"got in");
         ListEventCell *cell = (ListEventCell *)gesutureRecognizer.view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        // TODO :: do something with getting event, might delete this method right here
-        //ListEvent *event = [self getEventForIndexPath:indexPath];
+        ListEvent *event = [_cells objectAtIndex:indexPath.row];
         CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
         UIColor *colorcolor = [color customCellColorToUIColor];
         [DetailViewController setColor:colorcolor];
@@ -488,7 +429,7 @@ static BOOL keyboardIsUp = NO;
         [self.navigationController pushViewController:detail animated:YES];
     }
 }
-*/
+
 - (void)pinchedCells:(UIPinchGestureRecognizer *)gestureRecongnizer {
     UIGestureRecognizerState pinchState = gestureRecongnizer.state;
     
@@ -611,22 +552,7 @@ static BOOL keyboardIsUp = NO;
     BOOL allEventsShown = [list isDisplayingAllEvents];
     _cells = [NSMutableArray arrayWithArray:(allEventsShown ? [list getAllEvents] : [list eventsForCurrentCategory])];
 }
-/*
- 
- might not need
- hopefully will delete
- 
-- (ListEvent *)getEventForIndexPath:(NSIndexPath *)indexPath {
-    NSArray *events;
-    if([eventDataSource isDisplayingAllEvents]) {
-        events = [eventDataSource getAllEvents];
-    } else {
-        events = [eventDataSource eventsForCurrentKey];
-    }
-    
-    return [events objectAtIndex:indexPath.row];
-}
-*/
+
 - (void)switchCategoryWithDirection:(UISwipeGestureRecognizerDirection)direction andList:(List *)list {
     BOOL shouldIncrement;
     UITableViewRowAnimation insertAnimation;
@@ -689,7 +615,6 @@ static BOOL keyboardIsUp = NO;
     
     // TODO :: save stuff
     //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
-    //eventDataSource.recentlyAddedEvent = nil;
     list.recentlyAddedEvent = nil;
 }
 

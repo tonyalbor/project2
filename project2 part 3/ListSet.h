@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+#define EVENTS_DELETED @0
+#define EVENTS_DUE @1
+#define EVENTS_COMPLETED @2
+
 @class ListEvent;
 @class List;
 

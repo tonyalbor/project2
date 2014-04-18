@@ -16,10 +16,6 @@
 #define kEncodeKeyCurrentList  @"kEncodeKeyCurrentList"
 #define kEncodeKeyTitle       @"kEncodeKeyTitle"
 
-#define EVENTS_DELETED @0
-#define EVENTS_DUE @1
-#define EVENTS_COMPLETED @2
-
 @implementation ListSet
 
 - (id)init {
