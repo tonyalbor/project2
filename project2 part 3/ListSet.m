@@ -79,7 +79,7 @@
 #pragma mark File
 
 - (NSString *)fileName {
-    return [NSString stringWithFormat:@"%@.txt",self.title];
+    return [NSString stringWithFormat:@"%@.txt",self.dataSourceKey];
 }
 
 #pragma mark Manage Events
@@ -95,13 +95,24 @@
 #pragma mark Helper Functions
 
 - (void)addEvent:(ListEvent *)event toList:(List *)list {
+    // set events if nil
+    if(![list events]) {
+        list.events = [[NSMutableDictionary alloc] init];
+        
+    }
     // set array if nil
-    if(![[list events] objectForKey:event.categoryID]) {
-        [[list events] setObject:[NSMutableArray new] forKey:event.categoryID];
+    if(![list.events objectForKey:event.categoryID]) {
+        [list.events setObject:[NSMutableArray new] forKey:event.categoryID];
     }
     
     // add event for event.categoryID
-    [[[list events] objectForKey:event.categoryID] addObject:event];
+    [[list.events objectForKey:event.categoryID] addObject:event];
+}
+
+- (void)print {
+    // implement a pretty print for logging
+    
+    
 }
 
 #pragma mark Check For Current List

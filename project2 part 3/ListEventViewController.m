@@ -36,7 +36,7 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _cells.count;
+    //return _cells.count;
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     self.title = [currentSet title];
     return _cells.count; // or [[currentSet currentList] numberOfEventsForCurrentCategory]
@@ -136,6 +136,7 @@ static BOOL keyboardIsUp = NO;
     [_cells addObject:event];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
+    [MemoryDataSource save];
     NSLog(@"inserted new row: %d",numberOfRows);
 }
 
@@ -151,8 +152,8 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
-    
-    List *list = [[listSetDataSource listSetForCurrentKey] currentList];
+    ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
+    List *list = [currentSet currentList];
     
     [self.tableView beginUpdates];
     [list removeEvent:event];
@@ -203,11 +204,11 @@ static BOOL keyboardIsUp = NO;
     UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
     List *list = [self listForImageView:imageView];
     
-    // link up the events to the right category key
-    [list organizeEvents];
-
     // nowhere to switch to
     if([list numberOfEvents] <= 1) return;
+    
+    // link up the events to the right category key
+    [list organizeEvents];
     
     [self.tableView beginUpdates];
     [self switchCategoryWithDirection:gestureRecognizer.direction andList:list];
@@ -316,6 +317,7 @@ static BOOL keyboardIsUp = NO;
 
 - (IBAction)didTapCompleted:(id)sender {
     if([[listSetDataSource listSetForCurrentKey] isInCompleted]) return;
+    if([[[listSetDataSource listSetForCurrentKey] completed] isEmpty]) return;
     
     [UIView animateWithDuration:.3 animations:^{
         // big completed
@@ -335,17 +337,30 @@ static BOOL keyboardIsUp = NO;
     UITableViewRowAnimation insertDirection = [self directionToInsert:@2];
     UITableViewRowAnimation deleteDirection = [self directionToDelete:@2];
     
+    // get current set and set the current list to completed
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     [currentSet setCurrentList:EVENTS_COMPLETED];
+    
     [self.tableView beginUpdates];
+    // delete cells from screen
     [self deleteAllEventsFromTableViewInDirection:deleteDirection];
+    // set a current category if none is set
+    if(!currentSet.currentList.currentCategory) {
+        currentSet.currentList.currentCategory = @0;
+        if(![currentSet.currentList eventsForCurrentCategory]) {
+            [currentSet.currentList incrementCategory];
+        }
+    }
+    // insert events from current list into model
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
+    // insert into cells array
     [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
 }
 
 - (IBAction)didTapDeleted:(id)sender {
     if([[listSetDataSource listSetForCurrentKey] isInDeleted]) return;
+    if([[[listSetDataSource listSetForCurrentKey] deleted] isEmpty]) return;
     
     [UIView animateWithDuration:.3 animations:^{
         // big deleted
@@ -369,6 +384,12 @@ static BOOL keyboardIsUp = NO;
     [currentSet setCurrentList:EVENTS_DELETED];
     [self.tableView beginUpdates];
     [self deleteAllEventsFromTableViewInDirection:deleteDirection];
+    if(!currentSet.currentList.currentCategory) {
+        currentSet.currentList.currentCategory = @0;
+        if(![currentSet.currentList eventsForCurrentCategory]) {
+            [currentSet.currentList incrementCategory];
+        }
+    }
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
     [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
@@ -500,7 +521,13 @@ static BOOL keyboardIsUp = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
-    //[MemoryDataSource load];
+    // something is calling [MemoryDataSource load] before this gets called
+    // and then once this is actually called, it gets called twice
+    [super viewDidLoad];
+    
+    NSLog(@"view did load");
+    [MemoryDataSource load];
+    //[MemoryDataSource clear];
     
     self.containerView.alpha = 0;
     
@@ -511,9 +538,16 @@ static BOOL keyboardIsUp = NO;
     [listSetDataSource addSet:listSet forKey:@0];
     [listSetDataSource setCurrentKey:@0];
     _cells = [[NSMutableArray alloc] init];
+    ListSet *currentSet = [[ListSetDataSource sharedDataSource] listSetForCurrentKey];
+    if(!currentSet.currentList.currentCategory) {
+        currentSet.currentList.currentCategory = @0;
+        if(![currentSet.currentList eventsForCurrentCategory]) {
+            //[currentSet.currentList incrementCategory];
+        }
+    }
     [self loadEventsIntoCellsArray];
     
-    [super viewDidLoad];
+
     
     // Do any additional setup after loading the view, typically from a nib.
     

@@ -8,7 +8,7 @@
         <!--Navigation Controller-->
         <scene sceneID="5LV-J1-CAh">
             <objects>
-                <navigationController definesPresentationContext="YES" id="BFs-Qi-v5O" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="navigationController" definesPresentationContext="YES" id="BFs-Qi-v5O" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="da6-mT-mLi">
                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -56,7 +56,7 @@
         <!--List Event View Controller-->
         <scene sceneID="5">
             <objects>
-                <viewController id="2" customClass="ListEventViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="listEventViewController" id="2" customClass="ListEventViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="yYg-4T-DvC"/>
                         <viewControllerLayoutGuide type="bottom" id="jW3-51-Yva"/>

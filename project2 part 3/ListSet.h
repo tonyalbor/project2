@@ -28,6 +28,7 @@
 @property (strong, nonatomic) NSString *title;
 
 // used as key for data source dictionary
+// also for filename ???
 @property (strong, nonatomic) NSNumber *dataSourceKey;
 
 // used to keep track of the current list

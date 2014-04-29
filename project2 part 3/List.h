@@ -40,4 +40,6 @@
 // match events to category key
 - (void)organizeEvents;
 
+- (BOOL)isEmpty;
+
 @end

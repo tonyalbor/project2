@@ -39,9 +39,9 @@
 
 - (void)addEvent:(ListEvent *)event {
     if(!_events) _events = [[NSMutableDictionary alloc] init];
-    
-    if(!event.categoryID) _currentCategory = @0;
-    else _currentCategory = event.categoryID;
+    if(!_currentCategory || [self isDisplayingAllEvents]) _currentCategory = @0;
+    //if(!event.categoryID) _currentCategory = @0;
+    event.categoryID = _currentCategory;
     
     if(![_events objectForKey:_currentCategory]) {
         [_events setObject:[NSMutableArray new] forKey:_currentCategory];
@@ -153,6 +153,10 @@
             [[_events objectForKey:event.categoryID] addObject:event];
         }
     }
+}
+
+- (BOOL)isEmpty {
+    return (!_events || _events.count == 0);
 }
 
 @end
