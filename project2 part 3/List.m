@@ -14,11 +14,10 @@
 @implementation List
 
 - (id)init {
-    if(!self) {
-        self.events = [[NSMutableDictionary alloc] init];
-        self.currentCategory = @0;
-        self.recentlyAddedEvent = nil;
-    }
+    self.events = [[NSMutableDictionary alloc] init];
+    self.currentCategory = @0;
+    [self.events setObject:[NSMutableArray new] forKey:self.currentCategory];
+    self.recentlyAddedEvent = nil;
     return self;
 }
 
