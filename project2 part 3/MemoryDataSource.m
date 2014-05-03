@@ -33,8 +33,9 @@
 }
 
 #pragma mark ListSet
-
+/*
 + (void)load {
+    return;
     NSLog(@"wow");
     id datasource = [ListSetDataSource sharedDataSource];
     [datasource setSets:[[NSMutableDictionary alloc] init]];
@@ -53,17 +54,17 @@
     for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
         // set datasource sets
         [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
-        NSLog(@"sets: %@",[datasource sets]);
+        //NSLog(@"sets: %@",[datasource sets]);
         
         ListSet *set = [[datasource sets] objectForKey:@0];
-        NSLog(@"12345%@",set.currentList.events);
+        //NSLog(@"12345%@",set.currentList.events);
 
         NSMutableDictionary *d = [[[[ListSetDataSource sharedDataSource] listSetForCurrentKey] currentList] events];
         
-        NSLog(@"%@",d);
+        //NSLog(@"%@",d);
         // current key will be set via user default, app delegate when closing app
     }
-}
+}*/
 
 + (void)save {
     NSMutableDictionary *sets = [[ListSetDataSource sharedDataSource] sets];
@@ -77,7 +78,9 @@
 + (void)clear {
     id datasource = [ListSetDataSource sharedDataSource];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    for(id key in [datasource sets]) {
+//    for(id key in [datasource sets]) {
+    for(int i = 0; i < [[datasource sets] allKeys].count; ++i) {
+        NSNumber *key;
         NSLog(@"key: %@",key);
         [datasource removeSet:[datasource listSetForCurrentKey]];
         NSString *filename = [NSString stringWithFormat:@"%@.txt",key];

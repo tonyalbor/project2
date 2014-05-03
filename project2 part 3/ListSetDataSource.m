@@ -28,9 +28,11 @@ static ListSetDataSource *_sharedDataSource = nil;
 }
 
 - (void)addSet:(ListSet *)set forKey:(NSNumber *)key{
+    NSNumber *keyToUse = key == nil ? [self getNewKey] : key;
     if(!_sets) _sets = [[NSMutableDictionary alloc] init];
-    set.dataSourceKey = key;
-    [_sets setObject:set forKey:key];
+    set.dataSourceKey = keyToUse;
+    [_sets setObject:set forKey:keyToUse];
+    NSLog(@"just added sets : %@",_sets);
 }
 
 - (void)removeSet:(ListSet *)set {
@@ -66,6 +68,10 @@ static ListSetDataSource *_sharedDataSource = nil;
     NSMutableArray *setsArray = [[NSMutableArray alloc] init];
     for(id key in _sets) [setsArray addObject:[_sets objectForKey:key]];
     return setsArray;
+}
+
+- (NSNumber *)getNewKey {
+    return @(_sets.allKeys.count);
 }
 
 @end

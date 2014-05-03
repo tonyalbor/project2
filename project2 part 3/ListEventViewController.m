@@ -136,7 +136,7 @@ static BOOL keyboardIsUp = NO;
     [_cells addObject:event];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
-    [MemoryDataSource save];
+    //[MemoryDataSource save];
     NSLog(@"inserted new row: %d",numberOfRows);
 }
 
@@ -524,9 +524,10 @@ static BOOL keyboardIsUp = NO;
     // something is calling [MemoryDataSource load] before this gets called
     // and then once this is actually called, it gets called twice
     [super viewDidLoad];
+    //[MemoryDataSource clear];
     
     NSLog(@"view did load");
-    [MemoryDataSource load];
+    //[MemoryDataSource load];
     //[MemoryDataSource clear];
     
     self.containerView.alpha = 0;
@@ -691,5 +692,25 @@ static BOOL keyboardIsUp = NO;
     [doubleTapCompleted addTarget:self action:@selector(showAllEvents:)];
     [self.completedImageView addGestureRecognizer:doubleTapCompleted];
 }
+
+#pragma mark List Set Stuff
+
+- (IBAction)addListSet:(id)sender {
+    ListSet *newListSet = [[ListSet alloc] init];
+    [listSetDataSource addSet:newListSet forKey:nil];
+}
+
+- (IBAction)nextListSet:(id)sender {
+    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
+    [self.tableView beginUpdates];
+  
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationRight];
+    [listSetDataSource incrementKey];
+    [self loadEventsIntoCellsArray];
+    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationLeft];
+    [self.tableView endUpdates];
+}
+
+
 
 @end

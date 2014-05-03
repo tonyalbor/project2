@@ -189,6 +189,16 @@
                     </view>
                     <navigationItem key="navigationItem" id="Wxl-8L-nuW">
                         <nil key="title"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="rewind" id="Uqy-RD-2gA">
+                            <connections>
+                                <action selector="nextListSet:" destination="2" id="yEV-5b-zs7"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="f8h-Wa-fcW">
+                            <connections>
+                                <action selector="addListSet:" destination="2" id="ZAF-YZ-GuF"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="completedImageView" destination="Azb-uf-HUw" id="J7t-ez-2FU"/>
