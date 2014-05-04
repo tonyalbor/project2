@@ -8,13 +8,44 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ListSet : NSObject
+#define EVENTS_DELETED @0
+#define EVENTS_DUE @1
+#define EVENTS_COMPLETED @2
 
-@property (strong, nonatomic) id due;
-@property (strong, nonatomic) id completed;
-@property (strong, nonatomic) id deleted;
+@class ListEvent;
+@class List;
 
-// will be used for title of list set
-@property (strong, nonatomic) id key;
+@interface ListSet : NSObject <NSCoding> {
+    NSNumber *_currentListVar;
+}
+
+// dictionaries for where the events are stored
+@property (strong, nonatomic) List *due;
+@property (strong, nonatomic) List *completed;
+@property (strong, nonatomic) List *deleted;
+
+// title used to name the list set
+@property (strong, nonatomic) NSString *title;
+
+// used as key for data source dictionary
+// also for filename ???
+@property (strong, nonatomic) NSNumber *dataSourceKey;
+
+// used to keep track of the current list
+- (void)setCurrentList:(NSNumber *)list;
+- (List *)currentList;
+- (NSNumber *)_currentList;
+
+// returns the filename to read from and write to
+- (NSString *)fileName;
+
+// manage events
+- (void)completeEvent:(ListEvent *)event;
+- (void)deleteEvent:(ListEvent *)event;
+
+// checks for current list
+- (BOOL)isInDue;
+- (BOOL)isInCompleted;
+- (BOOL)isInDeleted;
 
 @end

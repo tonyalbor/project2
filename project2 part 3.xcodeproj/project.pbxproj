@@ -31,6 +31,7 @@
 		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
 		EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */; };
 		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
+		EAB8DA4018FE3A090021D595 /* List.m in Sources */ = {isa = PBXBuildFile; fileRef = EAB8DA3F18FE3A090021D595 /* List.m */; };
 		EAEB577E18F67A2D006C42F8 /* ListSet.m in Sources */ = {isa = PBXBuildFile; fileRef = EAEB577D18F67A2D006C42F8 /* ListSet.m */; };
 		EAEB578118F67CFA006C42F8 /* ListSetDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */; };
 		EAFDD8711856F2200049F482 /* save_data.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAFDD8701856F2200049F482 /* save_data.plist */; };
@@ -76,6 +77,8 @@
 		EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurrentListHandler.m; sourceTree = "<group>"; };
 		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		EA762F8F17EBA14E00B80123 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		EAB8DA3E18FE3A090021D595 /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = List.h; sourceTree = "<group>"; };
+		EAB8DA3F18FE3A090021D595 /* List.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = List.m; sourceTree = "<group>"; };
 		EAEB577C18F67A2D006C42F8 /* ListSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSet.h; sourceTree = "<group>"; };
 		EAEB577D18F67A2D006C42F8 /* ListSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListSet.m; sourceTree = "<group>"; };
 		EAEB577F18F67CFA006C42F8 /* ListSetDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSetDataSource.h; sourceTree = "<group>"; };
@@ -206,6 +209,8 @@
 			children = (
 				EA26D39C17DD5B370066C43B /* ListEvent.h */,
 				EA26D39D17DD5B370066C43B /* ListEvent.m */,
+				EAB8DA3E18FE3A090021D595 /* List.h */,
+				EAB8DA3F18FE3A090021D595 /* List.m */,
 				EAEB577C18F67A2D006C42F8 /* ListSet.h */,
 				EAEB577D18F67A2D006C42F8 /* ListSet.m */,
 				EA26D3A317DD5E220066C43B /* CustomCellColor.h */,
@@ -263,6 +268,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = tonyalbor;
+				TargetAttributes = {
+					EA26D36B17DD582E0066C43B = {
+						DevelopmentTeam = 998B9U96MF;
+					};
+				};
 			};
 			buildConfigurationList = EA26D36717DD582E0066C43B /* Build configuration list for PBXProject "project2 part 3" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -318,6 +328,7 @@
 				EA3879F618F11B4C00188347 /* EventDataSource.m in Sources */,
 				EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */,
 				EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */,
+				EAB8DA4018FE3A090021D595 /* List.m in Sources */,
 				EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */,
 				EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */,
 			);
@@ -404,10 +415,13 @@
 		EA26D39017DD582E0066C43B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "project2 part 3/project2 part 3-Prefix.pch";
 				INFOPLIST_FILE = "project2 part 3/project2 part 3-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -415,10 +429,13 @@
 		EA26D39117DD582E0066C43B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "project2 part 3/project2 part 3-Prefix.pch";
 				INFOPLIST_FILE = "project2 part 3/project2 part 3-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -14,20 +14,25 @@
 
 @property (strong, nonatomic) NSMutableDictionary *sets;
 
+@property (strong, nonatomic) NSNumber *currentKey;
+
 // data source
 + (ListSetDataSource *)sharedDataSource;
 
+// returns prefix for file name for data source
+- (NSString *)prefixFileName;
+
 // adding/removing sets
-- (void)addSet:(ListSet *)set;
+- (void)addSet:(ListSet *)set forKey:(NSNumber *)key;
 - (void)removeSet:(ListSet *)set;
 
 // current key stuff
-- (void)currentKey;
+- (id)currentKey;
 - (void)incrementKey;
 - (void)decrementKey;
 - (ListSet *)listSetForCurrentKey;
 
-// not even sure if I'll need this
+// all sets
 - (NSArray *)getAllSets;
 
 @end

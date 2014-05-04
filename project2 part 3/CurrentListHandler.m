@@ -7,9 +7,7 @@
 //
 
 #import "CurrentListHandler.h"
-#import "ListEventDataSource.h"
-#import "CompletedDataSource.h"
-#import "DeletedDataSource.h"
+#import "ListSet.h"
 
 @implementation CurrentListHandler
 
@@ -31,22 +29,13 @@ static CurrentListHandler *_sharedDataSource = nil;
     currentList = list;
 }
 
-- (id)currentListDataSource {
-    int list = currentList.intValue;
-    
-    switch(list) {
-        case 0:
-            return [DeletedDataSource sharedDataSource];
-        case 1:
-            return [ListEventDataSource sharedDataSource];
-        case 2:
-            return [CompletedDataSource sharedDataSource];
-        default:
-            // what
-            return nil;
+- (NSDictionary *)currentListForSet:(ListSet *)set {
+    switch(currentList.intValue) {
+        case 0: return [set deleted];
+        case 1: return [set due];
+        case 2: return [set completed];
+        default: return nil;
     }
-    
-    return nil;
 }
 
 - (BOOL)isInEvents {

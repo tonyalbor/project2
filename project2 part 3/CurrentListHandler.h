@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class ListEventDataSource;
-@class CompletedDataSource;
-@class DeletedDataSource;
+@class ListSet;
 
 @interface CurrentListHandler : NSObject
 
@@ -23,7 +21,7 @@
 @property (strong, nonatomic) NSNumber *currentList;
 
 // returns the data source for the current list
-- (id)currentListDataSource;
+- (NSDictionary *)currentListForSet:(ListSet *)set;
 
 - (BOOL)isInEvents;
 - (BOOL)isInCompleted;

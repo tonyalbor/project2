@@ -62,7 +62,6 @@ static ListEventDataSource *_sharedDataSource = nil;
         // initialize array
         [_events setObject:[[NSMutableArray alloc] init] forKey:event.categoryID];
     }
-    [event setSortId:@([[_events objectForKey:event.categoryID] count])];
     [[_events objectForKey:event.categoryID] addObject:event];
     
     recentlyAddedEvent = event;

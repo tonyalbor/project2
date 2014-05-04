@@ -12,8 +12,11 @@
 #import "DeletedDataSource.h"
 #import "ListSetDataSource.h"
 #import "ListSet.h"
+#import "List.h"
 
 @implementation MemoryDataSource
+
+#pragma mark I/O
 
 + (NSString *)getPathForFile:(NSString *)file {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -21,56 +24,82 @@
     return [documentsDirectory stringByAppendingPathComponent:file];
 }
 
-+ (void)writeDataWithDictionary:(NSDictionary *)dictionary toFile:(NSString *)file {
-    [NSKeyedArchiver archiveRootObject:dictionary toFile:[self getPathForFile:file]];
++ (void)writeData:(id)data toFile:(NSString *)file {
+    [NSKeyedArchiver archiveRootObject:data toFile:[self getPathForFile:file]];
 }
 
-+ (NSDictionary *)readDataFromFile:(NSString *)file {
++ (id)readDataFromFile:(NSString *)file {
     return [NSKeyedUnarchiver unarchiveObjectWithFile:[self getPathForFile:file]];
 }
 
-+ (void)loadEventsForDataSource:(id)sharedDataSource {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:[self getPathForFile:[sharedDataSource fileName]]]) {
-        [sharedDataSource setCurrentKey:@99];
-        [sharedDataSource setEvents:(NSMapTable *)[self readDataFromFile:[sharedDataSource fileName]]];
-    } else {
-        [sharedDataSource setCurrentKey:@0];
-        [sharedDataSource setEvents:[[NSMapTable alloc] init]];
+#pragma mark ListSet
+/*
+ + (void)load {
+ return;
+ NSLog(@"wow");
+ id datasource = [ListSetDataSource sharedDataSource];
+ [datasource setSets:[[NSMutableDictionary alloc] init]];
+ 
+ NSFileManager *fileManager = [NSFileManager defaultManager];
+ 
+ if(![self filesExist]) {
+ NSLog(@"no files exist");
+ [datasource addSet:[[ListSet alloc] init] forKey:@0];
+ return;
+ }
+ // TODO :: all saving stuff right now doesnt work
+ // once i get that done, it should be completely refactored, and ready to implement new features
+ NSLog(@"files do exist");
+ 
+ for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
+ // set datasource sets
+ [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
+ //NSLog(@"sets: %@",[datasource sets]);
+ 
+ ListSet *set = [[datasource sets] objectForKey:@0];
+ //NSLog(@"12345%@",set.currentList.events);
+ 
+ NSMutableDictionary *d = [[[[ListSetDataSource sharedDataSource] listSetForCurrentKey] currentList] events];
+ 
+ //NSLog(@"%@",d);
+ // current key will be set via user default, app delegate when closing app
+ }
+ }*/
+
++ (void)save {
+    NSMutableDictionary *sets = [[ListSetDataSource sharedDataSource] sets];
+    for(id key in sets) {
+        //NSString *filename = [NSString stringWithFormat:@"Untitled%@.txt",key];
+        NSString *filename = [[[ListSetDataSource sharedDataSource] listSetForCurrentKey] fileName];
+        [self writeData:(ListSet *)[sets objectForKey:key] toFile:filename];
     }
 }
 
-+ (void)saveEventsForDataSource:(id)sharedDataSource {
-    NSDictionary *write = [sharedDataSource mapToDictionary:[sharedDataSource events]];
-    NSString *file = [sharedDataSource fileName];
-    [self writeDataWithDictionary:write toFile:file];
-}
-
-+ (void)loadAllEvents {
-    [self loadEventsForDataSource:[ListEventDataSource sharedDataSource]];
-    [self loadEventsForDataSource:[CompletedDataSource sharedDataSource]];
-    [self loadEventsForDataSource:[DeletedDataSource sharedDataSource]];
-}
-
-+ (void)saveAllEvents {
-    [self saveEventsForDataSource:[ListEventDataSource sharedDataSource]];
-    [self saveEventsForDataSource:[CompletedDataSource sharedDataSource]];
-    [self saveEventsForDataSource:[DeletedDataSource sharedDataSource]];
-}
-
-+ (void)deleteFile:(NSString *)file {
++ (void)clear {
+    id datasource = [ListSetDataSource sharedDataSource];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath:file]) [fileManager removeItemAtPath:file error:nil];
+    //    for(id key in [datasource sets]) {
+    for(int i = 0; i < [[datasource sets] allKeys].count; ++i) {
+        NSNumber *key;
+        NSLog(@"key: %@",key);
+        [datasource removeSet:[datasource listSetForCurrentKey]];
+        NSString *filename = [NSString stringWithFormat:@"%@.txt",key];
+        if([fileManager fileExistsAtPath:[self getPathForFile:filename] isDirectory:NO]) {
+            NSLog(@"exists");
+            NSError __autoreleasing *error;
+            if([fileManager removeItemAtPath:[self getPathForFile:filename] error:&error])
+                NSLog(@"deleted");
+            else NSLog(@"error: %@",error);
+            
+        } else NSLog(@"does not exist");
+    }
 }
 
-+ (void)clearEverything {
-    NSString *list = [self getPathForFile:[[ListEventDataSource sharedDataSource] fileName]];
-    NSString *completed = [self getPathForFile:[[CompletedDataSource sharedDataSource] fileName]];
-    NSString *deleted = [self getPathForFile:[[DeletedDataSource sharedDataSource] fileName]];
-    
-    [self deleteFile:list];
-    [self deleteFile:completed];
-    [self deleteFile:deleted];
+#pragma mark Helper Functions
+
++ (BOOL)filesExist {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    return [fileManager fileExistsAtPath:[self getPathForFile:@"0.txt"]];
 }
 
 @end
