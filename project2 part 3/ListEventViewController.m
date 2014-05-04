@@ -36,10 +36,9 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    //return _cells.count;
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     self.title = [currentSet title];
-    return _cells.count; // or [[currentSet currentList] numberOfEventsForCurrentCategory]
+    return _cells.count;
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -47,6 +46,7 @@ static BOOL keyboardIsUp = NO;
     if(cell == nil) {
         cell = [[ListEventCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"listEventCell"];
     }
+    
     [self configureCell:cell atIndexPath:indexPath];
     return cell;
 }
@@ -56,7 +56,7 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    
+    cell.delegate = self;
     ListEvent *event = [_cells objectAtIndex:indexPath.row];
     
     // date still unimplemented
@@ -69,33 +69,14 @@ static BOOL keyboardIsUp = NO;
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
     
-    //
     [cell.textField setTag:indexPath.row];
     
-    if(cell.gestureRecognizers.count != 4) {
+    if(cell.gestureRecognizers.count != 3) {
         // 4 is the number of recognizers I'd like to add
         // if there are 4 recognizers for the cell, then there
         // is no need to add them again
         // (since this method gets called a lotttt)
-        
-        UISwipeGestureRecognizer *leftSwipe = [[UISwipeGestureRecognizer alloc] init];
-        [leftSwipe setDirection:UISwipeGestureRecognizerDirectionLeft];
-        [leftSwipe addTarget:self action:@selector(swipedCell:)];
-        
-        UISwipeGestureRecognizer *rightSwipe = [[UISwipeGestureRecognizer alloc] init];
-        [rightSwipe setDirection:UISwipeGestureRecognizerDirectionRight];
-        [rightSwipe addTarget:self action:@selector(swipedCell:)];
-        
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
-        [tap addTarget:self action:@selector(tappedCell:)];
-        
-        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] init];
-        [longPress addTarget:self action:@selector(longPressedCell:)];
-        
-        [cell addGestureRecognizer:leftSwipe];
-        [cell addGestureRecognizer:rightSwipe];
-        [cell addGestureRecognizer:tap];
-        [cell addGestureRecognizer:longPress];
+        [cell initWithGestureRecognizers];
     }
     
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
@@ -396,33 +377,27 @@ static BOOL keyboardIsUp = NO;
     
 }
 
+#pragma mark ListEventCellDelegate
 
-#pragma mark ListEventCell UIGestureRecognizer
-
-- (void)swipedCell:(UISwipeGestureRecognizer *)gestureRecognizer {
+- (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer shouldComplete:(BOOL)shouldComplete shouldDelete:(BOOL)shouldDelete {
+    
     if(![[listSetDataSource listSetForCurrentKey] isInDue]) return;
     
-    UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *eventToBeRemoved = [_cells objectAtIndex:indexPath.row];
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     
-    if(swipeDirection == UISwipeGestureRecognizerDirectionLeft) {
+    if(shouldDelete) {
         [currentSet deleteEvent:eventToBeRemoved];
         [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationLeft];
-    } else if(swipeDirection == UISwipeGestureRecognizerDirectionRight) {
+    } else if(shouldComplete) {
         [currentSet completeEvent:eventToBeRemoved];
         [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationRight];
-    } else {
-        // wait, what
     }
-    
-    // TODO :: save
-    //[MemoryDataSource saveAllEvents];
 }
 
-- (void)tappedCell:(UITapGestureRecognizer *)gestureRecognizer {
+- (void)cellTapped:(UITapGestureRecognizer *)gestureRecognizer {
     NSLog(@"tapped cell");
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -431,16 +406,12 @@ static BOOL keyboardIsUp = NO;
     [event changeColor];
     [self loadEventsIntoCellsArray];
     [self.tableView reloadData];
-    
-    // TODO :: save events or something
-    // save events for current data source
-    //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
 }
 
-- (void)longPressedCell:(UILongPressGestureRecognizer *)gesutureRecognizer {
-    if(gesutureRecognizer.state == UIGestureRecognizerStateBegan) {
+- (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         NSLog(@"got in");
-        ListEventCell *cell = (ListEventCell *)gesutureRecognizer.view;
+        ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
         ListEvent *event = [_cells objectAtIndex:indexPath.row];
         CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
@@ -450,6 +421,8 @@ static BOOL keyboardIsUp = NO;
         [self.navigationController pushViewController:detail animated:YES];
     }
 }
+
+#pragma mark ListEventCell UIGestureRecognizer
 
 - (void)pinchedCells:(UIPinchGestureRecognizer *)gestureRecongnizer {
     UIGestureRecognizerState pinchState = gestureRecongnizer.state;
