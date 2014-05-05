@@ -48,6 +48,7 @@ static BOOL keyboardIsUp = NO;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     self.title = [currentSet title];
+    
     return _cells.count;
 }
 
@@ -684,11 +685,13 @@ static BOOL keyboardIsUp = NO;
                 [UIView animateWithDuration:0.2 animations:^{
                     self.tableView.frame = originalFrame;
                 }];
-                [self nextListSet2:_goToNextSetOnRelease];
+                [self nextListSet:_goToNextSetOnRelease];
             } else {
-                
+                CGPoint endLocation = [gestureRecognizer locationInView:self.view];
                 // reset table view position
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
+                [self.tableView setFrame:CGRectMake(endLocation.x, self.tableView.frame.origin.y, self.tableView.frame.size.width, self.tableView.frame.size.height)];
+                
                 [UIView animateWithDuration:0.2 animations:^{
                     self.tableView.frame = originalFrame;
                 }];
@@ -752,36 +755,15 @@ static BOOL keyboardIsUp = NO;
     [listSetDataSource addSet:newListSet forKey:nil];
 }
 
-- (IBAction)nextListSet:(id)sender {
+- (void)nextListSet:(BOOL)next {
     [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
     [self.tableView beginUpdates];
-  
-    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
-    [listSetDataSource incrementKey];
-    [self loadEventsIntoCellsArray];
-    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationLeft];
-    [self.tableView endUpdates];
-}
-
-- (void)previousListSet {
-    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
-    [self.tableView beginUpdates];
-    
-    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationRight];
-    [listSetDataSource decrementKey];
-    [self loadEventsIntoCellsArray];
-    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationRight];
-    [self.tableView endUpdates];
-}
-
-- (void)nextListSet2:(BOOL)next {
-    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
-    [self.tableView beginUpdates];
-    //[self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationNone];
-    [self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationFade];
+    //[self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
     next ? [listSetDataSource incrementKey] : [listSetDataSource decrementKey];
     [self loadEventsIntoCellsArray];
-    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
+    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
+    //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
     [self.tableView endUpdates];
 }
 
