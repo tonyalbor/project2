@@ -552,7 +552,6 @@ static BOOL viewHasLoaded = NO;
     _cells = [[NSMutableArray alloc] init];
     ListSet *currentSet = [[ListSetDataSource sharedDataSource] listSetForCurrentKey];
     [[currentSet currentList] organizeEvents];
-    [self.tableView reloadData];
     
     // TODO :: not sure if i need this anymore
     if(!currentSet.currentList.currentCategory) {
@@ -561,8 +560,18 @@ static BOOL viewHasLoaded = NO;
             //[currentSet.currentList incrementCategory];
         }
     }
-    [self loadEventsIntoCellsArray];
     
+    for(id key in [listSetDataSource sets]) {
+        ListSet *listSet = [[listSetDataSource sets] objectForKey:key];
+        [[listSet currentList] displayAllEvents];
+    }
+    
+    NSLog(@"current set: %@",currentSet._currentList);
+    NSLog(@"current set: %@",currentSet.currentList.currentCategory);
+//    [[currentSet currentList] displayAllEvents];
+    NSLog(@"current set: %@",currentSet.currentList.currentCategory);
+    [self loadEventsIntoCellsArray];
+    [self.tableView reloadData];
 
     
     // Do any additional setup after loading the view, typically from a nib.
