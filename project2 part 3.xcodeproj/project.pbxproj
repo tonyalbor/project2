@@ -21,12 +21,9 @@
 		EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D38B17DD582E0066C43B /* ListEventViewController.m */; };
 		EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39917DD5A280066C43B /* ListEventCell.m */; };
 		EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39D17DD5B370066C43B /* ListEvent.m */; };
-		EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A117DD5D600066C43B /* ListEventDataSource.m */; };
 		EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A417DD5E220066C43B /* CustomCellColor.m */; };
 		EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA33247118A8DDAB00916A7E /* super-rough-nav2.png */; };
 		EA3879F618F11B4C00188347 /* EventDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA3879F518F11B4C00188347 /* EventDataSource.m */; };
-		EA4F39FA18A9E1EA00A94E95 /* CompletedDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4F39F918A9E1EA00A94E95 /* CompletedDataSource.m */; };
-		EA4F39FD18A9E1F700A94E95 /* DeletedDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4F39FC18A9E1F700A94E95 /* DeletedDataSource.m */; };
 		EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */; };
 		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
 		EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */; };
@@ -60,17 +57,11 @@
 		EA26D39917DD5A280066C43B /* ListEventCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEventCell.m; sourceTree = "<group>"; };
 		EA26D39C17DD5B370066C43B /* ListEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListEvent.h; sourceTree = "<group>"; };
 		EA26D39D17DD5B370066C43B /* ListEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEvent.m; sourceTree = "<group>"; };
-		EA26D3A017DD5D600066C43B /* ListEventDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListEventDataSource.h; sourceTree = "<group>"; };
-		EA26D3A117DD5D600066C43B /* ListEventDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListEventDataSource.m; sourceTree = "<group>"; };
 		EA26D3A317DD5E220066C43B /* CustomCellColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellColor.h; sourceTree = "<group>"; };
 		EA26D3A417DD5E220066C43B /* CustomCellColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellColor.m; sourceTree = "<group>"; };
 		EA33247118A8DDAB00916A7E /* super-rough-nav2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2.png"; sourceTree = "<group>"; };
 		EA3879F418F11B4C00188347 /* EventDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventDataSource.h; sourceTree = "<group>"; };
 		EA3879F518F11B4C00188347 /* EventDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventDataSource.m; sourceTree = "<group>"; };
-		EA4F39F818A9E1EA00A94E95 /* CompletedDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompletedDataSource.h; sourceTree = "<group>"; };
-		EA4F39F918A9E1EA00A94E95 /* CompletedDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CompletedDataSource.m; sourceTree = "<group>"; };
-		EA4F39FB18A9E1F700A94E95 /* DeletedDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeletedDataSource.h; sourceTree = "<group>"; };
-		EA4F39FC18A9E1F700A94E95 /* DeletedDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeletedDataSource.m; sourceTree = "<group>"; };
 		EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-check.png"; sourceTree = "<group>"; };
 		EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-trash.png"; sourceTree = "<group>"; };
 		EA74F46618AC606700B2B5E9 /* CurrentListHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentListHandler.h; sourceTree = "<group>"; };
@@ -226,12 +217,6 @@
 				EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */,
 				EA3879F418F11B4C00188347 /* EventDataSource.h */,
 				EA3879F518F11B4C00188347 /* EventDataSource.m */,
-				EA26D3A017DD5D600066C43B /* ListEventDataSource.h */,
-				EA26D3A117DD5D600066C43B /* ListEventDataSource.m */,
-				EA4F39F818A9E1EA00A94E95 /* CompletedDataSource.h */,
-				EA4F39F918A9E1EA00A94E95 /* CompletedDataSource.m */,
-				EA4F39FB18A9E1F700A94E95 /* DeletedDataSource.h */,
-				EA4F39FC18A9E1F700A94E95 /* DeletedDataSource.m */,
 				EA74F46618AC606700B2B5E9 /* CurrentListHandler.h */,
 				EA74F46718AC606700B2B5E9 /* CurrentListHandler.m */,
 				EA23A77518ACCB1900AD2BF3 /* MemoryDataSource.h */,
@@ -316,20 +301,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				EAEB577E18F67A2D006C42F8 /* ListSet.m in Sources */,
-				EA4F39FA18A9E1EA00A94E95 /* CompletedDataSource.m in Sources */,
 				EA23A77718ACCB1900AD2BF3 /* MemoryDataSource.m in Sources */,
 				EA26D37C17DD582E0066C43B /* main.m in Sources */,
 				EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */,
 				EA26D38017DD582E0066C43B /* AppDelegate.m in Sources */,
 				EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */,
 				EAEB578118F67CFA006C42F8 /* ListSetDataSource.m in Sources */,
-				EA4F39FD18A9E1F700A94E95 /* DeletedDataSource.m in Sources */,
 				EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */,
 				EA3879F618F11B4C00188347 /* EventDataSource.m in Sources */,
 				EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */,
 				EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */,
 				EAB8DA4018FE3A090021D595 /* List.m in Sources */,
-				EA26D3A217DD5D600066C43B /* ListEventDataSource.m in Sources */,
 				EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
