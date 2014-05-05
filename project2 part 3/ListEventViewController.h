@@ -28,4 +28,6 @@
 @property (weak, nonatomic) IBOutlet UIImageView *eventsImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *completedImageView;
 
+@property (strong, nonatomic) IBOutlet UITextField *titleTextField;
+
 @end

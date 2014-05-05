@@ -12,6 +12,8 @@
 #import "ListSet.h"
 #import "ListSetDataSource.h"
 
+#define TEXTFIELD_NAVIGATION_TITLE_TAG 5
+
 @interface ListEventViewController ()
 
 @end
@@ -47,8 +49,7 @@ static BOOL keyboardIsUp = NO;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    self.title = [currentSet title];
-    
+    [self.titleTextField setText:[[currentSet title] uppercaseString]];
     return _cells.count;
 }
 
@@ -482,6 +483,14 @@ static BOOL keyboardIsUp = NO;
 #pragma mark UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    // the nav title textfield tag is 5
+    if(textField.tag == TEXTFIELD_NAVIGATION_TITLE_TAG) {
+        [textField resignFirstResponder];
+        [[listSetDataSource listSetForCurrentKey] setTitle:textField.text];
+        [self.tableView reloadData];
+        return NO;
+    }
+    
     [self readjustTableViewBackToNormal];
     [self scrollToBottomOfTableView];
     
@@ -494,6 +503,7 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if(textField.tag == TEXTFIELD_NAVIGATION_TITLE_TAG) return YES;
     UIView *view = textField.superview;
     while(![view isKindOfClass:[ListEventCell class]]) {
         // keep getting textfield's superview until it is the ListEventCell

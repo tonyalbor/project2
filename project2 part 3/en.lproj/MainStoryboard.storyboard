@@ -188,6 +188,16 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="Wxl-8L-nuW">
+                        <nil key="title"/>
+                        <textField key="titleView" opaque="NO" clipsSubviews="YES" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter Title" textAlignment="center" minimumFontSize="17" id="kRe-29-sCf">
+                            <rect key="frame" x="96" y="7" width="128" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits"/>
+                            <connections>
+                                <outlet property="delegate" destination="2" id="aJj-Pe-37g"/>
+                            </connections>
+                        </textField>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="f8h-Wa-fcW">
                             <connections>
                                 <action selector="addListSet:" destination="2" id="ZAF-YZ-GuF"/>
@@ -200,6 +210,7 @@
                         <outlet property="deletedImageView" destination="vrA-2V-vBp" id="daF-vI-5sn"/>
                         <outlet property="eventsImageView" destination="d4m-1p-1cN" id="pez-l2-sN5"/>
                         <outlet property="tableView" destination="rdk-rW-qcO" id="ZRQ-qR-eUe"/>
+                        <outlet property="titleTextField" destination="kRe-29-sCf" id="NF2-Kd-20t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
