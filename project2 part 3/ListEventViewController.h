@@ -14,7 +14,7 @@
 
 @class ListSetDataSource;
 
-@interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, ListEventCellDelegate>
+@interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate, ListEventCellDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 

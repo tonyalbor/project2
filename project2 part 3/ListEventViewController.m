@@ -16,7 +16,17 @@
 
 @end
 
-@implementation ListEventViewController
+@implementation ListEventViewController {
+    CGPoint _originalCenter;
+    CGPoint _originalPoint;
+    BOOL _goToNextSetOnRelease;
+    BOOL _goToPreviousSetOnRelease;
+}
+
+// TODO :: FEATURE ::
+// include a count above the trash and completed icon
+// that will let the user know that there is now something there
+// after they complete/delete an event
 
 @synthesize listSetDataSource;
 
@@ -387,7 +397,10 @@ static BOOL keyboardIsUp = NO;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *eventToBeRemoved = [_cells objectAtIndex:indexPath.row];
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    
+    if(shouldDelete && shouldComplete) {
+        NSLog(@"something is broken");
+        return;
+    }
     if(shouldDelete) {
         [currentSet deleteEvent:eventToBeRemoved];
         [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationLeft];
@@ -626,6 +639,67 @@ static BOOL keyboardIsUp = NO;
     list.recentlyAddedEvent = nil;
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
+
+    if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        CGPoint location = [gestureRecognizer locationInView:self.view];
+
+        if(location.x > 50 && location.x < self.view.frame.size.width - 50) {
+            return NO;
+        }
+        CGPoint translation = [gestureRecognizer translationInView:self.view];
+        if(fabsf(translation.x) > fabsf(translation.y)) {
+            return YES;
+        }
+    }
+    return YES;
+}
+
+// TODO :: this whole thing needs to be checkout out
+// the animation from deletion to insertion is awkward
+- (void)handlePanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+
+    switch (gestureRecognizer.state) {
+        case UIGestureRecognizerStateBegan: {
+            _originalCenter = self.tableView.center;
+            _originalPoint = [gestureRecognizer locationInView:self.tableView];
+            break;
+        }
+        case UIGestureRecognizerStateChanged: {
+            CGPoint translation = [gestureRecognizer translationInView:self.tableView];
+            self.tableView.center = CGPointMake(_originalCenter.x + translation.x, _originalCenter.y);
+            
+            // TODO :: check this out
+            _goToNextSetOnRelease = _originalPoint.x < 50;
+            
+            // TODO :: check this out
+            _goToPreviousSetOnRelease = _originalPoint.x > 50;
+            break;
+        }
+        case UIGestureRecognizerStateEnded: {
+            if(_goToNextSetOnRelease || _goToPreviousSetOnRelease) {
+                
+                // TODO :: check this out
+                CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
+                [UIView animateWithDuration:0.2 animations:^{
+                    self.tableView.frame = originalFrame;
+                }];
+                [self nextListSet2:_goToNextSetOnRelease];
+            } else {
+                
+                // reset table view position
+                CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
+                [UIView animateWithDuration:0.2 animations:^{
+                    self.tableView.frame = originalFrame;
+                }];
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 - (void)UIGestureRecognizersAreFun {
     UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
     [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
@@ -634,6 +708,11 @@ static BOOL keyboardIsUp = NO;
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
     [tapRecognizer addTarget:self action:@selector(didTapTableView:)];
     [self.tableView addGestureRecognizer:tapRecognizer];
+    
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] init];
+    [panRecognizer addTarget:self action:@selector(handlePanGesture:)];
+    [panRecognizer setDelegate:self];
+    [self.tableView addGestureRecognizer:panRecognizer];
     
     UISwipeGestureRecognizer *swipeDeletedNavigationLeft = [[UISwipeGestureRecognizer alloc] init];
     [swipeDeletedNavigationLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
@@ -677,10 +756,32 @@ static BOOL keyboardIsUp = NO;
     [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
     [self.tableView beginUpdates];
   
-    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationRight];
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
     [listSetDataSource incrementKey];
     [self loadEventsIntoCellsArray];
     [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationLeft];
+    [self.tableView endUpdates];
+}
+
+- (void)previousListSet {
+    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
+    [self.tableView beginUpdates];
+    
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationRight];
+    [listSetDataSource decrementKey];
+    [self loadEventsIntoCellsArray];
+    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationRight];
+    [self.tableView endUpdates];
+}
+
+- (void)nextListSet2:(BOOL)next {
+    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
+    [self.tableView beginUpdates];
+    //[self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationNone];
+    [self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
+    next ? [listSetDataSource incrementKey] : [listSetDataSource decrementKey];
+    [self loadEventsIntoCellsArray];
+    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
     [self.tableView endUpdates];
 }
 

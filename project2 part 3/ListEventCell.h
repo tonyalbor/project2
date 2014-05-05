@@ -11,7 +11,7 @@
 
 @protocol ListEventCellDelegate;
 
-@interface ListEventCell : UITableViewCell
+@interface ListEventCell : UITableViewCell <UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *eventLabel;
@@ -20,6 +20,8 @@
 @property (strong, nonatomic) id<ListEventCellDelegate>delegate;
 
 - (void)initWithGestureRecognizers;
+
+- (void)pannedCell:(UIPanGestureRecognizer *)gestureRecognizer;
 
 @end
 
