@@ -14,12 +14,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    /*
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
     UINavigationController *navigationController = [storyboard instantiateViewControllerWithIdentifier:@"navigationController"];
     ListEventViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"listEventViewController"];
     [navigationController pushViewController:vc animated:YES];
     NSLog(@"cool");
-    
+    */
     //[nav pushViewController:nil animated:NO];
     return YES;
 }

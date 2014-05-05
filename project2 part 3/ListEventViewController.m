@@ -41,6 +41,8 @@ static BOOL isInCreateMode = YES;
 
 static BOOL keyboardIsUp = NO;
 
+static BOOL viewHasLoaded = NO;
+
 #pragma mark UITableViewDataSource
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -137,6 +139,16 @@ static BOOL keyboardIsUp = NO;
     [newCell.textField becomeFirstResponder];
     [newCell.textField isFirstResponder];
     keyboardIsUp = YES;
+    
+    for(UIGestureRecognizer *gestureRecognizer in self.tableView.gestureRecognizers) {
+        if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+            [gestureRecognizer setEnabled:YES];
+        } else if([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+            [gestureRecognizer setEnabled:NO];
+        } else if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+            [gestureRecognizer setEnabled:NO];
+        }
+    }
 }
 
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
@@ -493,7 +505,18 @@ static BOOL keyboardIsUp = NO;
     [textField setEnabled:NO];
     [textField resignFirstResponder];
     keyboardIsUp = NO;
-    //[eventDataSource organizeEvents];
+    
+    for(UIGestureRecognizer *gestureRecognizer in self.tableView.gestureRecognizers) {
+        if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+            [gestureRecognizer setEnabled:NO];
+        } else if([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+            [gestureRecognizer setEnabled:YES];
+        } else if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+            [gestureRecognizer setEnabled:YES];
+        }
+    }
+    [self.tableView reloadData];
+    
     return NO;
 }
 
@@ -515,23 +538,20 @@ static BOOL keyboardIsUp = NO;
 - (void)viewDidLoad {
     // something is calling [MemoryDataSource load] before this gets called
     // and then once this is actually called, it gets called twice
+    // [MemoryDataSource load];
     [super viewDidLoad];
-    //[MemoryDataSource clear];
-    
     NSLog(@"view did load");
-    //[MemoryDataSource load];
-    //[MemoryDataSource clear];
-    
-    self.containerView.alpha = 0;
-    
+
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
     ListSet *listSet = [[ListSet alloc] init];
     
-    [listSetDataSource addSet:listSet forKey:@0];
-    [listSetDataSource setCurrentKey:@0];
+    //[listSetDataSource addSet:listSet forKey:@0];
+    //[listSetDataSource setCurrentKey:@0];
     _cells = [[NSMutableArray alloc] init];
     ListSet *currentSet = [[ListSetDataSource sharedDataSource] listSetForCurrentKey];
+    
+    // TODO :: not sure if i need this anymore
     if(!currentSet.currentList.currentCategory) {
         currentSet.currentList.currentCategory = @0;
         if(![currentSet.currentList eventsForCurrentCategory]) {
@@ -646,6 +666,8 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
+    // TODO :: something is going on with the table view tap / cell tap
+    if(!keyboardIsUp && [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]){ NSLog(@"uh oh"); return NO;}
 
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         CGPoint location = [gestureRecognizer locationInView:self.view];
@@ -709,6 +731,8 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)UIGestureRecognizersAreFun {
+    NSLog(@"being called once");
+    NSLog(@"self.tableview.ges: %d",self.tableView.gestureRecognizers.count);
     UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
     [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
     [self.tableView addGestureRecognizer:pinchRecognizer];

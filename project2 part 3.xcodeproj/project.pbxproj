@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA13734C19175A710014AF28 /* ContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA13734B19175A710014AF28 /* ContainerViewController.m */; };
 		EA23A77718ACCB1900AD2BF3 /* MemoryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA23A77618ACCB1900AD2BF3 /* MemoryDataSource.m */; };
 		EA26D37017DD582E0066C43B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D36F17DD582E0066C43B /* UIKit.framework */; };
 		EA26D37217DD582E0066C43B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D37117DD582E0066C43B /* Foundation.framework */; };
@@ -38,6 +39,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EA13734A19175A710014AF28 /* ContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContainerViewController.h; sourceTree = "<group>"; };
+		EA13734B19175A710014AF28 /* ContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContainerViewController.m; sourceTree = "<group>"; };
 		EA23A77518ACCB1900AD2BF3 /* MemoryDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryDataSource.h; sourceTree = "<group>"; };
 		EA23A77618ACCB1900AD2BF3 /* MemoryDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemoryDataSource.m; sourceTree = "<group>"; };
 		EA26D36C17DD582E0066C43B /* project2 part 3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "project2 part 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -183,6 +186,8 @@
 				EA26D38B17DD582E0066C43B /* ListEventViewController.m */,
 				EA762F8E17EBA14E00B80123 /* DetailViewController.h */,
 				EA762F8F17EBA14E00B80123 /* DetailViewController.m */,
+				EA13734A19175A710014AF28 /* ContainerViewController.h */,
+				EA13734B19175A710014AF28 /* ContainerViewController.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -318,6 +323,7 @@
 				EAEB577E18F67A2D006C42F8 /* ListSet.m in Sources */,
 				EA4F39FA18A9E1EA00A94E95 /* CompletedDataSource.m in Sources */,
 				EA23A77718ACCB1900AD2BF3 /* MemoryDataSource.m in Sources */,
+				EA13734C19175A710014AF28 /* ContainerViewController.m in Sources */,
 				EA26D37C17DD582E0066C43B /* main.m in Sources */,
 				EA74F46818AC606700B2B5E9 /* CurrentListHandler.m in Sources */,
 				EA26D38017DD582E0066C43B /* AppDelegate.m in Sources */,
