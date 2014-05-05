@@ -26,7 +26,6 @@
     
     // TODO :: figure out when i can set this
 //    if(self.dataSourceKey == nil) //self.dataSourceKey = @99;
-    
     self.title = [NSString stringWithFormat:@"Untitled%@",self.dataSourceKey];
     
     return self;

@@ -84,8 +84,8 @@ static BOOL keyboardIsUp = NO;
     [cell.textField setTag:indexPath.row];
     
     if(cell.gestureRecognizers.count != 3) {
-        // 4 is the number of recognizers I'd like to add
-        // if there are 4 recognizers for the cell, then there
+        // 3 is the number of recognizers I'd like to add
+        // if there are 3 recognizers for the cell, then there
         // is no need to add them again
         // (since this method gets called a lotttt)
         [cell initWithGestureRecognizers];
@@ -98,12 +98,7 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)insertEvents:(List *)list inDirection:(UITableViewRowAnimation)direction {
-    // TODO :: check if this works
-    // leave this for reference, delete later
-    //NSArray *events = [set isDisplayingAllEvents] ? [ListSet getAllEventsForList:list] : [list objectForKey:[set currentKey]];
-    
     NSArray *events = [NSArray arrayWithArray:[list isDisplayingAllEvents] ? [list getAllEvents] : [list eventsForCurrentCategory]];
-    
     for(int i = 0; i < events.count; ++i) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
