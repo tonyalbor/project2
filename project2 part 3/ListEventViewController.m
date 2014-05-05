@@ -545,7 +545,6 @@ static BOOL viewHasLoaded = NO;
     //[MemoryDataSource clear];
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
-    //ListSet *listSet = [[ListSet alloc] init];
     
     //[listSetDataSource addSet:listSet forKey:@0];
     //[listSetDataSource setCurrentKey:@0];
@@ -566,10 +565,6 @@ static BOOL viewHasLoaded = NO;
         [[listSet currentList] displayAllEvents];
     }
     
-    NSLog(@"current set: %@",currentSet._currentList);
-    NSLog(@"current set: %@",currentSet.currentList.currentCategory);
-//    [[currentSet currentList] displayAllEvents];
-    NSLog(@"current set: %@",currentSet.currentList.currentCategory);
     [self loadEventsIntoCellsArray];
     [self.tableView reloadData];
 
@@ -807,10 +802,7 @@ static BOOL viewHasLoaded = NO;
     [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
     //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
     [self.tableView endUpdates];
-    NSLog(@"datasource key: %@",[[listSetDataSource listSetForCurrentKey] dataSourceKey]);
     [MemoryDataSource save];
 }
-
-
 
 @end
