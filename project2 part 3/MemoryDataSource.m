@@ -33,38 +33,38 @@
 }
 
 #pragma mark ListSet
-/*
- + (void)load {
- return;
- NSLog(@"wow");
- id datasource = [ListSetDataSource sharedDataSource];
- [datasource setSets:[[NSMutableDictionary alloc] init]];
+
++ (void)load {
+    NSLog(@"is this the first thing to get called?");
+    ListSetDataSource *datasource = [ListSetDataSource sharedDataSource];
+    [datasource setSets:[[NSMutableDictionary alloc] init]];
  
- NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
  
- if(![self filesExist]) {
- NSLog(@"no files exist");
- [datasource addSet:[[ListSet alloc] init] forKey:@0];
- return;
- }
- // TODO :: all saving stuff right now doesnt work
- // once i get that done, it should be completely refactored, and ready to implement new features
- NSLog(@"files do exist");
+    if(![self fileExistsAt:@0]) {
+        NSLog(@"no files exist");
+        [datasource addSet:[[ListSet alloc] init] forKey:@0];
+        [datasource setCurrentKey:@0];
+        return;
+    }
+    // TODO :: all saving stuff right now doesnt work
+    // once i get that done, it should be completely refactored, and ready to implement new features
+    NSLog(@"files do exist");
  
- for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
- // set datasource sets
- [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
- //NSLog(@"sets: %@",[datasource sets]);
+    for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
+        // set datasource sets
+        [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
+        //NSLog(@"sets: %@",[datasource sets]);
  
- ListSet *set = [[datasource sets] objectForKey:@0];
- //NSLog(@"12345%@",set.currentList.events);
+        ListSet *set = [[datasource sets] objectForKey:@0];
+        //NSLog(@"12345%@",set.currentList.events);
  
- NSMutableDictionary *d = [[[[ListSetDataSource sharedDataSource] listSetForCurrentKey] currentList] events];
+        NSMutableDictionary *d = [[[[ListSetDataSource sharedDataSource] listSetForCurrentKey] currentList] events];
  
- //NSLog(@"%@",d);
- // current key will be set via user default, app delegate when closing app
- }
- }*/
+        //NSLog(@"%@",d);
+        // current key will be set via user default, app delegate when closing app
+    }
+}
 
 + (void)save {
     NSMutableDictionary *sets = [[ListSetDataSource sharedDataSource] sets];
@@ -76,30 +76,20 @@
 }
 
 + (void)clear {
-    id datasource = [ListSetDataSource sharedDataSource];
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    //    for(id key in [datasource sets]) {
-    for(int i = 0; i < [[datasource sets] allKeys].count; ++i) {
-        NSNumber *key;
-        NSLog(@"key: %@",key);
-        [datasource removeSet:[datasource listSetForCurrentKey]];
-        NSString *filename = [NSString stringWithFormat:@"%@.txt",key];
-        if([fileManager fileExistsAtPath:[self getPathForFile:filename] isDirectory:NO]) {
-            NSLog(@"exists");
-            NSError __autoreleasing *error;
-            if([fileManager removeItemAtPath:[self getPathForFile:filename] error:&error])
-                NSLog(@"deleted");
-            else NSLog(@"error: %@",error);
-            
-        } else NSLog(@"does not exist");
+    for(int key = 0; [self fileExistsAt:@(key)]; ++key) {
+        NSError __autoreleasing *error;
+        if([fileManager removeItemAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]] error:&error]) {
+            NSLog(@"deleted file - %@.txt",@(key));
+        } else NSLog(@"error: %@",error);
     }
 }
 
 #pragma mark Helper Functions
 
-+ (BOOL)filesExist {
++ (BOOL)fileExistsAt:(NSNumber *)key {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    return [fileManager fileExistsAtPath:[self getPathForFile:@"0.txt"]];
+    return [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",key]]];
 }
 
 @end
