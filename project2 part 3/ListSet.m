@@ -58,7 +58,7 @@
     [aCoder encodeObject:self.due forKey:kEncodeKeyDue];
     [aCoder encodeObject:self.completed forKey:kEncodeKeyCompleted];
     [aCoder encodeObject:self.deleted forKey:kEncodeKeyDeleted];
-    //[aCoder encodeObject:self.currentList forKey:kEncodeKeyCurrentList];
+    [aCoder encodeObject:_currentListVar forKey:kEncodeKeyCurrentList];
     [aCoder encodeObject:self.title forKey:kEncodeKeyTitle];
     
 }
@@ -69,7 +69,7 @@
         self.due = [aDecoder decodeObjectForKey:kEncodeKeyDue];
         self.completed = [aDecoder decodeObjectForKey:kEncodeKeyCompleted];
         self.deleted = [aDecoder decodeObjectForKey:kEncodeKeyDeleted];
-        //self.currentList = [aDecoder decodeObjectForKey:kEncodeKeyCurrentList];
+        self.currentList = [aDecoder decodeObjectForKey:kEncodeKeyCurrentList];
         self.title = [aDecoder decodeObjectForKey:kEncodeKeyTitle];
     }
     

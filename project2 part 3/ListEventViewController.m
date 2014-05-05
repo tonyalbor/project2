@@ -241,6 +241,7 @@ static BOOL viewHasLoaded = NO;
         [self loadEventsIntoCellsArray];
         [self.tableView endUpdates];
     }
+    [MemoryDataSource save];
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
@@ -541,15 +542,17 @@ static BOOL viewHasLoaded = NO;
     // [MemoryDataSource load];
     [super viewDidLoad];
     NSLog(@"view did load");
-
+    //[MemoryDataSource clear];
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
-    ListSet *listSet = [[ListSet alloc] init];
+    //ListSet *listSet = [[ListSet alloc] init];
     
     //[listSetDataSource addSet:listSet forKey:@0];
     //[listSetDataSource setCurrentKey:@0];
     _cells = [[NSMutableArray alloc] init];
     ListSet *currentSet = [[ListSetDataSource sharedDataSource] listSetForCurrentKey];
+    [[currentSet currentList] organizeEvents];
+    [self.tableView reloadData];
     
     // TODO :: not sure if i need this anymore
     if(!currentSet.currentList.currentCategory) {
@@ -661,6 +664,7 @@ static BOOL viewHasLoaded = NO;
     [_cells replaceObjectAtIndex:_cells.count-1 withObject:newEvent];
     
     // TODO :: save stuff
+    [MemoryDataSource save];
     //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
     list.recentlyAddedEvent = nil;
 }
@@ -781,7 +785,7 @@ static BOOL viewHasLoaded = NO;
 
 - (IBAction)addListSet:(id)sender {
     ListSet *newListSet = [[ListSet alloc] init];
-    [listSetDataSource addSet:newListSet forKey:nil];
+    [listSetDataSource addSet:newListSet];
 }
 
 - (void)nextListSet:(BOOL)next {
@@ -794,6 +798,8 @@ static BOOL viewHasLoaded = NO;
     [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
     //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
     [self.tableView endUpdates];
+    NSLog(@"datasource key: %@",[[listSetDataSource listSetForCurrentKey] dataSourceKey]);
+    [MemoryDataSource save];
 }
 
 

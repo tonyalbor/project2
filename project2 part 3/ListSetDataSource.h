@@ -23,7 +23,7 @@
 - (NSString *)prefixFileName;
 
 // adding/removing sets
-- (void)addSet:(ListSet *)set forKey:(NSNumber *)key;
+- (void)addSet:(ListSet *)set;
 - (void)removeSet:(ListSet *)set;
 
 // current key stuff

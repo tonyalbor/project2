@@ -43,7 +43,7 @@
  
     if(![self fileExistsAt:@0]) {
         NSLog(@"no files exist");
-        [datasource addSet:[[ListSet alloc] init] forKey:@0];
+        [datasource addSet:[[ListSet alloc] init]];
         [datasource setCurrentKey:@0];
         return;
     }
@@ -53,13 +53,13 @@
  
     for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
         // set datasource sets
-        [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]] forKey:@(key)];
+        [datasource addSet:(ListSet *)[self readDataFromFile:[NSString stringWithFormat:@"%@.txt",@(key)]]];
         //NSLog(@"sets: %@",[datasource sets]);
  
-        ListSet *set = [[datasource sets] objectForKey:@0];
+//        ListSet *set = [[datasource sets] objectForKey:@(key)];
         //NSLog(@"12345%@",set.currentList.events);
  
-        NSMutableDictionary *d = [[[[ListSetDataSource sharedDataSource] listSetForCurrentKey] currentList] events];
+  //      NSMutableDictionary *d = [[[[ListSetDataSource sharedDataSource] listSetForCurrentKey] currentList] events];
  
         //NSLog(@"%@",d);
         // current key will be set via user default, app delegate when closing app
@@ -69,8 +69,13 @@
 + (void)save {
     NSMutableDictionary *sets = [[ListSetDataSource sharedDataSource] sets];
     for(id key in sets) {
+        NSLog(@"about to save for key: %@",key);
         //NSString *filename = [NSString stringWithFormat:@"Untitled%@.txt",key];
-        NSString *filename = [[[ListSetDataSource sharedDataSource] listSetForCurrentKey] fileName];
+        //NSString *filename = [[[ListSetDataSource sharedDataSource] listSetForCurrentKey] fileName];
+        NSString *filename = [NSString stringWithFormat:@"%@.txt",key];
+        NSLog(@"filename to save: %@",filename);
+        ListSet *setToWrite = (ListSet *)[sets objectForKey:key];
+        NSLog(@"datasource to save: %@",setToWrite.dataSourceKey);
         [self writeData:(ListSet *)[sets objectForKey:key] toFile:filename];
     }
 }

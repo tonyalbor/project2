@@ -27,11 +27,10 @@ static ListSetDataSource *_sharedDataSource = nil;
     return [[_sets objectForKey:_currentKey] title];
 }
 
-- (void)addSet:(ListSet *)set forKey:(NSNumber *)key{
-    NSNumber *keyToUse = key == nil ? [self getNewKey] : key;
+- (void)addSet:(ListSet *)set {
     if(!_sets) _sets = [[NSMutableDictionary alloc] init];
-    set.dataSourceKey = keyToUse;
-    [_sets setObject:set forKey:keyToUse];
+    set.dataSourceKey = [self getNewKey];
+    [_sets setObject:set forKey:set.dataSourceKey];
     NSLog(@"just added sets : %@",_sets);
 }
 
