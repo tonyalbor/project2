@@ -93,7 +93,7 @@ static BOOL keyboardIsUp = NO;
     
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     for(UIGestureRecognizer *gesture in cell.gestureRecognizers) {
-        [gesture setEnabled:[currentSet isInDue]];
+        [gesture setEnabled:[currentSet isInDue] || [gesture isKindOfClass:[UIPanGestureRecognizer class]]];
     }
 }
 
@@ -466,23 +466,36 @@ static BOOL keyboardIsUp = NO;
 
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer shouldComplete:(BOOL)shouldComplete shouldDelete:(BOOL)shouldDelete {
     
-    if(![[listSetDataSource listSetForCurrentKey] isInDue]) return;
-    
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *eventToBeRemoved = [_cells objectAtIndex:indexPath.row];
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    if(shouldDelete && shouldComplete) {
-        NSLog(@"something is broken");
-        return;
-    }
-    if(shouldDelete) {
+    
+    BOOL inDeleted = [[listSetDataSource listSetForCurrentKey] isInDeleted];
+    BOOL inDue = [[listSetDataSource listSetForCurrentKey] isInDue];
+    BOOL inCompleted = [[listSetDataSource listSetForCurrentKey] isInCompleted];
+    
+    if(inDeleted && shouldDelete) {
+        // nothing, deletion of cell
+    } else if(inDeleted && shouldComplete) {
+        // send it back to due
+        [currentSet dueEvent:eventToBeRemoved];
+    } else if(inDue && shouldDelete) {
+        // regular stuff
         [currentSet deleteEvent:eventToBeRemoved];
-        [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationLeft];
-    } else if(shouldComplete) {
+    } else if(inDue && shouldComplete) {
+        // regular stuff
         [currentSet completeEvent:eventToBeRemoved];
-        [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:UITableViewRowAnimationRight];
+    } else if(inCompleted && shouldDelete) {
+        // send back to due
+        [currentSet dueEvent:eventToBeRemoved];
+    } else if(inCompleted && shouldComplete) {
+        // nothing, deletion of cell
     }
+
+    UITableViewRowAnimation deleteDirection = shouldDelete ? UITableViewRowAnimationLeft:UITableViewRowAnimationRight;
+    [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:deleteDirection];
+    
 }
 
 - (void)cellTapped:(UITapGestureRecognizer *)gestureRecognizer {

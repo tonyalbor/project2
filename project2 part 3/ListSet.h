@@ -40,6 +40,7 @@
 - (NSString *)fileName;
 
 // manage events
+- (void)dueEvent:(ListEvent *)event;
 - (void)completeEvent:(ListEvent *)event;
 - (void)deleteEvent:(ListEvent *)event;
 

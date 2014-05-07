@@ -84,6 +84,10 @@
 
 #pragma mark Manage Events
 
+- (void)dueEvent:(ListEvent *)event {
+    [self addEvent:event toList:_due];
+}
+
 - (void)completeEvent:(ListEvent *)event {
     [self addEvent:event toList:_completed];
 }
