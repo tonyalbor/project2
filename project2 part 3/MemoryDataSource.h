@@ -10,7 +10,7 @@
 
 @interface MemoryDataSource : NSObject
 
-+ (void)load;
++ (void)_load;
 + (void)save;
 + (void)clear;
 

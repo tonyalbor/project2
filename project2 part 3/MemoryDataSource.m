@@ -31,9 +31,7 @@
 
 #pragma mark ListSet
 
-+ (void)load {
-    // TODO :: I DONT KNOW WHY THIS IS THE VERY FIRST
-    // METHOD TO BE CALLED, WHO IS CALLING IT
++ (void)_load {
     NSLog(@"is this the first thing to get called?");
     ListSetDataSource *datasource = [ListSetDataSource sharedDataSource];
     [datasource setSets:[[NSMutableDictionary alloc] init]];
@@ -41,13 +39,10 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
  
     if(![self fileExistsAt:@0]) {
-        NSLog(@"no files exist");
         [datasource addSet:[[ListSet alloc] init]];
         [datasource setCurrentKey:@0];
         return;
     }
-    
-    NSLog(@"files do exist");
  
     for(int key = 0; [fileManager fileExistsAtPath:[self getPathForFile:[NSString stringWithFormat:@"%@.txt",@(key)]]]; ++key) {
         // set datasource sets
