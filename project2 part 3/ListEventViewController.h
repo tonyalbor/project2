@@ -18,9 +18,9 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (strong, nonatomic) ListSetDataSource *listSetDataSource;
 
-@property (strong, nonatomic) NSMutableArray *cells;
+
+
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 
@@ -29,5 +29,9 @@
 @property (weak, nonatomic) IBOutlet UIImageView *completedImageView;
 
 @property (strong, nonatomic) IBOutlet UITextField *titleTextField;
+
+@property (strong, nonatomic) NSMutableArray *cells;
+
+@property (strong, nonatomic) ListSetDataSource *listSetDataSource;
 
 @end

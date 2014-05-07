@@ -41,8 +41,6 @@ static BOOL isInCreateMode = YES;
 
 static BOOL keyboardIsUp = NO;
 
-static BOOL viewHasLoaded = NO;
-
 #pragma mark UITableViewDataSource
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -274,8 +272,41 @@ static BOOL viewHasLoaded = NO;
 }
 
 - (IBAction)didTapEvents:(id)sender {
+    //[self showNavCenters];
     if([[listSetDataSource listSetForCurrentKey] isInDue]) return;
     
+    [self animateDueBig];
+    
+    UITableViewRowAnimation insertDirection = [self directionToInsert:@1];
+    UITableViewRowAnimation deleteDirection = [self directionToDelete:@1];
+    
+    ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
+    [currentSet setCurrentList:EVENTS_DUE];
+    [self.tableView beginUpdates];
+    [self deleteAllEventsFromTableViewInDirection:deleteDirection];
+    [self insertEvents:currentSet.currentList inDirection:insertDirection];
+    [self loadEventsIntoCellsArray];
+    [self.tableView endUpdates];
+}
+
+- (void)animateCompletedBig {
+    [UIView animateWithDuration:.3 animations:^{
+        // big completed
+        // events (105,496)
+        // completed (190,468)
+        // deleted (17,496)
+        
+        [_eventsImageView setFrame:CGRectMake(105, 496, 80, 72)];
+        [_completedImageView setFrame:CGRectMake(190, 468, 110, 100)];
+        [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
+        
+        [_eventsImageView setAlpha:.2];
+        [_completedImageView setAlpha:.7];
+        [_deletedImageView setAlpha:.2];
+    }];
+}
+
+- (void)animateDueBig {
     [UIView animateWithDuration:.3 animations:^{
         // big events
         // events (105,468)
@@ -290,17 +321,24 @@ static BOOL viewHasLoaded = NO;
         [_completedImageView setAlpha:.2];
         [_deletedImageView setAlpha:.2];
     }];
-    
-    UITableViewRowAnimation insertDirection = [self directionToInsert:@1];
-    UITableViewRowAnimation deleteDirection = [self directionToDelete:@1];
-    
-    ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    [currentSet setCurrentList:EVENTS_DUE];
-    [self.tableView beginUpdates];
-    [self deleteAllEventsFromTableViewInDirection:deleteDirection];
-    [self insertEvents:currentSet.currentList inDirection:insertDirection];
-    [self loadEventsIntoCellsArray];
-    [self.tableView endUpdates];
+
+}
+
+- (void)animateDeletedBig {
+    [UIView animateWithDuration:.3 animations:^{
+        // big deleted
+        // events (132,496)
+        // completed (220,496)
+        // deleted (20,468)
+        
+        [_eventsImageView setFrame:CGRectMake(132, 496, 80, 72)];
+        [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
+        [_deletedImageView setFrame:CGRectMake(20, 468, 110, 100)];
+        
+        [_eventsImageView setAlpha:.2];
+        [_completedImageView setAlpha:.2];
+        [_deletedImageView setAlpha:.7];
+    }];
 }
 
 #pragma mark Menu Options
@@ -316,24 +354,64 @@ static BOOL viewHasLoaded = NO;
 
 #pragma mark UIGestureRecongnizer Deleted
 
+- (void)showNavCenters {
+    int currentList = [[[listSetDataSource listSetForCurrentKey] _currentList] intValue];
+    switch (currentList) {
+        case 0: {
+            break;
+        }
+        case 1: {
+            
+            [UIView animateWithDuration:0.2 animations:^{
+                [_eventsImageView setFrame:CGRectMake(105, 468, 110, 100)];
+                [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
+                [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
+
+            }];
+            
+            break;
+        }
+        case 2: {
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
+- (void)hideNavCenters {
+    int currentList = [[[listSetDataSource listSetForCurrentKey] _currentList] intValue];
+    switch (currentList) {
+            // deleted
+        case 0: {
+            break;
+        }
+            //due
+        case 1: {
+            [UIView animateWithDuration:0.2 animations:^{
+                CGPoint originalCenterDeleted = self.deletedImageView.center;
+                CGPoint originalCenterCompleted = self.completedImageView.center;
+                [self.deletedImageView setCenter:CGPointMake(self.view.frame.size.width / 3, originalCenterDeleted.y)];
+                [self.completedImageView setCenter:CGPointMake(self.view.frame.size.width *2/3, originalCenterCompleted.y)];
+            }];
+            break;
+        }
+            //completed
+        case 2: {
+            break;
+        }
+            
+        default:
+            break;
+    }
+}
+
 - (IBAction)didTapCompleted:(id)sender {
     if([[listSetDataSource listSetForCurrentKey] isInCompleted]) return;
     if([[[listSetDataSource listSetForCurrentKey] completed] isEmpty]) return;
     
-    [UIView animateWithDuration:.3 animations:^{
-        // big completed
-        // events (105,496)
-        // completed (190,468)
-        // deleted (17,496)
-        
-        [_eventsImageView setFrame:CGRectMake(105, 496, 80, 72)];
-        [_completedImageView setFrame:CGRectMake(190, 468, 110, 100)];
-        [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
-        
-        [_eventsImageView setAlpha:.2];
-        [_completedImageView setAlpha:.7];
-        [_deletedImageView setAlpha:.2];
-    }];
+    [self animateCompletedBig];
     
     UITableViewRowAnimation insertDirection = [self directionToInsert:@2];
     UITableViewRowAnimation deleteDirection = [self directionToDelete:@2];
@@ -363,20 +441,7 @@ static BOOL viewHasLoaded = NO;
     if([[listSetDataSource listSetForCurrentKey] isInDeleted]) return;
     if([[[listSetDataSource listSetForCurrentKey] deleted] isEmpty]) return;
     
-    [UIView animateWithDuration:.3 animations:^{
-        // big deleted
-        // events (132,496)
-        // completed (220,496)
-        // deleted (20,468)
-        
-        [_eventsImageView setFrame:CGRectMake(132, 496, 80, 72)];
-        [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
-        [_deletedImageView setFrame:CGRectMake(20, 468, 110, 100)];
-        
-        [_eventsImageView setAlpha:.2];
-        [_completedImageView setAlpha:.2];
-        [_deletedImageView setAlpha:.7];
-    }];
+    [self animateDeletedBig];
     
     UITableViewRowAnimation insertDirection = [self directionToInsert:@0];
     UITableViewRowAnimation deleteDirection = [self directionToDelete:@0];
@@ -537,17 +602,13 @@ static BOOL viewHasLoaded = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
-    // something is calling [MemoryDataSource load] before this gets called
-    // and then once this is actually called, it gets called twice
-    // [MemoryDataSource load];
+    [MemoryDataSource _load];
+    
     [super viewDidLoad];
-    NSLog(@"view did load");
-    //[MemoryDataSource clear];
+    
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
     
-    //[listSetDataSource addSet:listSet forKey:@0];
-    //[listSetDataSource setCurrentKey:@0];
     _cells = [[NSMutableArray alloc] init];
     ListSet *currentSet = [[ListSetDataSource sharedDataSource] listSetForCurrentKey];
     [[currentSet currentList] organizeEvents];
@@ -567,13 +628,9 @@ static BOOL viewHasLoaded = NO;
     
     [self loadEventsIntoCellsArray];
     [self.tableView reloadData];
-
     
     // Do any additional setup after loading the view, typically from a nib.
-    
     [self UIGestureRecognizersAreFun];
-    // this method is getting called twice
-    // might have to do something with the image views
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
@@ -693,6 +750,9 @@ static BOOL viewHasLoaded = NO;
 
 // TODO :: this whole thing needs to be checkout out
 // the animation from deletion to insertion is awkward
+
+// UPDATE:: fixed and i think it should be good now
+// keep comments here so i can check it out later
 - (void)handlePanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 
     switch (gestureRecognizer.state) {
@@ -731,6 +791,18 @@ static BOOL viewHasLoaded = NO;
                     self.tableView.frame = originalFrame;
                 }];
             }
+            // TODO :: current big nav center
+            // implement a method to get the current big nav center
+            // rather than animating it every time even if it is already big
+            int currentList = [[[listSetDataSource listSetForCurrentKey] _currentList] intValue];
+            if(currentList == 0) {
+                [self animateDeletedBig];
+            } else if(currentList == 1) {
+                [self animateDueBig];
+            } else if(currentList == 2) {
+                [self animateCompletedBig];
+            }
+            //[self hideNavCenters];
             break;
         }
         default:
@@ -739,8 +811,6 @@ static BOOL viewHasLoaded = NO;
 }
 
 - (void)UIGestureRecognizersAreFun {
-    NSLog(@"being called once");
-    NSLog(@"self.tableview.ges: %d",self.tableView.gestureRecognizers.count);
     UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
     [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
     [self.tableView addGestureRecognizer:pinchRecognizer];
