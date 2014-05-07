@@ -475,27 +475,16 @@ static BOOL keyboardIsUp = NO;
     BOOL inDue = [[listSetDataSource listSetForCurrentKey] isInDue];
     BOOL inCompleted = [[listSetDataSource listSetForCurrentKey] isInCompleted];
     
-    if(inDeleted && shouldDelete) {
-        // nothing, deletion of cell
-    } else if(inDeleted && shouldComplete) {
-        // send it back to due
+    if( (inDeleted && shouldComplete) || (inCompleted && shouldDelete) ) {
         [currentSet dueEvent:eventToBeRemoved];
     } else if(inDue && shouldDelete) {
-        // regular stuff
         [currentSet deleteEvent:eventToBeRemoved];
     } else if(inDue && shouldComplete) {
-        // regular stuff
         [currentSet completeEvent:eventToBeRemoved];
-    } else if(inCompleted && shouldDelete) {
-        // send back to due
-        [currentSet dueEvent:eventToBeRemoved];
-    } else if(inCompleted && shouldComplete) {
-        // nothing, deletion of cell
     }
 
     UITableViewRowAnimation deleteDirection = shouldDelete ? UITableViewRowAnimationLeft:UITableViewRowAnimationRight;
     [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:deleteDirection];
-    
 }
 
 - (void)cellTapped:(UITapGestureRecognizer *)gestureRecognizer {
