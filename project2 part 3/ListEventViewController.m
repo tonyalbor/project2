@@ -760,23 +760,24 @@ static BOOL keyboardIsUp = NO;
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan: {
             _originalCenter = self.tableView.center;
-            _originalPoint = [gestureRecognizer locationInView:self.tableView];
+            _originalPoint = [gestureRecognizer locationInView:self.view];
             break;
         }
         case UIGestureRecognizerStateChanged: {
             CGPoint translation = [gestureRecognizer translationInView:self.tableView];
             self.tableView.center = CGPointMake(_originalCenter.x + translation.x, _originalCenter.y);
             
-            // TODO :: check this out
-            _goToNextSetOnRelease = _originalPoint.x < 50;
+            CGPoint endLocation = [gestureRecognizer locationInView:self.view];
             
             // TODO :: check this out
-            _goToPreviousSetOnRelease = _originalPoint.x > 50;
+            _goToNextSetOnRelease = _originalPoint.x > self.view.frame.size.width-50 && endLocation.x < self.view.frame.size.width-50;
+            
+            // TODO :: check this out
+            _goToPreviousSetOnRelease = _originalPoint.x < 50 && endLocation.x > 50;
             break;
         }
         case UIGestureRecognizerStateEnded: {
             if(_goToNextSetOnRelease || _goToPreviousSetOnRelease) {
-                
                 // TODO :: check this out
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
                 [UIView animateWithDuration:0.2 animations:^{
@@ -784,10 +785,8 @@ static BOOL keyboardIsUp = NO;
                 }];
                 [self nextListSet:_goToNextSetOnRelease];
             } else {
-                CGPoint endLocation = [gestureRecognizer locationInView:self.view];
                 // reset table view position
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
-                [self.tableView setFrame:CGRectMake(endLocation.x, self.tableView.frame.origin.y, self.tableView.frame.size.width, self.tableView.frame.size.height)];
                 
                 [UIView animateWithDuration:0.2 animations:^{
                     self.tableView.frame = originalFrame;
