@@ -27,7 +27,7 @@
 
 @protocol ListEventCellDelegate <NSObject>
 
-- (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer shouldComplete:(BOOL)shouldComplete shouldDelete:(BOOL)shouldDelete;
+- (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete;
 - (void)cellTapped:(UITapGestureRecognizer *)gestureRecognizer;
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer;
 

@@ -160,11 +160,6 @@
                                 <outlet property="delegate" destination="2" id="aJj-Pe-37g"/>
                             </connections>
                         </textField>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="f8h-Wa-fcW">
-                            <connections>
-                                <action selector="addListSet:" destination="2" id="ZAF-YZ-GuF"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="completedImageView" destination="Azb-uf-HUw" id="J7t-ez-2FU"/>

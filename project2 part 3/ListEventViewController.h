@@ -20,8 +20,6 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (weak, nonatomic) IBOutlet UIView *containerView;
-
 @property (weak, nonatomic) IBOutlet UIImageView *deletedImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *eventsImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *completedImageView;

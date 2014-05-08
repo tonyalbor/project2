@@ -247,7 +247,7 @@ static BOOL keyboardIsUp = NO;
 #pragma mark MenuViewControllerDelegate
 
 - (void)didSelectAddSet {
-    [self addListSet:nil];
+    [self addListSet];
     [popover dismissPopoverAnimated:YES];
     [self.tableView beginUpdates];
     [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
@@ -272,9 +272,7 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
-    NSLog(@"uhhhh");
-    
-    
+    NSLog(@"time : %f",sender.minimumPressDuration);
     if(sender.state == UIGestureRecognizerStateBegan) {
         NSLog(@"began");
 //        WYPopoverController *popover = [[WYPopoverController alloc] initWithContentViewController:self];
@@ -331,6 +329,7 @@ static BOOL keyboardIsUp = NO;
 
 - (IBAction)didTapEvents:(id)sender {
     //[self showNavCenters];
+    if([popover isPopoverVisible]) [popover dismissPopoverAnimated:YES];
     if([[listSetDataSource listSetForCurrentKey] isInDue]) return;
     
     [self animateDueBig];
@@ -403,11 +402,6 @@ static BOOL keyboardIsUp = NO;
 
 - (IBAction)hitButton:(id)sender {
     NSLog(@"hit");
-  
-    self.containerView.hidden = YES;
-    [UIView animateWithDuration:.5 animations:^{
-        self.containerView.alpha = 0;
-    }];
 }
 
 #pragma mark UIGestureRecongnizer Deleted
@@ -522,7 +516,7 @@ static BOOL keyboardIsUp = NO;
 
 #pragma mark ListEventCellDelegate
 
-- (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer shouldComplete:(BOOL)shouldComplete shouldDelete:(BOOL)shouldDelete {
+- (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete {
     
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -925,7 +919,7 @@ static BOOL keyboardIsUp = NO;
 
 #pragma mark List Set Stuff
 
-- (IBAction)addListSet:(id)sender {
+- (void)addListSet {
     ListSet *newListSet = [[ListSet alloc] init];
     [listSetDataSource addSet:newListSet];
 }

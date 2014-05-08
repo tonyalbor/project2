@@ -96,7 +96,7 @@
         case UIGestureRecognizerStateEnded: {
             
             if(_completeOnDragRelease || _deleteOnDragRelease) {
-                [_delegate cellPanned:gestureRecognizer shouldComplete:_completeOnDragRelease shouldDelete:_deleteOnDragRelease];
+                [_delegate cellPanned:gestureRecognizer complete:_completeOnDragRelease delete:_deleteOnDragRelease];
             } else {
                 // reset cell position
                 CGRect originalFrame = CGRectMake(0, self.frame.origin.y, self.bounds.size.width, self.bounds.size.height);
