@@ -14,7 +14,9 @@
 
 #define TEXTFIELD_NAVIGATION_TITLE_TAG 5
 
-@interface ListEventViewController ()
+@interface ListEventViewController () {
+    WYPopoverController *popover;
+}
 
 @end
 
@@ -242,8 +244,59 @@ static BOOL keyboardIsUp = NO;
     [MemoryDataSource save];
 }
 
-- (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
+#pragma mark MenuViewControllerDelegate
+
+- (void)didSelectAddSet {
+    [popover dismissPopoverAnimated:YES];
+    NSLog(@"cool");
+}
+
+- (void)didSelectListSetAtIndexPath:(NSIndexPath *)indexPath {
+    [popover dismissPopoverAnimated:YES];
+    NSLog(@"before: %@",[[listSetDataSource listSetForCurrentKey] title]);
+    [self.tableView beginUpdates];
     
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
+    [listSetDataSource setCurrentKey:@(indexPath.row)];
+    NSLog(@"after: %@",[[listSetDataSource listSetForCurrentKey] title]);
+    
+    List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
+    [self loadEventsIntoCellsArray];
+    [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
+    [self.tableView endUpdates];
+}
+
+- (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
+    NSLog(@"uhhhh");
+    
+    
+    if(sender.state == UIGestureRecognizerStateBegan) {
+        NSLog(@"began");
+//        WYPopoverController *popover = [[WYPopoverController alloc] initWithContentViewController:self];
+        
+
+        UIImageView *imageView = (UIImageView *)sender.view;
+//        DetailViewController *contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
+        MenuViewController *contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"menu"];
+        popover = [[WYPopoverController alloc] initWithContentViewController:contentViewController];
+        [contentViewController setDelegate:self];
+        popover.delegate = self;
+        popover.passthroughViews = @[imageView];
+        popover.wantsDefaultContentAppearance = NO;
+        popover.popoverLayoutMargins = UIEdgeInsetsMake(10, 10, 10, 10);
+        [popover presentPopoverFromRect:imageView.frame
+                                 inView:self.view
+               permittedArrowDirections:WYPopoverArrowDirectionAny
+                               animated:YES
+                                options:WYPopoverAnimationOptionFadeWithScale];
+    } else if(sender.state == UIGestureRecognizerStateChanged) {
+        NSLog(@"changing");
+    } else if(sender.state == UIGestureRecognizerStateEnded) {
+        //[popover dismissPopoverAnimated:YES];
+        NSLog(@"ended");
+    }
+    
+    /*
     if(sender.state == UIGestureRecognizerStateBegan ) {
         NSLog(@"menu doe");
         UIView *mask = [[UIView alloc] initWithFrame:self.containerView.frame];
@@ -268,7 +321,7 @@ static BOOL keyboardIsUp = NO;
 
         NSLog(@"x:%.02lf y:%.02lf",point.x,point.y);
     }
-    
+    */
 }
 
 - (IBAction)didTapEvents:(id)sender {
@@ -500,6 +553,7 @@ static BOOL keyboardIsUp = NO;
 
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
     if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        /*
         NSLog(@"got in");
         ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -509,6 +563,14 @@ static BOOL keyboardIsUp = NO;
         [DetailViewController setColor:colorcolor];
         DetailViewController *detail = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
         [self.navigationController pushViewController:detail animated:YES];
+         */
+        ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+        ListEvent *event = [_cells objectAtIndex:indexPath.row];
+        CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
+
+        
+        
     }
 }
 

@@ -1,0 +1,14 @@
+PODS:
+  - WYPopoverController (0.1.8)
+
+DEPENDENCIES:
+  - WYPopoverController (from `https://github.com/nicolaschengdev/WYPopoverController.git`)
+
+EXTERNAL SOURCES:
+  WYPopoverController:
+    :git: https://github.com/nicolaschengdev/WYPopoverController.git
+
+SPEC CHECKSUMS:
+  WYPopoverController: 938c6f14f0255204199c003853aba8475f3f239c
+
+COCOAPODS: 0.32.1

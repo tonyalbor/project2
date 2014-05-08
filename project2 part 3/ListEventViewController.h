@@ -11,16 +11,14 @@
 #import "ListEventCell.h"
 #import "CustomCellColor.h"
 #import "DetailViewController.h"
+#import <WYPopoverController.h>
+#import "MenuViewController.h"
 
 @class ListSetDataSource;
 
-@interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate, ListEventCellDelegate>
+@interface ListEventViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate, ListEventCellDelegate, WYPopoverControllerDelegate, MenuViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
-
-
-
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 

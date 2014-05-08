@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A923BB97DEB48568939414E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74C82BAC16084C17A3117F34 /* libPods.a */; };
+		EA0E69D0191AF6B00025AE6C /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = EA0E69CF191AF6B00025AE6C /* Podfile */; };
 		EA23A77718ACCB1900AD2BF3 /* MemoryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA23A77618ACCB1900AD2BF3 /* MemoryDataSource.m */; };
 		EA26D37017DD582E0066C43B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D36F17DD582E0066C43B /* UIKit.framework */; };
 		EA26D37217DD582E0066C43B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D37117DD582E0066C43B /* Foundation.framework */; };
@@ -23,6 +25,7 @@
 		EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39D17DD5B370066C43B /* ListEvent.m */; };
 		EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A417DD5E220066C43B /* CustomCellColor.m */; };
 		EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA33247118A8DDAB00916A7E /* super-rough-nav2.png */; };
+		EA6C592A191B209400BC7469 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA6C5929191B209400BC7469 /* MenuViewController.m */; };
 		EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */; };
 		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
 		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
@@ -33,6 +36,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		74C82BAC16084C17A3117F34 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA0E69CF191AF6B00025AE6C /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		EA23A77518ACCB1900AD2BF3 /* MemoryDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryDataSource.h; sourceTree = "<group>"; };
 		EA23A77618ACCB1900AD2BF3 /* MemoryDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemoryDataSource.m; sourceTree = "<group>"; };
 		EA26D36C17DD582E0066C43B /* project2 part 3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "project2 part 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,6 +63,8 @@
 		EA26D3A317DD5E220066C43B /* CustomCellColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellColor.h; sourceTree = "<group>"; };
 		EA26D3A417DD5E220066C43B /* CustomCellColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellColor.m; sourceTree = "<group>"; };
 		EA33247118A8DDAB00916A7E /* super-rough-nav2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2.png"; sourceTree = "<group>"; };
+		EA6C5928191B209400BC7469 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
+		EA6C5929191B209400BC7469 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-check.png"; sourceTree = "<group>"; };
 		EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-trash.png"; sourceTree = "<group>"; };
 		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
@@ -69,6 +76,7 @@
 		EAEB577F18F67CFA006C42F8 /* ListSetDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSetDataSource.h; sourceTree = "<group>"; };
 		EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListSetDataSource.m; sourceTree = "<group>"; };
 		EAFDD8701856F2200049F482 /* save_data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = save_data.plist; sourceTree = "<group>"; };
+		F8FEF2D9795B4347BB56A7C5 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +87,7 @@
 				EA26D37017DD582E0066C43B /* UIKit.framework in Frameworks */,
 				EA26D37217DD582E0066C43B /* Foundation.framework in Frameworks */,
 				EA26D37417DD582E0066C43B /* CoreGraphics.framework in Frameworks */,
+				5A923BB97DEB48568939414E /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,9 +97,11 @@
 		EA26D36317DD582E0066C43B = {
 			isa = PBXGroup;
 			children = (
+				EA0E69CF191AF6B00025AE6C /* Podfile */,
 				EA26D37517DD582E0066C43B /* project2 part 3 */,
 				EA26D36E17DD582E0066C43B /* Frameworks */,
 				EA26D36D17DD582E0066C43B /* Products */,
+				F8FEF2D9795B4347BB56A7C5 /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,6 +119,7 @@
 				EA26D36F17DD582E0066C43B /* UIKit.framework */,
 				EA26D37117DD582E0066C43B /* Foundation.framework */,
 				EA26D37317DD582E0066C43B /* CoreGraphics.framework */,
+				74C82BAC16084C17A3117F34 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -168,6 +180,8 @@
 				EA26D38B17DD582E0066C43B /* ListEventViewController.m */,
 				EA762F8E17EBA14E00B80123 /* DetailViewController.h */,
 				EA762F8F17EBA14E00B80123 /* DetailViewController.m */,
+				EA6C5928191B209400BC7469 /* MenuViewController.h */,
+				EA6C5929191B209400BC7469 /* MenuViewController.m */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -222,9 +236,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EA26D38F17DD582E0066C43B /* Build configuration list for PBXNativeTarget "project2 part 3" */;
 			buildPhases = (
+				0AF432F702894BF89646AE21 /* Check Pods Manifest.lock */,
 				EA26D36817DD582E0066C43B /* Sources */,
 				EA26D36917DD582E0066C43B /* Frameworks */,
 				EA26D36A17DD582E0066C43B /* Resources */,
+				983C872EF8714CE2A3D54AAB /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -271,6 +287,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA0E69D0191AF6B00025AE6C /* Podfile in Resources */,
 				EA26D37A17DD582E0066C43B /* InfoPlist.strings in Resources */,
 				EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */,
 				EAFDD8711856F2200049F482 /* save_data.plist in Resources */,
@@ -285,6 +302,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0AF432F702894BF89646AE21 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		983C872EF8714CE2A3D54AAB /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		EA26D36817DD582E0066C43B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -297,6 +347,7 @@
 				EA26D38C17DD582E0066C43B /* ListEventViewController.m in Sources */,
 				EAEB578118F67CFA006C42F8 /* ListSetDataSource.m in Sources */,
 				EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */,
+				EA6C592A191B209400BC7469 /* MenuViewController.m in Sources */,
 				EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */,
 				EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */,
 				EAB8DA4018FE3A090021D595 /* List.m in Sources */,
@@ -384,6 +435,7 @@
 		};
 		EA26D39017DD582E0066C43B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F8FEF2D9795B4347BB56A7C5 /* Pods.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -398,6 +450,7 @@
 		};
 		EA26D39117DD582E0066C43B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F8FEF2D9795B4347BB56A7C5 /* Pods.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

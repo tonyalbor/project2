@@ -11,6 +11,7 @@
 @implementation ListEvent
 
 @synthesize title;
+@synthesize dateString;
 @synthesize date;
 @synthesize categoryID;
 
@@ -24,7 +25,7 @@
     [aCoder encodeObject:self.title forKey:kEncodeKeyTitle];
     [aCoder encodeObject:self.date forKey:kEncodeKeyDate];
     [aCoder encodeInt:self.categoryID.intValue forKey:kEncodeKeyCategoryId];
-    
+
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
@@ -42,7 +43,7 @@
     if(!self) {
         // inititalization
         title = @"";
-        date = @"";
+        dateString = @"";
         categoryID = @0;
     }
     return self;

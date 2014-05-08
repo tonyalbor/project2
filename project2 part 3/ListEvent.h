@@ -10,8 +10,16 @@
 
 @interface ListEvent : NSObject <NSCoding>
 
+// event title
 @property (strong, nonatomic) NSString *title;
-@property (strong, nonatomic) NSString *date;
+
+// string value of date
+@property (strong, nonatomic) NSString *dateString;
+
+// event date
+@property (strong, nonatomic) NSDate *date;
+
+// category id for color
 @property (strong, nonatomic) NSNumber *categoryID;
 @property (strong, nonatomic) NSNumber *sortId;
 
