@@ -19,6 +19,7 @@ static ListSetDataSource *_sharedDataSource = nil;
         _sharedDataSource = [[ListSetDataSource alloc] init];
         _sharedDataSource.sets = [[NSMutableDictionary alloc] init];
         _sharedDataSource.currentKey = @0;
+        _sharedDataSource.recentlyAddedSet = @0;
     });
     return _sharedDataSource;
 }
@@ -31,7 +32,7 @@ static ListSetDataSource *_sharedDataSource = nil;
     if(!_sets) _sets = [[NSMutableDictionary alloc] init];
     set.dataSourceKey = [self getNewKey];
     [_sets setObject:set forKey:set.dataSourceKey];
-    NSLog(@"just added sets : %@",_sets);
+    _recentlyAddedSet = set.dataSourceKey;
 }
 
 - (void)removeSet:(ListSet *)set {

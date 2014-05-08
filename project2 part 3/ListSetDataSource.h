@@ -16,6 +16,8 @@
 
 @property (strong, nonatomic) NSNumber *currentKey;
 
+@property (strong, nonatomic) NSNumber *recentlyAddedSet;
+
 // data source
 + (ListSetDataSource *)sharedDataSource;
 

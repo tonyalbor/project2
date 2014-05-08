@@ -247,18 +247,23 @@ static BOOL keyboardIsUp = NO;
 #pragma mark MenuViewControllerDelegate
 
 - (void)didSelectAddSet {
+    [self addListSet:nil];
     [popover dismissPopoverAnimated:YES];
-    NSLog(@"cool");
+    [self.tableView beginUpdates];
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
+    [listSetDataSource setCurrentKey:[listSetDataSource recentlyAddedSet]];
+    List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
+    [self loadEventsIntoCellsArray];
+    [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
+    [self.tableView endUpdates];
 }
 
 - (void)didSelectListSetAtIndexPath:(NSIndexPath *)indexPath {
     [popover dismissPopoverAnimated:YES];
-    NSLog(@"before: %@",[[listSetDataSource listSetForCurrentKey] title]);
     [self.tableView beginUpdates];
     
     [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
     [listSetDataSource setCurrentKey:@(indexPath.row)];
-    NSLog(@"after: %@",[[listSetDataSource listSetForCurrentKey] title]);
     
     List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
     [self loadEventsIntoCellsArray];
