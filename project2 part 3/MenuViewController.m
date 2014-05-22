@@ -10,7 +10,6 @@
 #import "ListSetDataSource.h"
 #import "ListSet.h"
 #import "MenuTableViewCell.h"
-#import <UIColor+GBFlatButton.h>
 
 @interface MenuViewController ()
 
@@ -78,10 +77,12 @@
     [cell.dueCountView setTitle:[NSString stringWithFormat:@"%d",[currentSet numberOfEventsInDue]] forState:UIControlStateNormal];
     [cell.completedCountView setTitle:[NSString stringWithFormat:@"%d",[currentSet numberOfEventsInCompleted]] forState:UIControlStateNormal];
     
-    [cell.deletedCountView setButtonColor:[UIColor gb_redColor]];
-    [cell.dueCountView setButtonColor:[UIColor gb_blueColor]];
-    [cell.completedCountView setButtonColor:[UIColor gb_greenColor]];
-    
+    //[cell.deletedCountView setButtonColor:[UIColor redColor]];
+    //[cell.dueCountView setButtonColor:[UIColor blueColor]];
+    //[cell.completedCountView setButtonColor:[UIColor greenColor]];
+    [cell.deletedCountView setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [cell.dueCountView setTitleColor:[UIColor cyanColor] forState:UIControlStateNormal];
+    [cell.completedCountView setTitleColor:[UIColor greenColor] forState:UIControlStateNormal];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

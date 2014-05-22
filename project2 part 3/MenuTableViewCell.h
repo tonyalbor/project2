@@ -7,16 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <GBFlatButton.h>
 
 @interface MenuTableViewCell : UITableViewCell
 
 @property (strong, nonatomic) IBOutlet UILabel *listSetTitleLabel;
 
-@property (strong, nonatomic) IBOutlet GBFlatButton *deletedCountView;
+@property (strong, nonatomic) IBOutlet UIButton *deletedCountView;
 
-@property (strong, nonatomic) IBOutlet GBFlatButton *dueCountView;
+@property (strong, nonatomic) IBOutlet UIButton *dueCountView;
 
-@property (strong, nonatomic) IBOutlet GBFlatButton *completedCountView;
+@property (strong, nonatomic) IBOutlet UIButton *completedCountView;
 
 @end

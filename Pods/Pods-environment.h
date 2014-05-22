@@ -6,12 +6,6 @@
 // project.
 
 
-// GBFlatButton
-#define COCOAPODS_POD_AVAILABLE_GBFlatButton
-#define COCOAPODS_VERSION_MAJOR_GBFlatButton 1
-#define COCOAPODS_VERSION_MINOR_GBFlatButton 0
-#define COCOAPODS_VERSION_PATCH_GBFlatButton 0
-
 // WYPopoverController
 #define COCOAPODS_POD_AVAILABLE_WYPopoverController
 #define COCOAPODS_VERSION_MAJOR_WYPopoverController 0
