@@ -32,7 +32,6 @@
 #pragma mark ListSet
 
 + (void)_load {
-    NSLog(@"is this the first thing to get called?");
     ListSetDataSource *datasource = [ListSetDataSource sharedDataSource];
     [datasource setSets:[[NSMutableDictionary alloc] init]];
  
@@ -50,6 +49,7 @@
     }
 }
 
+// TODO :: i need to find out when and where exactly i should be saving
 + (void)save {
     NSMutableDictionary *sets = [[ListSetDataSource sharedDataSource] sets];
     for(id key in sets) {

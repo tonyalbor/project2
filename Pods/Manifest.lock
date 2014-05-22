@@ -1,7 +1,9 @@
 PODS:
+  - GBFlatButton (1.0.0)
   - WYPopoverController (0.1.8)
 
 DEPENDENCIES:
+  - GBFlatButton (~> 1.0)
   - WYPopoverController (from `https://github.com/nicolaschengdev/WYPopoverController.git`)
 
 EXTERNAL SOURCES:
@@ -9,6 +11,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/nicolaschengdev/WYPopoverController.git
 
 SPEC CHECKSUMS:
+  GBFlatButton: 05ea76b25d2fb9c52b1ae47ddc8e3b8045284134
   WYPopoverController: 938c6f14f0255204199c003853aba8475f3f239c
 
 COCOAPODS: 0.32.1

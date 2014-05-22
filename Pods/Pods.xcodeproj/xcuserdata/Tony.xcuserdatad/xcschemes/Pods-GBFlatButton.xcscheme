@@ -13,11 +13,11 @@
             buildForArchiving = "YES"
             buildForProfiling = "YES">
             <BuildableReference
-               BuildableName = "libPods.a"
+               BuildableName = "libPods-GBFlatButton.a"
                BuildableIdentifier = "primary"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BlueprintName = "Pods"
-               BlueprintIdentifier = "B94D6112F78844F7B1CE244B">
+               BlueprintName = "Pods-GBFlatButton"
+               BlueprintIdentifier = "9D66E53F0CCF43609781FAEE">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

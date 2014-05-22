@@ -21,6 +21,7 @@
 @end
 
 @implementation ListEventViewController {
+    CGPoint _pinchPoint;
     CGPoint _originalCenter;
     CGPoint _originalPoint;
     BOOL _goToNextSetOnRelease;
@@ -244,87 +245,45 @@ static BOOL keyboardIsUp = NO;
     [MemoryDataSource save];
 }
 
-#pragma mark MenuViewControllerDelegate
-
-- (void)didSelectAddSet {
-    [self addListSet];
-    [popover dismissPopoverAnimated:YES];
-    [self.tableView beginUpdates];
-    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
-    [listSetDataSource setCurrentKey:[listSetDataSource recentlyAddedSet]];
-    List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
-    [self loadEventsIntoCellsArray];
-    [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
-    [self.tableView endUpdates];
-}
-
-- (void)didSelectListSetAtIndexPath:(NSIndexPath *)indexPath {
-    [popover dismissPopoverAnimated:YES];
-    [self.tableView beginUpdates];
-    
-    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
-    [listSetDataSource setCurrentKey:@(indexPath.row)];
-    
-    List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
-    [self loadEventsIntoCellsArray];
-    [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
-    [self.tableView endUpdates];
-}
-
 - (IBAction)showMenu:(UILongPressGestureRecognizer *)sender {
-    NSLog(@"time : %f",sender.minimumPressDuration);
+    
+    // TODO :: change the minumum press duration for long press recognizer
+    // needs to be a little faster
+    
     if(sender.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"began");
-//        WYPopoverController *popover = [[WYPopoverController alloc] initWithContentViewController:self];
-        
-
         UIImageView *imageView = (UIImageView *)sender.view;
-//        DetailViewController *contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
         MenuViewController *contentViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"menu"];
+        
+        // TODO :: don't know if i should do this here in appearance,
+        // or if i should just modify the theme like below
+        WYPopoverBackgroundView *appearance = [WYPopoverBackgroundView appearance];
+        [appearance setOverlayColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:.4]];
+        [appearance setFillBottomColor:[UIColor whiteColor]];
+//        [appearance setOuterStrokeColor:[UIColor blackColor]];
+//        [appearance setInnerStrokeColor:[UIColor blackColor]];
+        [appearance setBorderWidth:5];
+        
         popover = [[WYPopoverController alloc] initWithContentViewController:contentViewController];
         [contentViewController setDelegate:self];
         popover.delegate = self;
         popover.passthroughViews = @[imageView];
         popover.wantsDefaultContentAppearance = NO;
         popover.popoverLayoutMargins = UIEdgeInsetsMake(10, 10, 10, 10);
+        
+        //popover.theme.overlayColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.40];
+        //popover.theme.fillBottomColor = [UIColor whiteColor];
+        
         [popover presentPopoverFromRect:imageView.frame
                                  inView:self.view
                permittedArrowDirections:WYPopoverArrowDirectionAny
                                animated:YES
-                                options:WYPopoverAnimationOptionFadeWithScale];
+                                options:WYPopoverAnimationOptionScale];
+        
     } else if(sender.state == UIGestureRecognizerStateChanged) {
         NSLog(@"changing");
     } else if(sender.state == UIGestureRecognizerStateEnded) {
-        //[popover dismissPopoverAnimated:YES];
         NSLog(@"ended");
     }
-    
-    /*
-    if(sender.state == UIGestureRecognizerStateBegan ) {
-        NSLog(@"menu doe");
-        UIView *mask = [[UIView alloc] initWithFrame:self.containerView.frame];
-        [mask setHidden:YES];
-        [mask setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5]];
-        
-        [self.containerView insertSubview:mask atIndex:0];
-        
-        [UIView animateWithDuration:.3 animations:^{
-            [mask setHidden:NO];
-            [mask setAlpha:.8];
-            self.containerView.alpha = 1;
-        }];
-    } else if(sender.state == UIGestureRecognizerStateEnded) {
-        [UIView animateWithDuration:.5 animations:^{
-            [[self.containerView.subviews objectAtIndex:0] setAlpha:0];
-            //[[self.view.subviews objectAtIndex:self.view.subviews.count-2] removeFromSuperview];
-            self.containerView.alpha = 0;
-        }];
-        
-        CGPoint point = [sender locationInView:self.containerView];
-
-        NSLog(@"x:%.02lf y:%.02lf",point.x,point.y);
-    }
-    */
 }
 
 - (IBAction)didTapEvents:(id)sender {
@@ -395,6 +354,37 @@ static BOOL keyboardIsUp = NO;
         [_eventsImageView setAlpha:.2];
         [_completedImageView setAlpha:.2];
         [_deletedImageView setAlpha:.7];
+    }];
+}
+
+#pragma mark MenuViewControllerDelegate
+
+- (void)didSelectAddSet {
+    [self addListSet];
+    [popover dismissPopoverAnimated:YES];
+    [self.tableView beginUpdates];
+    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
+    [listSetDataSource setCurrentKey:[listSetDataSource recentlyAddedSet]];
+    List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
+    [self loadEventsIntoCellsArray];
+    [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
+    [self.tableView endUpdates];
+}
+
+- (void)didSelectListSetAtIndexPath:(NSIndexPath *)indexPath {
+    [popover dismissPopoverAnimated:YES options:WYPopoverAnimationOptionScale completion:^{
+        NSLog(@"done");
+        [self.tableView beginUpdates];
+        
+        [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
+        [listSetDataSource setCurrentKey:@(indexPath.row)];
+        
+        List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
+        [self loadEventsIntoCellsArray];
+        [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
+        [self.tableView endUpdates];
+        
+        [self transitionNavCenters];
     }];
 }
 
@@ -552,7 +542,6 @@ static BOOL keyboardIsUp = NO;
 
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
     if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        /*
         NSLog(@"got in");
         ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -562,14 +551,6 @@ static BOOL keyboardIsUp = NO;
         [DetailViewController setColor:colorcolor];
         DetailViewController *detail = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
         [self.navigationController pushViewController:detail animated:YES];
-         */
-        ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        ListEvent *event = [_cells objectAtIndex:indexPath.row];
-        CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
-
-        
-        
     }
 }
 
@@ -662,11 +643,20 @@ static BOOL keyboardIsUp = NO;
     return cell.eventLabel.text.length == 0;
 }
 
+#pragma mark WYPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(WYPopoverController *)popoverController {
+    popover.delegate = nil;
+    popover = nil;
+}
+
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
     [MemoryDataSource _load];
-    
+    [self.navigationController.navigationBar setTranslucent:YES];
+//    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
+//    [self.navigationController.navigationBar setBarTintColor:[UIColor w]];
     [super viewDidLoad];
     
     // set up list set data source
@@ -684,9 +674,17 @@ static BOOL keyboardIsUp = NO;
         }
     }
     
+    // display all events for all sets
+    // TODO :: idk if this is the functionality i want
+    // i think i need to figure out a way to show how many events there are / where events are
+    // and then i won't need to do this
+    // TODO :: will delete later once this ^ is implemented
     for(id key in [listSetDataSource sets]) {
         ListSet *listSet = [[listSetDataSource sets] objectForKey:key];
-        [[listSet currentList] displayAllEvents];
+        [[listSet due] displayAllEvents];
+        [[listSet completed] displayAllEvents];
+        [[listSet deleted] displayAllEvents];
+//        [[listSet currentList] displayAllEvents];
     }
     
     [self loadEventsIntoCellsArray];
@@ -787,9 +785,8 @@ static BOOL keyboardIsUp = NO;
     [textField setEnabled:NO];
     [_cells replaceObjectAtIndex:_cells.count-1 withObject:newEvent];
     
-    // TODO :: save stuff
+    // TODO :: should i save here ?
     [MemoryDataSource save];
-    //[MemoryDataSource saveEventsForDataSource:[listHandler currentListDataSource]];
     list.recentlyAddedEvent = nil;
 }
 
@@ -811,20 +808,22 @@ static BOOL keyboardIsUp = NO;
     return YES;
 }
 
-// TODO :: this whole thing needs to be checkout out
+// TODO :: this whole thing needs to be checked out
 // the animation from deletion to insertion is awkward
 
-// UPDATE:: fixed and i think it should be good now
-// keep comments here so i can check it out later
+// UPDATE :: fixed and i think it should be good now
+// keep comments here so i can decide if i want to change anything later
 - (void)handlePanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
 
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan: {
+            // get initial center and point of drag
             _originalCenter = self.tableView.center;
             _originalPoint = [gestureRecognizer locationInView:self.view];
             break;
         }
         case UIGestureRecognizerStateChanged: {
+            // get changing point and determine if we should change sets
             CGPoint translation = [gestureRecognizer translationInView:self.tableView];
             self.tableView.center = CGPointMake(_originalCenter.x + translation.x, _originalCenter.y);
             
@@ -839,11 +838,15 @@ static BOOL keyboardIsUp = NO;
         }
         case UIGestureRecognizerStateEnded: {
             if(_goToNextSetOnRelease || _goToPreviousSetOnRelease) {
+                // perform animation to
                 // TODO :: check this out
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
-                [UIView animateWithDuration:0.2 animations:^{
+
+                // reset table view frame
+                [UIView animateWithDuration:0.3 animations:^{
                     self.tableView.frame = originalFrame;
                 }];
+                // go to next/previous list set
                 [self nextListSet:_goToNextSetOnRelease];
             } else {
                 // reset table view position
@@ -853,22 +856,26 @@ static BOOL keyboardIsUp = NO;
                     self.tableView.frame = originalFrame;
                 }];
             }
-            // TODO :: current big nav center
-            // implement a method to get the current big nav center
-            // rather than animating it every time even if it is already big
-            int currentList = [[[listSetDataSource listSetForCurrentKey] _currentList] intValue];
-            if(currentList == 0) {
-                [self animateDeletedBig];
-            } else if(currentList == 1) {
-                [self animateDueBig];
-            } else if(currentList == 2) {
-                [self animateCompletedBig];
-            }
+            [self transitionNavCenters];
             //[self hideNavCenters];
             break;
         }
         default:
             break;
+    }
+}
+
+- (void)transitionNavCenters {
+    // TODO :: current big nav center
+    // implement a method to get the current big nav center
+    // rather than animating it every time even if it is already big
+    int currentList = [[[listSetDataSource listSetForCurrentKey] _currentList] intValue];
+    if(currentList == 0) {
+        [self animateDeletedBig];
+    } else if(currentList == 1) {
+        [self animateDueBig];
+    } else if(currentList == 2) {
+        [self animateCompletedBig];
     }
 }
 
@@ -927,13 +934,15 @@ static BOOL keyboardIsUp = NO;
 - (void)nextListSet:(BOOL)next {
     [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
     [self.tableView beginUpdates];
-    [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationFade];
-    //[self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
+    //[self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationFade];
+    [self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
     next ? [listSetDataSource incrementKey] : [listSetDataSource decrementKey];
     [self loadEventsIntoCellsArray];
-    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
-    //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
+    //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
+    [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
     [self.tableView endUpdates];
+    
+    // TODO :: take this out
     [MemoryDataSource save];
 }
 

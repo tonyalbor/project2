@@ -44,6 +44,11 @@
 - (void)completeEvent:(ListEvent *)event;
 - (void)deleteEvent:(ListEvent *)event;
 
+// list count
+- (int)numberOfEventsInDeleted;
+- (int)numberOfEventsInDue;
+- (int)numberOfEventsInCompleted;
+
 // checks for current list
 - (BOOL)isInDue;
 - (BOOL)isInCompleted;

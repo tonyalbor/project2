@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A923BB97DEB48568939414E /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74C82BAC16084C17A3117F34 /* libPods.a */; };
+		EA045B93191C35CA006E660B /* MenuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EA045B92191C35C9006E660B /* MenuTableViewCell.m */; };
 		EA0E69D0191AF6B00025AE6C /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = EA0E69CF191AF6B00025AE6C /* Podfile */; };
 		EA23A77718ACCB1900AD2BF3 /* MemoryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EA23A77618ACCB1900AD2BF3 /* MemoryDataSource.m */; };
 		EA26D37017DD582E0066C43B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA26D36F17DD582E0066C43B /* UIKit.framework */; };
@@ -37,7 +38,9 @@
 
 /* Begin PBXFileReference section */
 		74C82BAC16084C17A3117F34 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EA0E69CF191AF6B00025AE6C /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		EA045B91191C35C9006E660B /* MenuTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTableViewCell.h; sourceTree = "<group>"; };
+		EA045B92191C35C9006E660B /* MenuTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTableViewCell.m; sourceTree = "<group>"; };
+		EA0E69CF191AF6B00025AE6C /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		EA23A77518ACCB1900AD2BF3 /* MemoryDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryDataSource.h; sourceTree = "<group>"; };
 		EA23A77618ACCB1900AD2BF3 /* MemoryDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemoryDataSource.m; sourceTree = "<group>"; };
 		EA26D36C17DD582E0066C43B /* project2 part 3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "project2 part 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -199,6 +202,8 @@
 			children = (
 				EA26D39817DD5A280066C43B /* ListEventCell.h */,
 				EA26D39917DD5A280066C43B /* ListEventCell.m */,
+				EA045B91191C35C9006E660B /* MenuTableViewCell.h */,
+				EA045B92191C35C9006E660B /* MenuTableViewCell.m */,
 			);
 			name = "table cells";
 			sourceTree = "<group>";
@@ -351,6 +356,7 @@
 				EA26D39A17DD5A280066C43B /* ListEventCell.m in Sources */,
 				EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */,
 				EAB8DA4018FE3A090021D595 /* List.m in Sources */,
+				EA045B93191C35CA006E660B /* MenuTableViewCell.m in Sources */,
 				EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

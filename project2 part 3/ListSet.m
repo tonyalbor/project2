@@ -119,6 +119,20 @@
     
 }
 
+#pragma mark List Count
+
+- (int)numberOfEventsInDeleted {
+    return [_deleted numberOfEvents];
+}
+
+- (int)numberOfEventsInDue {
+    return [_due numberOfEvents];
+}
+
+- (int)numberOfEventsInCompleted {
+    return [_completed numberOfEvents];
+}
+
 #pragma mark Check For Current List
 
 - (BOOL)isInDue {

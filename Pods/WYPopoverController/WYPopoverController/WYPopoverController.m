@@ -435,7 +435,7 @@ static char const * const UINavigationControllerEmbedInPopoverTagKey = "UINaviga
 @synthesize overlayColor;
 
 + (id)theme {
-    
+  
     WYPopoverTheme *result = nil;
     
     if (WY_IS_IOS_LESS_THAN(@"7.0")) {

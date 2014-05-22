@@ -9,6 +9,8 @@
 #import "MenuViewController.h"
 #import "ListSetDataSource.h"
 #import "ListSet.h"
+#import "MenuTableViewCell.h"
+#import <UIColor+GBFlatButton.h>
 
 @interface MenuViewController ()
 
@@ -27,6 +29,9 @@
     return self;
 }
 
+// TODO :: section view header
+// ListSetTitle - (trashicon-red) (dueicon-blue) (completedicon-green)
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 80;
 }
@@ -36,24 +41,47 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"menuCell"];
-    if(cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"menuCell"];
+    
+    if([self indexPathIsAddSet:indexPath]) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"add_set"];
+        if(cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"add_set"];
+        }
+        [cell.textLabel setText:@"Add Set"];
+        return cell;
     }
+    
+    MenuTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"menuCell"];
+    if(cell == nil) {
+        cell = [[MenuTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"menuCell"];
+    }
+    
+    
+    // TODO :: make the 'add set' cell a regular table view cell
     
     [self configureCell:cell atIndexPath:indexPath];
     
     return cell;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    if(indexPath.row == [self.tableView numberOfRowsInSection:0]-1) {
-        [cell.textLabel setText:@"Add Set"];
+- (void)configureCell:(MenuTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+    if([self indexPathIsAddSet:indexPath]) {
+        [cell.listSetTitleLabel setText:@"Add Set"];
+
         return;
     }
     
     ListSet *currentSet = [[[ListSetDataSource sharedDataSource] sets] objectForKey:@(indexPath.row)];
-    [cell.textLabel setText:currentSet.title];
+    [cell.listSetTitleLabel setText:currentSet.title];
+
+    [cell.deletedCountView setTitle:[NSString stringWithFormat:@"%d",[currentSet numberOfEventsInDeleted]] forState:UIControlStateNormal];
+    [cell.dueCountView setTitle:[NSString stringWithFormat:@"%d",[currentSet numberOfEventsInDue]] forState:UIControlStateNormal];
+    [cell.completedCountView setTitle:[NSString stringWithFormat:@"%d",[currentSet numberOfEventsInCompleted]] forState:UIControlStateNormal];
+    
+    [cell.deletedCountView setButtonColor:[UIColor gb_redColor]];
+    [cell.dueCountView setButtonColor:[UIColor gb_blueColor]];
+    [cell.completedCountView setButtonColor:[UIColor gb_greenColor]];
+    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -64,15 +92,21 @@
     _delegate = delegate;
 }
 
-- (void)viewDidLoad
-{
+- (bool)indexPathIsAddSet:(NSIndexPath *)indexPath {
+    return indexPath.row == [self indexForAddSet];
+}
+
+- (int)indexForAddSet {
+    return [self.tableView numberOfRowsInSection:0]-1;
+}
+
+- (void)viewDidLoad {
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
