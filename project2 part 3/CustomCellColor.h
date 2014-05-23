@@ -16,11 +16,14 @@
 
 @property (strong, nonatomic) NSNumber *index;
 
+// initialize colors
++ (void)initializeColors;
+
+// get uicolor from customcellcolor
 - (UIColor *)customCellColorToUIColor;
 
+// get customcellcolor
 + (CustomCellColor *)colorForId:(NSNumber *)index;
-
-+ (CustomCellColor *)whiteColor;
 + (CustomCellColor *)redColor;
 + (CustomCellColor *)blueColor;
 + (CustomCellColor *)greenColor;
@@ -29,5 +32,9 @@
 + (CustomCellColor *)pinkColor;
 + (CustomCellColor *)orangeColor;
 + (CustomCellColor *)orchidColor;
+//+ (CustomCellColor *)whiteColor;
+
+// get number of colors
++ (NSNumber *)numberOfCustomColors;
 
 @end

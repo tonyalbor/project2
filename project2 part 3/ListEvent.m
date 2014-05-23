@@ -7,6 +7,7 @@
 //
 
 #import "ListEvent.h"
+#import "CustomCellColor.h"
 
 @implementation ListEvent
 
@@ -40,7 +41,7 @@
 }
 
 - (id)init {
-    if(!self) {
+    if(self) {
         // inititalization
         title = @"";
         dateString = @"";
@@ -51,7 +52,7 @@
 
 - (void)changeColor {
     if(categoryID.integerValue == 99) categoryID = @0;
-    if(categoryID.integerValue == 8) categoryID = @0;
+    if(categoryID.integerValue == [[CustomCellColor numberOfCustomColors] intValue]) categoryID = @0;
     else {
         NSInteger temp = categoryID.integerValue;
         ++temp;

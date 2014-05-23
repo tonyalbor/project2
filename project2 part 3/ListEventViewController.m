@@ -807,6 +807,7 @@ static BOOL _isCreatingNewCell = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
+    [CustomCellColor initializeColors];
     [MemoryDataSource _load];
     [self.navigationController.navigationBar setTranslucent:YES];
 //    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];

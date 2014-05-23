@@ -8,6 +8,7 @@
 
 #import "List.h"
 #import "ListEvent.h"
+#import "CustomCellColor.h"
 
 #define kEncodeKeyEvents @"kEncodeKeyEvents"
 
@@ -61,7 +62,7 @@
 
 - (void)incrementCategory {
     if([self isDisplayingAllEvents]) _currentCategory = @0;
-    else if([_currentCategory isEqualToNumber:@8]) _currentCategory = @0;
+    else if([_currentCategory isEqualToNumber:[CustomCellColor numberOfCustomColors]]) _currentCategory = @0;
     else {
         NSInteger temp = _currentCategory.integerValue;
         ++temp;
@@ -71,8 +72,8 @@
 }
 
 - (void)decrementCategory {
-    if([self isDisplayingAllEvents]) _currentCategory = @8;
-    else if([_currentCategory isEqualToNumber:@0]) _currentCategory = @8;
+    if([self isDisplayingAllEvents]) _currentCategory = [CustomCellColor numberOfCustomColors];
+    else if([_currentCategory isEqualToNumber:@0]) _currentCategory = [CustomCellColor numberOfCustomColors];
     else {
         NSInteger temp = _currentCategory.integerValue;
         --temp;
