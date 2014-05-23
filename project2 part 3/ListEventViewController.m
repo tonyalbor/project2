@@ -11,6 +11,7 @@
 #import "List.h"
 #import "ListSet.h"
 #import "ListSetDataSource.h"
+#import <POP/POP.h>
 
 #define TEXTFIELD_NAVIGATION_TITLE_TAG 5
 
@@ -42,7 +43,11 @@ static CGFloat cellHeight = 80;
 // will probably delete later
 static BOOL isInCreateMode = YES;
 
+// TODO :: figure out how to completely delete this
+// i might already be able to
 static BOOL keyboardIsUp = NO;
+
+static BOOL _isCreatingNewCell = NO;
 
 #pragma mark UITableViewDataSource
 
@@ -131,6 +136,10 @@ static BOOL keyboardIsUp = NO;
     NSLog(@"inserted new row: %d",numberOfRows);
 }
 
+- (BOOL)isCreatingNewCell {
+    return _isCreatingNewCell;
+}
+
 - (void)bringUpKeyboardForNewEvent {
     int newCellIndex = (int)[self.tableView numberOfRowsInSection:0] - 1;
     NSIndexPath *newCellIndexPath = [NSIndexPath indexPathForRow:newCellIndex inSection:0];
@@ -138,15 +147,22 @@ static BOOL keyboardIsUp = NO;
    
     [newCell.textField setEnabled:YES];
     [newCell.textField becomeFirstResponder];
-    [newCell.textField isFirstResponder];
+    if([newCell.textField isFirstResponder]) {
+        NSLog(@"cool, tf is first responder");
+    } else NSLog(@"nope, tf is not first responder");
+//[newCell.textField isFirstResponder];
     keyboardIsUp = YES;
+    
+    [self enableTableViewTap];
     
     for(UIGestureRecognizer *gestureRecognizer in self.tableView.gestureRecognizers) {
         if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-            [gestureRecognizer setEnabled:YES];
+            //[gestureRecognizer setEnabled:YES];
         } else if([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+            // pinch for table view cell size adjustment
             [gestureRecognizer setEnabled:NO];
         } else if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+            // pan the entire table view out; not allowed
             [gestureRecognizer setEnabled:NO];
         }
     }
@@ -185,7 +201,7 @@ static BOOL keyboardIsUp = NO;
 
 - (IBAction)pullUp:(id)sender {
     if(!isInCreateMode) return;
-    
+    _isCreatingNewCell = YES;
     [self adjustTableViewForInsertion];
     [self scrollToBottomOfTableView];
     [self insertRowAtBottomOfTableView];
@@ -272,12 +288,35 @@ static BOOL keyboardIsUp = NO;
         
         //popover.theme.overlayColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.40];
         //popover.theme.fillBottomColor = [UIColor whiteColor];
+    
         
         [popover presentPopoverFromRect:imageView.frame
                                  inView:self.view
                permittedArrowDirections:WYPopoverArrowDirectionAny
                                animated:YES
                                 options:WYPopoverAnimationOptionScale];
+        
+         
+         
+        /*
+        [popover presentPopoverFromRect:imageView.frame
+                                 inView:self.view
+               permittedArrowDirections:WYPopoverArrowDirectionAny
+                               animated:NO completion:^ {
+                                   
+                               }
+         ];
+         
+        
+        POPSpringAnimation *anim = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+      //anim.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, 400, 400)];
+        anim.toValue = [NSValue valueWithCGRect:popover.contentViewController.view.frame];
+        [anim.toValue setObject:[NSObject new] forKey:@"objectKey"];
+        
+        [popover.contentViewController.view pop_addAnimation:anim forKey:@"size"];
+         
+        
+         */
         
     } else if(sender.state == UIGestureRecognizerStateChanged) {
         NSLog(@"changing");
@@ -306,6 +345,12 @@ static BOOL keyboardIsUp = NO;
 }
 
 - (void)animateCompletedBig {
+    CGRect due = CGRectMake(105, 496, 80, 72);
+    CGRect com = CGRectMake(190, 468, 110, 100);
+    CGRect del = CGRectMake(17, 496, 80, 72);
+    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_COMPLETED];
+    
+    /*
     [UIView animateWithDuration:.3 animations:^{
         // big completed
         // events (105,496)
@@ -320,9 +365,93 @@ static BOOL keyboardIsUp = NO;
         [_completedImageView setAlpha:.7];
         [_deletedImageView setAlpha:.2];
     }];
+     */
+}
+
+// TODO :: possibly make an 'animations' class
+// cuz this is gonna get messy
+- (void)animateCompletedWithRect:(CGRect)completedRect dueWithRect:(CGRect)dueRect deletedWithRect:(CGRect)deletedRect biggest:(NSNumber *)biggest {
+    
+    POPSpringAnimation *dueSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+    dueSpring.toValue = [NSValue valueWithCGRect:dueRect];
+    dueSpring.springBounciness = 15;
+    dueSpring.springSpeed = 10;
+    
+    POPSpringAnimation *completedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+    completedSpring.toValue = [NSValue valueWithCGRect:completedRect];
+    completedSpring.springBounciness = 15;
+    completedSpring.springSpeed = 10;
+    
+    POPSpringAnimation *deletedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+    deletedSpring.toValue = [NSValue valueWithCGRect:deletedRect];
+    deletedSpring.springBounciness = 15;
+    deletedSpring.springSpeed = 10;
+    
+    [_eventsImageView pop_addAnimation:dueSpring forKey:@"events"];
+    [_completedImageView pop_addAnimation:completedSpring forKey:@"completed"];
+    [_deletedImageView pop_addAnimation:deletedSpring forKey:@"deleted"];
+    
+    POPBasicAnimation *dueFade = [POPBasicAnimation animationWithPropertyNamed:kPOPViewAlpha];
+    POPBasicAnimation *completedFade = [POPBasicAnimation animationWithPropertyNamed:kPOPViewAlpha];
+    POPBasicAnimation *deletedFade = [POPBasicAnimation animationWithPropertyNamed:kPOPViewAlpha];
+    
+    dueFade.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    completedFade.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    deletedFade.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    
+    dueFade.fromValue = @(_eventsImageView.alpha);
+    completedFade.fromValue = @(_completedImageView.alpha);
+    deletedFade.fromValue = @(_deletedImageView.alpha);
+    
+    
+    int big = biggest.intValue;
+    
+    CGFloat active = 0.7;
+    CGFloat inactive = 0.3;
+    
+    if(big == 0) {
+        dueFade.toValue = @(inactive);
+        completedFade.toValue = @(inactive);
+        deletedFade.toValue = @(active);
+    } else if(big == 1) {
+        dueFade.toValue = @(active);
+        completedFade.toValue = @(inactive);
+        deletedFade.toValue = @(inactive);
+    } else if(big == 2) {
+        dueFade.toValue = @(inactive);
+        completedFade.toValue = @(active);
+        deletedFade.toValue = @(inactive);
+    }
+    
+    
+    
+    [_eventsImageView pop_addAnimation:dueFade forKey:@"dueFade"];
+    [_completedImageView pop_addAnimation:completedFade forKey:@"completedFade"];
+    [_deletedImageView pop_addAnimation:deletedFade forKey:@"deletedFade"];
+    
+    POPBasicAnimation *dueFrame = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
+    POPBasicAnimation *completedFrame = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
+    POPBasicAnimation *deletedFrame = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
+    
+    dueFrame.toValue = [NSValue valueWithCGRect:dueRect];
+    completedFrame.toValue = [NSValue valueWithCGRect:completedRect];
+    deletedFrame.toValue = [NSValue valueWithCGRect:deletedRect];
+    
+    //[_eventsImageView pop_addAnimation:dueFrame forKey:@"dueFrame"];
+    //[_completedImageView pop_addAnimation:completedFrame forKey:@"completedFrame"];
+    //[_deletedImageView pop_addAnimation:deletedFrame forKey:@"deletedFrame"];
+    
+    
 }
 
 - (void)animateDueBig {
+    CGRect due = CGRectMake(105, 468, 110, 100);
+    CGRect com = CGRectMake(220, 496, 80, 72);
+    CGRect del = CGRectMake(17, 496, 80, 72);
+    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DUE];
+    
+    
+    /*
     [UIView animateWithDuration:.3 animations:^{
         // big events
         // events (105,468)
@@ -337,10 +466,18 @@ static BOOL keyboardIsUp = NO;
         [_completedImageView setAlpha:.2];
         [_deletedImageView setAlpha:.2];
     }];
+    */
 
 }
 
 - (void)animateDeletedBig {
+    CGRect due = CGRectMake(132, 496, 80, 72);
+    CGRect com = CGRectMake(220, 496, 80, 72);
+    CGRect del = CGRectMake(20, 468, 110, 100);
+    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DELETED];
+    
+    
+    /*
     [UIView animateWithDuration:.3 animations:^{
         // big deleted
         // events (132,496)
@@ -355,6 +492,7 @@ static BOOL keyboardIsUp = NO;
         [_completedImageView setAlpha:.2];
         [_deletedImageView setAlpha:.7];
     }];
+     */
 }
 
 #pragma mark MenuViewControllerDelegate
@@ -529,9 +667,9 @@ static BOOL keyboardIsUp = NO;
     [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:deleteDirection];
 }
 
-- (void)cellTapped:(UITapGestureRecognizer *)gestureRecognizer {
-    NSLog(@"tapped cell");
-    ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
+- (void)cellTapped:(ListEventCell *)cell {
+    //NSLog(@"tapped cell");
+    //ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *event = [_cells objectAtIndex:indexPath.row];
     
@@ -598,34 +736,50 @@ static BOOL keyboardIsUp = NO;
 }
 
 #pragma mark UITextFieldDelegate
-
+// TODO :: this needs to be in listeventcell for finishing the creation of a cell
+// still need method here though for nav title textfield
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+
     // the nav title textfield tag is 5
     if(textField.tag == TEXTFIELD_NAVIGATION_TITLE_TAG) {
         [textField resignFirstResponder];
         [[listSetDataSource listSetForCurrentKey] setTitle:textField.text];
         [self.tableView reloadData];
+        NSLog(@"text field should return for nav title");
         return NO;
     }
     
     [self readjustTableViewBackToNormal];
     [self scrollToBottomOfTableView];
-    
     [self completeCreationOfEventWith:textField];
-    [textField setEnabled:NO];
+
     [textField resignFirstResponder];
+    [textField setEnabled:NO];
+
     keyboardIsUp = NO;
+    _isCreatingNewCell = NO;
+    
+    [self disableTableViewTap];
     
     for(UIGestureRecognizer *gestureRecognizer in self.tableView.gestureRecognizers) {
         if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-            [gestureRecognizer setEnabled:NO];
+            //[gestureRecognizer setEnabled:NO];
         } else if([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+            // cell sizes
             [gestureRecognizer setEnabled:YES];
         } else if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+            // pan the entire table view
             [gestureRecognizer setEnabled:YES];
         }
     }
     [self.tableView reloadData];
+    
+    // change the cell textfield delegates all back to their actual cell object
+    for(int i = 0; i < [self.tableView numberOfRowsInSection:0]; ++i) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+        ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        if(cell.textField.delegate == self) [cell.textField setDelegate:cell];
+    }
     
     return NO;
 }
@@ -792,7 +946,6 @@ static BOOL keyboardIsUp = NO;
 
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
     // TODO :: something is going on with the table view tap / cell tap
-    if(!keyboardIsUp && [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]){ NSLog(@"uh oh"); return NO;}
 
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         CGPoint location = [gestureRecognizer locationInView:self.view];
@@ -841,20 +994,33 @@ static BOOL keyboardIsUp = NO;
                 // perform animation to
                 // TODO :: check this out
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
-
-                // reset table view frame
-                [UIView animateWithDuration:0.3 animations:^{
-                    self.tableView.frame = originalFrame;
-                }];
-                // go to next/previous list set
                 [self nextListSet:_goToNextSetOnRelease];
+                POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+                
+                tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
+                tableViewSpring.springBounciness = 15;
+                tableViewSpring.springSpeed = 10;
+                [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+                // reset table view frame
+                //[UIView animateWithDuration:0.3 animations:^{
+                  //  self.tableView.frame = originalFrame;
+                //}];
+                // go to next/previous list set
+
             } else {
                 // reset table view position
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
                 
-                [UIView animateWithDuration:0.2 animations:^{
-                    self.tableView.frame = originalFrame;
-                }];
+                POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+                
+                tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
+                tableViewSpring.springBounciness = 15;
+                tableViewSpring.springSpeed = 10;
+                [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+                
+                //[UIView animateWithDuration:0.2 animations:^{
+                //    self.tableView.frame = originalFrame;
+                //}];
             }
             [self transitionNavCenters];
             //[self hideNavCenters];
@@ -879,14 +1045,23 @@ static BOOL keyboardIsUp = NO;
     }
 }
 
+- (void)enableTableViewTap {
+    [_tableViewTapRecognizer setEnabled:YES];
+}
+
+- (void)disableTableViewTap {
+    [_tableViewTapRecognizer setEnabled:NO];
+}
+
 - (void)UIGestureRecognizersAreFun {
     UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] init];
     [pinchRecognizer addTarget:self action:@selector(pinchedCells:)];
     [self.tableView addGestureRecognizer:pinchRecognizer];
     
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] init];
-    [tapRecognizer addTarget:self action:@selector(didTapTableView:)];
-    [self.tableView addGestureRecognizer:tapRecognizer];
+    _tableViewTapRecognizer = [[UITapGestureRecognizer alloc] init];
+    [_tableViewTapRecognizer addTarget:self action:@selector(didTapTableView:)];
+    [self.tableView addGestureRecognizer:_tableViewTapRecognizer];
+    [self disableTableViewTap];
     
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] init];
     [panRecognizer addTarget:self action:@selector(handlePanGesture:)];

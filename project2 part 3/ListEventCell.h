@@ -11,7 +11,7 @@
 
 @protocol ListEventCellDelegate;
 
-@interface ListEventCell : UITableViewCell <UIGestureRecognizerDelegate>
+@interface ListEventCell : UITableViewCell <UIGestureRecognizerDelegate, UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet UILabel *eventLabel;
@@ -28,7 +28,11 @@
 @protocol ListEventCellDelegate <NSObject>
 
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete;
-- (void)cellTapped:(UITapGestureRecognizer *)gestureRecognizer;
+- (void)cellTapped:(ListEventCell *)cell;
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer;
+- (BOOL)isCreatingNewCell;
+
+// TODO :: move this to actual cell model, maybe
+- (void)completeCreationOfEventWith:(UITextField *)textfield;
 
 @end

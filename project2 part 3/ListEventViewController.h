@@ -30,4 +30,6 @@
 
 @property (strong, nonatomic) ListSetDataSource *listSetDataSource;
 
+@property (strong, nonatomic) UITapGestureRecognizer *tableViewTapRecognizer;
+
 @end

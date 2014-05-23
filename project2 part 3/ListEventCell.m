@@ -7,6 +7,7 @@
 //
 
 #import "ListEventCell.h"
+#import <POP/POP.h>
 
 @implementation ListEventCell {
     CGPoint _originalCenter;
@@ -33,13 +34,16 @@
 
 - (void)initWithGestureRecognizers {
     if(self.gestureRecognizers.count == 3) return;
+    
+    [_textField setUserInteractionEnabled:YES];
+    [_textField setDelegate:self];
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
-    [tap addTarget:self action:@selector(tappedCell:)];
+    [tap addTarget:self action:@selector(didTapCell)];
     [tap setDelegate:self];
     
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] init];
-    [longPress addTarget:self action:@selector(longPressedCell:)];
+    [longPress addTarget:self action:@selector(didLongPressCell:)];
     
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] init];
     [pan addTarget:self action:@selector(pannedCell:)];
@@ -51,7 +55,10 @@
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
-
+    
+    if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+        return YES;
+    }
     CGPoint location = [gestureRecognizer locationInView:[self superview]];
     if(location.x < 50 || location.x > self.superview.frame.size.width - 50) {
         return NO;
@@ -67,11 +74,11 @@
     return YES;
     
 }
-
+/*
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return NO;
 }
-
+*/
 - (void)pannedCell:(UIPanGestureRecognizer *)gestureRecognizer {
     //if(_originalPoint.x < 50 || _originalPoint.x > self.frame.size.width - 50) return;
     switch (gestureRecognizer.state) {
@@ -99,10 +106,22 @@
                 [_delegate cellPanned:gestureRecognizer complete:_completeOnDragRelease delete:_deleteOnDragRelease];
             } else {
                 // reset cell position
+                
+                
+                POPSpringAnimation *cellSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+
+                
+                
                 CGRect originalFrame = CGRectMake(0, self.frame.origin.y, self.bounds.size.width, self.bounds.size.height);
-                [UIView animateWithDuration:0.2 animations:^{
-                    self.frame = originalFrame;
-                }];
+                
+                cellSpring.toValue = [NSValue valueWithCGRect:originalFrame];
+                cellSpring.springBounciness = 14;
+                cellSpring.springSpeed = 7;
+
+                [self pop_addAnimation:cellSpring forKey:@"cellSpring"];
+//                [UIView animateWithDuration:0.2 animations:^{
+//                  self.frame = originalFrame;
+//                }];
             }
             break;
         }
@@ -111,11 +130,34 @@
     }
 }
 
-- (void)tappedCell:(UITapGestureRecognizer *)gestureRecognizer {
-    [_delegate cellTapped:gestureRecognizer];
+/**
+ *  Two Cases
+ *  1) creating new cell => change textfield delegate to view controller; return YES
+ *  2) tap on existing textfield within existing cell => [self didTapCell]; return NO
+ */
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    // cell textfield's delegate is originally the cell;
+    // once the textfield shows up, i change the delegate to the view controller;
+    // that way the view controller can handle the input of multiple cells
+    // by tapping on screen while keyboard is up (one keyboard for tableview,
+    // opposed to one keyboard per cell);
+    
+    if([_delegate isCreatingNewCell]) {
+        id<UITextFieldDelegate>newDelegate = (id)_delegate;
+        textField.delegate = newDelegate;
+        return YES;
+    } else {
+        [self didTapCell];
+        return NO;
+    }
+    
 }
 
-- (void)longPressedCell:(UILongPressGestureRecognizer *)gestureRecognizer {
+- (void)didTapCell {
+    [_delegate cellTapped:self];
+}
+
+- (void)didLongPressCell:(UILongPressGestureRecognizer *)gestureRecognizer {
     [_delegate cellLongPressed:gestureRecognizer];
 }
 
