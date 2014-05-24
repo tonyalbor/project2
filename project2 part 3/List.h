@@ -41,5 +41,6 @@
 - (void)organizeEvents;
 
 - (BOOL)isEmpty;
+- (void)updateSortIds;
 
 @end

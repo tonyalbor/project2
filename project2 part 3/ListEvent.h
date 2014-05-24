@@ -21,6 +21,8 @@
 
 // category id for color
 @property (strong, nonatomic) NSNumber *categoryID;
+
+// MAJOR TODO :: not going to be easy to implement sort ids
 @property (strong, nonatomic) NSNumber *sortId;
 
 - (void)changeColor;

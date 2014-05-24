@@ -43,6 +43,15 @@
     //if(!event.categoryID) _currentCategory = @0;
     event.categoryID = _currentCategory;
     
+    // sort id is the index of the event, based on category
+    // TODO :: i need to change this every time the cell color changes
+    // and when an actual reordering occurs
+    // once there is a change on screen (e.g. switchCategory, nextListSet),
+    // i should go through and update all the sortIds
+    // i should probably set some kind of boolean value to determine
+    // if i need to make those updates (updateSortIds)
+    event.sortId = @([self numberOfEventsForCurrentCategory]-1);
+    
     if(![_events objectForKey:_currentCategory]) {
         [_events setObject:[NSMutableArray new] forKey:_currentCategory];
     }
@@ -94,6 +103,7 @@
     return (int)[[_events objectForKey:_currentCategory] count];
 }
 
+// TODO :: go through and return events in order by sort id
 - (NSMutableArray *)eventsForCurrentCategory {
     return [_events objectForKey:_currentCategory];
 }
@@ -157,6 +167,18 @@
 
 - (BOOL)isEmpty {
     return (!_events || _events.count == 0);
+}
+
+// TODO :: think about when sorting by date
+// i can probably just have another method that sorts by date
+- (void)updateSortIds {
+    for(id key in _events) {
+        NSArray *category = [_events objectForKey:key];
+        for(int i = 0; i < category.count; ++i) {
+            ListEvent *event = (ListEvent *)[category objectAtIndex:i];
+            event.sortId = @(i);
+        }
+    }
 }
 
 @end

@@ -8,6 +8,8 @@
 
 #import "ListEvent.h"
 #import "CustomCellColor.h"
+#import "ListSet.h"
+#import "ListSetDataSource.h"
 
 @implementation ListEvent
 
@@ -15,17 +17,20 @@
 @synthesize dateString;
 @synthesize date;
 @synthesize categoryID;
+@synthesize sortId;
 
 
 #define kEncodeKeyTitle       @"kEncodeKeyTitle"
 #define kEncodeKeyDate        @"kEncodeKeyDate"
 #define kEncodeKeyCategoryId  @"kEncodeKeyCategoryId"
+#define kEncodeKeySortId      @"kEncodeKeySortId"
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     
     [aCoder encodeObject:self.title forKey:kEncodeKeyTitle];
     [aCoder encodeObject:self.date forKey:kEncodeKeyDate];
     [aCoder encodeInt:self.categoryID.intValue forKey:kEncodeKeyCategoryId];
+    [aCoder encodeObject:self.categoryID forKey:kEncodeKeySortId];
 
 }
 
@@ -35,6 +40,7 @@
         self.title = [aDecoder decodeObjectForKey:kEncodeKeyTitle];
         self.date = [aDecoder decodeObjectForKey:kEncodeKeyDate];
         self.categoryID = @([aDecoder decodeIntForKey:kEncodeKeyCategoryId]);
+        self.sortId = [aDecoder decodeObjectForKey:kEncodeKeySortId];
     }
     
     return self;
@@ -46,6 +52,7 @@
         title = @"";
         dateString = @"";
         categoryID = @0;
+        sortId = @0;
     }
     return self;
 }
@@ -58,7 +65,7 @@
         ++temp;
         categoryID = [NSNumber numberWithInteger:temp];
     }
-    
+    //sortId = @([[[ListSetDataSource sharedDataSource] listSetForCurrentKey] numberOfEventsInDue] -1);// index of last item from categoryid
 }
 
 @end
