@@ -49,10 +49,13 @@ static BOOL keyboardIsUp = NO;
 
 static BOOL _isCreatingNewCell = NO;
 
+// set to YES when a cell color changes, or when reordering of cells occurs
+static BOOL shouldUpdateSortIds = NO;
+
 #pragma mark UITableViewDataSource
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return cellHeight;
+    return [ListEventCell selectedIndex] == indexPath.row ? cellHeight + 150 : cellHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -68,6 +71,7 @@ static BOOL _isCreatingNewCell = NO;
     }
     
     [self configureCell:cell atIndexPath:indexPath];
+
     return cell;
 }
 
@@ -83,6 +87,7 @@ static BOOL _isCreatingNewCell = NO;
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
     [cell.eventLabel setText:event.title];
+    [cell setExpanded:[ListEventCell selectedIndex] == indexPath.row];
     
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
     
@@ -226,6 +231,10 @@ static BOOL _isCreatingNewCell = NO;
     
     // link up the events to the right category key
     [list organizeEvents];
+    
+    // update sort ids
+    if(shouldUpdateSortIds) [list updateSortIds];
+    shouldUpdateSortIds = NO;
     
     [self.tableView beginUpdates];
     [self switchCategoryWithDirection:gestureRecognizer.direction andList:list];
@@ -667,15 +676,38 @@ static BOOL _isCreatingNewCell = NO;
     [self deleteSwipedCell:eventToBeRemoved atIndexPath:indexPath withRowAnimation:deleteDirection];
 }
 
-- (void)cellTapped:(ListEventCell *)cell {
+- (void)changeCellColor:(ListEventCell *)cell {
     //NSLog(@"tapped cell");
     //ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *event = [_cells objectAtIndex:indexPath.row];
     
     [event changeColor];
+    shouldUpdateSortIds = YES;
     [self loadEventsIntoCellsArray];
     [self.tableView reloadData];
+}
+
+- (void)expandCell:(ListEventCell *)cell {
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    [ListEventCell setSelectedIndex:indexPath.row];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+    [cell setExpanded:YES];
+}
+
+- (void)collapseCell:(ListEventCell *)cell {
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    [ListEventCell setSelectedIndex:-1];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
+    [cell setExpanded:NO];
+}
+
+- (void)collapseCellAtIndex:(int)index {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    [ListEventCell setSelectedIndex:-1];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
+    ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [cell setExpanded:NO];
 }
 
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -713,7 +745,10 @@ static BOOL _isCreatingNewCell = NO;
                 cellHeight += 1;
             }
         }
-        [self.tableView reloadData];
+        //[self.tableView reloadData];
+        [self.tableView beginUpdates];
+        [self.tableView endUpdates];
+
     } else if(pinchState == UIGestureRecognizerStateEnded) {
         
     }
@@ -880,6 +915,10 @@ static BOOL _isCreatingNewCell = NO;
     _cells = [NSMutableArray arrayWithArray:(allEventsShown ? [list getAllEvents] : [list eventsForCurrentCategory])];
 }
 
+// TODO :: integrate pop
+// instead of deleting and inserting rows using uitableview methods,
+// use pop to animate the tableview out, and animate the new tableview back in
+// hmmm... idk if that will look good though, we'll see
 - (void)switchCategoryWithDirection:(UISwipeGestureRecognizerDirection)direction andList:(List *)list {
     BOOL shouldIncrement;
     UITableViewRowAnimation insertAnimation;
@@ -995,13 +1034,14 @@ static BOOL _isCreatingNewCell = NO;
                 // perform animation to
                 // TODO :: check this out
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
-                [self nextListSet:_goToNextSetOnRelease];
+
                 POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
                 
                 tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
                 tableViewSpring.springBounciness = 15;
                 tableViewSpring.springSpeed = 10;
                 [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+                [self nextListSet:_goToNextSetOnRelease];
                 // reset table view frame
                 //[UIView animateWithDuration:0.3 animations:^{
                   //  self.tableView.frame = originalFrame;
@@ -1108,7 +1148,21 @@ static BOOL _isCreatingNewCell = NO;
 }
 
 - (void)nextListSet:(BOOL)next {
-    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
+    List *currentList = [[listSetDataSource listSetForCurrentKey] currentList];
+    [currentList organizeEvents];
+//    [[[listSetDataSource listSetForCurrentKey] currentList] organizeEvents];
+    
+    if(shouldUpdateSortIds) [currentList updateSortIds];
+    shouldUpdateSortIds = NO;
+    
+    if([ListEventCell selectedIndex]) {
+        for(int i = 0; i < _cells.count; ++i) {
+            ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+            [cell setExpanded:NO];
+        }
+        [ListEventCell setSelectedIndex:-1];
+    }
+    
     [self.tableView beginUpdates];
     //[self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationFade];
     [self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
