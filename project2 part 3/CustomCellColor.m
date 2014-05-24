@@ -9,16 +9,15 @@
 /*
  *  Adding colors:
  *
- *  To add a color, create a setN method for it;
+ *  To add a color, create a setColorN method for it;
  *  give it a key one more than the previous one;
- *  initializeColors will automatically add it;
- *  Also, update CC_INDEX_MAX at the top of the file;
+ *  +initializeColors will automatically add it;
  *
  **/
 
-#import "CustomCellColor.h"
+// MAJOR TODO :: improve system to handle themes
 
-#define CC_INDEX_MAX 8
+#import "CustomCellColor.h"
 
 @implementation CustomCellColor
 
@@ -37,30 +36,35 @@ static NSMutableDictionary *_customColors = nil;
 // set up custom colors array
 + (void)initializeColors {
     _customColors = [[NSMutableDictionary alloc] init];
-    for(int i = 0; i <= CC_INDEX_MAX; ++i) {
-        [self performSelectorInBackground:NSSelectorFromString([NSString stringWithFormat:@"set%d",i]) withObject:nil];
+    for(int i = 0; [self respondsToSelector:NSSelectorFromString([NSString stringWithFormat:@"setColor%d",i])]; ++i) {
+        [self performSelectorInBackground:NSSelectorFromString([NSString stringWithFormat:@"setColor%d",i]) withObject:nil];
     }
 }
 
-// I decided to use white as the color for the extended view
-// cell. I removed it as a color for a listeventcell to ensure
-// the app is colorful as fuck.
+/*
 
-// Goodbye, fair color :')
-//+ (CustomCellColor *)whiteColor {
-//    return [self newColorWithRed:1 blue:1 green:1 andIndex:@0];
-//}
+ I decided to use white as the color for the extended view
+ cell. I removed it as a color for a listeventcell to ensure
+ the app is colorful as fuck.
+
+ Goodbye, fair color :')
+ 
++ (CustomCellColor *)whiteColor {
+    return [self newColorWithRed:1 blue:1 green:1 andIndex:@0];
+}
+
+*/
 
 #define WHITE_KEY @(-1)
 
-+ (void)setNegativeOne {
++ (void)setColorNegativeOne {
     id color = [self newColorWithRed:1 blue:1 green:1 andIndex:WHITE_KEY];
     [_customColors setObject:color forKey:WHITE_KEY];
 }
 
 #define RED_KEY @0 // === RED ============================
 
-+ (void)set0 {
++ (void)setColor0 {
     id color = [self newColorWithRed:1 blue:.4 green:.4 andIndex:RED_KEY];
     [_customColors setObject:color forKey:RED_KEY];
 }
@@ -71,7 +75,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define BLUE_KEY @1 // === BLUE ==========================
 
-+ (void)set1 {
++ (void)setColor1 {
     id color = [self newColorWithRed:.4 blue:1 green:.8 andIndex:BLUE_KEY];
     [_customColors setObject:color forKey:BLUE_KEY];
 }
@@ -82,7 +86,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define GREEN_KEY @2 // === GREEN ========================
 
-+ (void)set2 {
++ (void)setColor2 {
     id color = [self newColorWithRed:.4 blue:.8 green:1 andIndex:GREEN_KEY];
     [_customColors setObject:color forKey:GREEN_KEY];
 }
@@ -93,7 +97,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define YELLOW_KEY @3 // === YELLOW ======================
 
-+ (void)set3 {
++ (void)setColor3 {
     id color = [self newColorWithRed:1 blue:.4 green:1 andIndex:YELLOW_KEY];
     [_customColors setObject:color forKey:YELLOW_KEY];
 }
@@ -104,7 +108,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define PURPLE_KEY @4 // === PURPLE ======================
 
-+ (void)set4 {
++ (void)setColor4 {
     id color = [self newColorWithRed:.8 blue:1 green:.4 andIndex:PURPLE_KEY];
     [_customColors setObject:color forKey:PURPLE_KEY];
 }
@@ -115,7 +119,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define PINK_KEY @5 // === PINK ==========================
 
-+ (void)set5 {
++ (void)setColor5 {
     id color = [self newColorWithRed:1 blue:.8 green:.4 andIndex:PINK_KEY];
     [_customColors setObject:color forKey:PINK_KEY];
 }
@@ -126,7 +130,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define ORANGE_KEY @6 // === ORANGE ======================
 
-+ (void)set6 {
++ (void)setColor6 {
     id color = [self newColorWithRed:1 blue:.4 green:.8 andIndex:ORANGE_KEY];
     [_customColors setObject:color forKey:ORANGE_KEY];
 }
@@ -137,7 +141,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define ORCHID_KEY @7 // === ORCHID ======================
 
-+ (void)set7 {
++ (void)setColor7 {
     id color = [self newColorWithRed:.4 blue:1 green:.4 andIndex:ORCHID_KEY];
     [_customColors setObject:color forKey:ORCHID_KEY];
 }
@@ -148,7 +152,7 @@ static NSMutableDictionary *_customColors = nil;
 
 #define TEST_KEY @8
 
-+ (void)set8 {
++ (void)setColor8 {
     id color = [self newColorWithRed:.1 blue:.3 green:.4 andIndex:TEST_KEY];
     [_customColors setObject:color forKey:TEST_KEY];
 }
