@@ -14,13 +14,19 @@
     CGPoint _originalPoint;
 	BOOL _deleteOnDragRelease;
     BOOL _completeOnDragRelease;
+    
+    CGFloat _cellHeight;
+    BOOL _isExpanded;
 }
+
+static int selectedIndex = -1;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
+        _isExpanded = NO;
     }
     return self;
 }
@@ -130,6 +136,30 @@
     }
 }
 
+- (BOOL)isExpanded {
+    return _isExpanded;
+}
+
+- (void)setExpanded:(BOOL)expanded {
+    _isExpanded = expanded;
+}
+
++ (int)selectedIndex {
+    return selectedIndex;
+}
+
++ (void)setSelectedIndex:(int)index {
+    selectedIndex = index;
+}
+
+- (CGFloat)cellHeight {
+    return _cellHeight;
+}
+
+- (void)setCellHeight:(CGFloat)height {
+    _cellHeight = height;
+}
+
 /**
  *  Two Cases
  *  1) creating new cell => change textfield delegate to view controller; return YES
@@ -154,11 +184,50 @@
 }
 
 - (void)didTapCell {
-    [_delegate cellTapped:self];
+    
+    if(selectedIndex == -1) {
+        // nothing is expanded; color
+        [_delegate changeCellColor:self];
+        //[_delegate cellTapped:self];
+    } else if(_isExpanded) {
+        // self is expanded; collapse
+        NSLog(@"right about to crash");
+        [_delegate collapseCell:self];
+        _isExpanded = NO;
+    } else if(selectedIndex >= 0) {
+        // something else is expanded; collapse that something else
+        [_delegate collapseCellAtIndex:selectedIndex];
+    }
 }
 
+// TODO :: if _isExpanded crashes
 - (void)didLongPressCell:(UILongPressGestureRecognizer *)gestureRecognizer {
-    [_delegate cellLongPressed:gestureRecognizer];
+
+
+    if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+
+        NSLog(@"selected index %d is expanded %d",selectedIndex,_isExpanded);
+    if(selectedIndex == -1) {
+        // nothing is expanded; expand
+        [_delegate expandCell:self];
+        _isExpanded = YES;
+    } else if(_isExpanded) {
+        // self is expanded; collapse
+        NSLog(@"right about to crash");
+        [_delegate collapseCell:self];
+        _isExpanded = NO;
+    } else if(selectedIndex >= 0) {
+        // something else is expanded; collapse currently expanded; expand self
+        // TODO :: animation
+        [_delegate collapseCellAtIndex:selectedIndex];
+        [_delegate expandCell:self];
+        _isExpanded = YES;
+    } else {
+        NSLog(@"TROLOLOL");
+    }
+    } else {
+        
+    }
 }
 
 @end
