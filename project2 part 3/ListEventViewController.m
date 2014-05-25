@@ -86,8 +86,14 @@ static BOOL shouldUpdateSortIds = NO;
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
+
     [cell.eventLabel setText:event.title];
     [cell setExpanded:[ListEventCell selectedIndex] == indexPath.row];
+    
+    if([cell isExpanded]) {
+        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width/4, cell.contentView.frame.size.height*3/4, cell.contentView.frame.size.width/2, 75)];
+        [cell.contentView addSubview:slider];
+    }
     
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
     
@@ -223,7 +229,26 @@ static BOOL shouldUpdateSortIds = NO;
 
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
     // called when image view is swiped left/right
+    
     UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
+    UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
+    /*
+    POPSpringAnimation *spring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+//    spring.toValue = [NSValue valueWithCGRect:imageView.frame];
+    
+    CGFloat dy = swipeDirection == UISwipeGestureRecognizerDirectionLeft ? -5 : 5;
+    
+    CGRect r = CGRectOffset(imageView.frame, dy*3, 0);
+    spring.toValue = [NSValue valueWithCGRect:r];
+    
+    spring.springBounciness = 15;
+    spring.springSpeed = 10;
+    [imageView pop_addAnimation:spring forKey:@"nav-center-pop-spring-switch"];
+
+    [self animateDueBig];
+    */
+    
+    
     List *list = [self listForImageView:imageView];
     
     // nowhere to switch to
@@ -237,7 +262,7 @@ static BOOL shouldUpdateSortIds = NO;
     shouldUpdateSortIds = NO;
     
     [self.tableView beginUpdates];
-    [self switchCategoryWithDirection:gestureRecognizer.direction andList:list];
+    [self switchCategoryWithDirection:swipeDirection andList:list];
     [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
 }

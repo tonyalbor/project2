@@ -24,6 +24,7 @@
  */
 
 #import "WYPopoverController.h"
+#import <POP/POP.h>
 
 #import <objc/runtime.h>
 
@@ -1948,6 +1949,14 @@ static WYPopoverTheme *defaultTheme_ = nil;
         
         if (strongSelf)
         {
+            
+            POPSpringAnimation *spring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+            CGRect r = CGRectOffset(strongSelf->backgroundView.frame,0,5);
+            spring.toValue = [NSValue valueWithCGRect:r];
+            spring.springBounciness = 10;
+            spring.springSpeed = 10;
+            [strongSelf->backgroundView pop_addAnimation:spring forKey:@"popover-pop-spring-up"];
+            
             if ([strongSelf->viewController isKindOfClass:[UINavigationController class]] == NO)
             {
                 [strongSelf->viewController viewDidAppear:YES];
@@ -1973,6 +1982,7 @@ static WYPopoverTheme *defaultTheme_ = nil;
         {
             [strongSelf->delegate popoverControllerDidPresentPopover:strongSelf];
         }
+        
         
         
     };
@@ -2009,6 +2019,25 @@ static WYPopoverTheme *defaultTheme_ = nil;
             backgroundView.transform = startTransform;
         }
         
+        //POPBasicAnimation *alphaAnimation = [POPBasicAnimation animationWithPropertyNamed:kPOPViewAlpha];
+        //alphaAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        //alphaAnimation.toValue = @1;
+        
+        //POPBasicAnimation *affine = [POPBasicAnimation animationWithPropertyNamed:kPOPLayerPosition];
+        NSLog(@"adding value");
+        //affine.toValue = [NSValue valueWithCGAffineTransform:endTransform];
+        NSLog(@"added");
+        
+        //[self->overlayView pop_addAnimation:alphaAnimation forKey:@"overlayview-pop"];
+        //[self->backgroundView pop_addAnimation:alphaAnimation forKey:@"backgroundview-pop"];
+        NSLog(@"adding actual anim");
+        //[self->backgroundView pop_addAnimation:affine forKey:@"affine-present-pop"];
+        NSLog(@"animed");
+
+
+        //adjustTintDimmed();
+        //completionBlock(YES);
+        
         [UIView animateWithDuration:animationDuration animations:^{
             __typeof__(self) strongSelf = weakSelf;
             
@@ -2021,7 +2050,9 @@ static WYPopoverTheme *defaultTheme_ = nil;
             adjustTintDimmed();
         } completion:^(BOOL finished) {
             completionBlock(YES);
+            
         }];
+        
     }
     else
     {
@@ -2528,12 +2559,19 @@ static WYPopoverTheme *defaultTheme_ = nil;
     containerFrame.origin = WYPointRelativeToOrientation(containerOrigin, containerFrame.size, orientation);
 
     if (aAnimated == YES) {
-        backgroundView.frame = savedContainerFrame;
-        __weak __typeof__(self) weakSelf = self;
-        [UIView animateWithDuration:0.10f animations:^{
-            __typeof__(self) strongSelf = weakSelf;
-            strongSelf->backgroundView.frame = containerFrame;
-        }];
+        
+                backgroundView.frame = savedContainerFrame;
+        
+        POPBasicAnimation *frameAnimation = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
+        frameAnimation.toValue = [NSValue valueWithCGRect:containerFrame];
+        [self->backgroundView pop_addAnimation:frameAnimation forKey:@"pop-frame-positionPopover"];
+        
+
+//        __weak __typeof__(self) weakSelf = self;
+  //      [UIView animateWithDuration:0.10f animations:^{
+    //        __typeof__(self) strongSelf = weakSelf;
+      //      strongSelf->backgroundView.frame = containerFrame;
+        //}];
     } else {
         backgroundView.frame = containerFrame;
     }
@@ -2579,6 +2617,7 @@ static WYPopoverTheme *defaultTheme_ = nil;
                     completion:(void (^)(void))completion
                   callDelegate:(BOOL)callDelegate
 {
+    
     float duration = self.animationDuration;
     WYPopoverAnimationOptions style = aOptions;
     
@@ -2663,6 +2702,7 @@ static WYPopoverTheme *defaultTheme_ = nil;
     
     if (aAnimated)
     {
+        
         [UIView animateWithDuration:duration animations:^{
             __typeof__(self) strongSelf = weakSelf;
             

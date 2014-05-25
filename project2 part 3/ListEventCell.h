@@ -18,6 +18,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *eventLabel;
 @property (weak, nonatomic) IBOutlet UITextField *textField;
 
+@property (weak, nonatomic) UIView *datePicker;
+
 // delegate to send ListEventCellDelegate messages to
 @property (strong, nonatomic) id<ListEventCellDelegate>delegate;
 

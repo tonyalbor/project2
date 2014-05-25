@@ -27,6 +27,7 @@ static int selectedIndex = -1;
     if (self) {
         // Initialization code
         _isExpanded = NO;
+        
     }
     return self;
 }
@@ -40,6 +41,9 @@ static int selectedIndex = -1;
 
 - (void)initWithGestureRecognizers {
     if(self.gestureRecognizers.count == 3) return;
+    
+    self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+    self.clipsToBounds = YES;
     
     [_textField setUserInteractionEnabled:YES];
     [_textField setDelegate:self];
@@ -228,6 +232,14 @@ static int selectedIndex = -1;
     } else {
         
     }
+}
+
+- (void)layoutSubviews {
+    
+}
+
+- (void)addSubviews {
+
 }
 
 @end
