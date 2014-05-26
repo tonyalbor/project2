@@ -26,6 +26,9 @@
 		EA26D39E17DD5B370066C43B /* ListEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D39D17DD5B370066C43B /* ListEvent.m */; };
 		EA26D3A517DD5E220066C43B /* CustomCellColor.m in Sources */ = {isa = PBXBuildFile; fileRef = EA26D3A417DD5E220066C43B /* CustomCellColor.m */; };
 		EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA33247118A8DDAB00916A7E /* super-rough-nav2.png */; };
+		EA5589F01931D13600D5F97B /* pencil.png in Resources */ = {isa = PBXBuildFile; fileRef = EA5589EF1931D13600D5F97B /* pencil.png */; };
+		EA5589F21931D71100D5F97B /* trash-2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA5589F11931D71100D5F97B /* trash-2.png */; };
+		EA5589F41931D8E400D5F97B /* super-rough-nav2-trash2.png in Resources */ = {isa = PBXBuildFile; fileRef = EA5589F31931D8E400D5F97B /* super-rough-nav2-trash2.png */; };
 		EA6C592A191B209400BC7469 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA6C5929191B209400BC7469 /* MenuViewController.m */; };
 		EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */; };
 		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
@@ -66,6 +69,9 @@
 		EA26D3A317DD5E220066C43B /* CustomCellColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellColor.h; sourceTree = "<group>"; };
 		EA26D3A417DD5E220066C43B /* CustomCellColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellColor.m; sourceTree = "<group>"; };
 		EA33247118A8DDAB00916A7E /* super-rough-nav2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2.png"; sourceTree = "<group>"; };
+		EA5589EF1931D13600D5F97B /* pencil.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pencil.png; sourceTree = "<group>"; };
+		EA5589F11931D71100D5F97B /* trash-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-2.png"; sourceTree = "<group>"; };
+		EA5589F31931D8E400D5F97B /* super-rough-nav2-trash2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-trash2.png"; sourceTree = "<group>"; };
 		EA6C5928191B209400BC7469 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		EA6C5929191B209400BC7469 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-check.png"; sourceTree = "<group>"; };
@@ -144,6 +150,9 @@
 		EA26D37617DD582E0066C43B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EA5589EF1931D13600D5F97B /* pencil.png */,
+				EA5589F31931D8E400D5F97B /* super-rough-nav2-trash2.png */,
+				EA5589F11931D71100D5F97B /* trash-2.png */,
 				EA33247118A8DDAB00916A7E /* super-rough-nav2.png */,
 				EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */,
 				EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */,
@@ -295,6 +304,7 @@
 				EA0E69D0191AF6B00025AE6C /* Podfile in Resources */,
 				EA26D37A17DD582E0066C43B /* InfoPlist.strings in Resources */,
 				EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */,
+				EA5589F21931D71100D5F97B /* trash-2.png in Resources */,
 				EAFDD8711856F2200049F482 /* save_data.plist in Resources */,
 				EA26D38217DD582E0066C43B /* Default.png in Resources */,
 				EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */,
@@ -302,6 +312,8 @@
 				EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */,
 				EA26D38617DD582E0066C43B /* Default-568h@2x.png in Resources */,
 				EA26D38917DD582E0066C43B /* MainStoryboard.storyboard in Resources */,
+				EA5589F01931D13600D5F97B /* pencil.png in Resources */,
+				EA5589F41931D8E400D5F97B /* super-rough-nav2-trash2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

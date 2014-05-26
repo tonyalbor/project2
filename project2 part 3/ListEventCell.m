@@ -27,6 +27,7 @@ static int selectedIndex = -1;
     if (self) {
         // Initialization code
         _isExpanded = NO;
+        [self removeSubviews];
         
     }
     return self;
@@ -42,6 +43,8 @@ static int selectedIndex = -1;
 - (void)initWithGestureRecognizers {
     if(self.gestureRecognizers.count == 3) return;
     
+    self.textField.keyboardAppearance = UIKeyboardAppearanceDark;
+    
     self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     self.clipsToBounds = YES;
     
@@ -49,7 +52,7 @@ static int selectedIndex = -1;
     [_textField setDelegate:self];
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
-    [tap addTarget:self action:@selector(didTapCell)];
+    [tap addTarget:self action:@selector(didTapCell:)];
     [tap setDelegate:self];
     
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] init];
@@ -181,13 +184,25 @@ static int selectedIndex = -1;
         textField.delegate = newDelegate;
         return YES;
     } else {
-        [self didTapCell];
+        [self didTapCell:nil];
         return NO;
     }
     
 }
 
-- (void)didTapCell {
+- (void)didTapCell:(UITapGestureRecognizer *)gestureRecognizer {
+    UIImageView *pencilImageView = (UIImageView *)[self.contentView viewWithTag:111];
+    if(pencilImageView) {
+        CGPoint touchLocation = [gestureRecognizer locationInView:self.contentView];
+        
+        if(CGRectContainsPoint(pencilImageView.frame, touchLocation)) {
+            NSLog(@"touched image view");
+            [self didTapPencil:gestureRecognizer];
+            return;
+        } else {
+            NSLog(@"didnt touch image view");
+        }
+    }
     
     if(selectedIndex == -1) {
         // nothing is expanded; color
@@ -195,7 +210,7 @@ static int selectedIndex = -1;
         //[_delegate cellTapped:self];
     } else if(_isExpanded) {
         // self is expanded; collapse
-        NSLog(@"right about to crash");
+       // [self removeSubviews];
         [_delegate collapseCell:self];
         _isExpanded = NO;
     } else if(selectedIndex >= 0) {
@@ -217,7 +232,6 @@ static int selectedIndex = -1;
         _isExpanded = YES;
     } else if(_isExpanded) {
         // self is expanded; collapse
-        NSLog(@"right about to crash");
         [_delegate collapseCell:self];
         _isExpanded = NO;
     } else if(selectedIndex >= 0) {
@@ -238,8 +252,51 @@ static int selectedIndex = -1;
     
 }
 
-- (void)addSubviews {
+- (void)didTapPencil:(UITapGestureRecognizer *)gestureRecognizer {
+    [self animatePencil:gestureRecognizer];
+    
+}
 
+- (void)animatePencil:(UITapGestureRecognizer *)gestureRecognizer {
+    id pencilImageView = [self.contentView viewWithTag:111];
+    CGRect originalFrame = ((UIImageView *)pencilImageView).frame;
+    
+    [UIView animateWithDuration:.2 animations:^{
+        CGRect newFrame = CGRectInset(originalFrame, -originalFrame.size.width/4, -originalFrame.size.height/4);
+        [pencilImageView setFrame:newFrame];
+    } completion:^(BOOL finsished) {
+        if(finsished) {
+            POPSpringAnimation *spring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+            spring.toValue = [NSValue valueWithCGRect:originalFrame];
+            spring.springBounciness = 15;
+            spring.springSpeed = 10;
+            [pencilImageView pop_addAnimation:spring forKey:@"pencil-image-view-pop-spring"];
+        }
+    }];
+    
+}
+
+- (void)addSubviews {
+    UIImageView *pencilImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
+    [pencilImageView setFrame:CGRectMake(self.eventLabel.frame.origin.x / 4, self.eventLabel.frame.origin.y + 150, 25, 25)];
+    [pencilImageView setTag:111];
+    [pencilImageView setUserInteractionEnabled:YES];
+    UITapGestureRecognizer *tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPencil:)];
+    [pencilImageView addGestureRecognizer:tapPencil];
+    [self.contentView addSubview:pencilImageView];
+    
+    UIImageView *otherImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
+    [otherImageView setFrame:CGRectOffset(pencilImageView.frame, 0, -75)];
+    [otherImageView setTag:112];
+    [self.contentView addSubview:otherImageView];
+}
+
+- (void)removeSubviews {
+    id view = [self.contentView viewWithTag:111];
+    if(view) [view removeFromSuperview];
+    
+    id other = [self.contentView viewWithTag:112];
+    if(other) [other removeFromSuperview];
 }
 
 @end

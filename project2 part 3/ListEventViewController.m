@@ -55,7 +55,7 @@ static BOOL shouldUpdateSortIds = NO;
 #pragma mark UITableViewDataSource
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [ListEventCell selectedIndex] == indexPath.row ? cellHeight + 150 : cellHeight;
+    return [ListEventCell selectedIndex] == indexPath.row ? cellHeight + 250 : cellHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -86,14 +86,8 @@ static BOOL shouldUpdateSortIds = NO;
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
     [cell.dateLabel setHidden:YES];
-
     [cell.eventLabel setText:event.title];
     [cell setExpanded:[ListEventCell selectedIndex] == indexPath.row];
-    
-    if([cell isExpanded]) {
-        UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(cell.contentView.frame.size.width/4, cell.contentView.frame.size.height*3/4, cell.contentView.frame.size.width/2, 75)];
-        [cell.contentView addSubview:slider];
-    }
     
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
     
@@ -710,28 +704,31 @@ static BOOL shouldUpdateSortIds = NO;
     [event changeColor];
     shouldUpdateSortIds = YES;
     [self loadEventsIntoCellsArray];
-    [self.tableView reloadData];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)expandCell:(ListEventCell *)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     [ListEventCell setSelectedIndex:indexPath.row];
-    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
+    [self.tableView beginUpdates];
+    [cell addSubviews];
+    [self.tableView endUpdates];
     [cell setExpanded:YES];
 }
 
 - (void)collapseCell:(ListEventCell *)cell {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     [ListEventCell setSelectedIndex:-1];
-    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
     [cell setExpanded:NO];
 }
 
 - (void)collapseCellAtIndex:(int)index {
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     [ListEventCell setSelectedIndex:-1];
-    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
     ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
     [cell setExpanded:NO];
 }
 
@@ -770,9 +767,7 @@ static BOOL shouldUpdateSortIds = NO;
                 cellHeight += 1;
             }
         }
-        //[self.tableView reloadData];
-        [self.tableView beginUpdates];
-        [self.tableView endUpdates];
+        [self.tableView reloadData];
 
     } else if(pinchState == UIGestureRecognizerStateEnded) {
         

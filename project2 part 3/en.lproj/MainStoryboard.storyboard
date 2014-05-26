@@ -115,7 +115,7 @@
                                             <outlet property="delegate" destination="2" id="jJp-Er-hPa"/>
                                         </connections>
                                     </tableView>
-                                    <imageView alpha="0.69999999999999973" contentMode="scaleToFill" image="super-rough-nav2.png" id="d4m-1p-1cN">
+                                    <imageView alpha="0.69999999999999973" contentMode="scaleToFill" image="super-rough-nav2-trash2.png" id="d4m-1p-1cN">
                                         <rect key="frame" x="105" y="467" width="110" height="100"/>
                                         <gestureRecognizers/>
                                         <connections>
@@ -367,6 +367,7 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
     <resources>
         <image name="super-rough-nav2-check.png" width="111" height="100"/>
         <image name="super-rough-nav2-trash.png" width="111" height="100"/>
+        <image name="super-rough-nav2-trash2.png" width="111" height="100"/>
         <image name="super-rough-nav2.png" width="111" height="100"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

@@ -47,6 +47,9 @@
 // set cell to expanded
 - (void)setExpanded:(BOOL)expanded;
 
+- (void)addSubviews;
+- (void)removeSubviews;
+
 @end
 
 #pragma mark ListEventCellDelegate methods
