@@ -15,6 +15,9 @@
 
 #define TEXTFIELD_NAVIGATION_TITLE_TAG 5
 
+// TODO :: there's a bug with the transition nav centers method calls
+// they're just not being called at the right time
+
 @interface ListEventViewController () {
     WYPopoverController *popover;
 }
@@ -53,6 +56,12 @@ static BOOL _isCreatingNewCell = NO;
 static BOOL shouldUpdateSortIds = NO;
 
 #pragma mark UITableViewDataSource
+
+/*
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    // create slim section header view to display list set info (eg. title, #events,...)
+}
+*/
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return [ListEventCell selectedIndex] == indexPath.row ? cellHeight + 250 : cellHeight;
@@ -865,6 +874,7 @@ static BOOL shouldUpdateSortIds = NO;
     [CustomCellColor initializeColors];
     [MemoryDataSource _load];
     [self.navigationController.navigationBar setTranslucent:YES];
+    [self.navigationController setNavigationBarHidden:YES];
 //    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
 //    [self.navigationController.navigationBar setBarTintColor:[UIColor w]];
     [super viewDidLoad];
@@ -1030,6 +1040,14 @@ static BOOL shouldUpdateSortIds = NO;
 
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan: {
+            POPSpringAnimation *tableViewSpring = [self.tableView pop_animationForKey:@"tableViewSpring"];
+            if(tableViewSpring) {
+                [self.tableView pop_removeAnimationForKey:@"tableViewSpring"];
+            } else {
+                
+            }
+            
+            
             // get initial center and point of drag
             _originalCenter = self.tableView.center;
             _originalPoint = [gestureRecognizer locationInView:self.view];
@@ -1042,14 +1060,42 @@ static BOOL shouldUpdateSortIds = NO;
             
             CGPoint endLocation = [gestureRecognizer locationInView:self.view];
             
-            // TODO :: check this out
-            _goToNextSetOnRelease = _originalPoint.x > self.view.frame.size.width-50 && endLocation.x < self.view.frame.size.width-50;
+            const int edge = 65;
             
             // TODO :: check this out
-            _goToPreviousSetOnRelease = _originalPoint.x < 50 && endLocation.x > 50;
+            _goToNextSetOnRelease = _originalPoint.x > self.view.frame.size.width-edge && endLocation.x < self.view.frame.size.width-edge;
+            
+            // TODO :: check this out
+            _goToPreviousSetOnRelease = _originalPoint.x < edge && endLocation.x > edge;
+            
+            if(_goToNextSetOnRelease || _goToPreviousSetOnRelease) {
+                [self transitionNavCenters];
+                // perform animation to
+                // TODO :: check this out
+                CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
+                
+                POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+                
+                tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
+                tableViewSpring.springBounciness = 15;
+                tableViewSpring.springSpeed = 6;
+                [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+                [self nextListSet:_goToNextSetOnRelease];
+                
+                // awesome hack to cancel the gesture
+                [gestureRecognizer setEnabled:NO];
+                [gestureRecognizer setEnabled:YES];
+            
+                // reset table view frame
+                //[UIView animateWithDuration:0.3 animations:^{
+                //  self.tableView.frame = originalFrame;
+                //}];
+                // go to next/previous list set
+                
+            }
             break;
         }
-        case UIGestureRecognizerStateEnded: {
+        case UIGestureRecognizerStateEnded: {/*
             if(_goToNextSetOnRelease || _goToPreviousSetOnRelease) {
                 // perform animation to
                 // TODO :: check this out
@@ -1068,7 +1114,7 @@ static BOOL shouldUpdateSortIds = NO;
                 //}];
                 // go to next/previous list set
 
-            } else {
+            } else {*/
                 // reset table view position
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
                 
@@ -1082,8 +1128,8 @@ static BOOL shouldUpdateSortIds = NO;
                 //[UIView animateWithDuration:0.2 animations:^{
                 //    self.tableView.frame = originalFrame;
                 //}];
-            }
-            [self transitionNavCenters];
+            //}
+            //[self transitionNavCenters];
             //[self hideNavCenters];
             break;
         }
@@ -1193,6 +1239,7 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView endUpdates];
     
     // TODO :: take this out
+    // TODO :: change this to MemoryCard
     [MemoryDataSource save];
 }
 

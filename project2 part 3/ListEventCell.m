@@ -128,8 +128,8 @@ static int selectedIndex = -1;
                 CGRect originalFrame = CGRectMake(0, self.frame.origin.y, self.bounds.size.width, self.bounds.size.height);
                 
                 cellSpring.toValue = [NSValue valueWithCGRect:originalFrame];
-                cellSpring.springBounciness = 14;
-                cellSpring.springSpeed = 7;
+                cellSpring.springBounciness = 15;
+                cellSpring.springSpeed = 10;
 
                 [self pop_addAnimation:cellSpring forKey:@"cellSpring"];
 //                [UIView animateWithDuration:0.2 animations:^{
