@@ -25,7 +25,8 @@
 @end
 
 @implementation ListEventViewController {
-    CGPoint _pinchPoint;
+    CGFloat _currentScale;
+    CGFloat _lastScale;
     CGPoint _originalCenter;
     CGPoint _originalPoint;
     BOOL _goToNextSetOnRelease;
@@ -730,6 +731,7 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
     [cell setExpanded:NO];
+    [cell removeSubviews];
 }
 
 - (void)collapseCellAtIndex:(int)index {
@@ -739,6 +741,7 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
     [cell setExpanded:NO];
+    [cell removeSubviews];
 }
 
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -758,28 +761,43 @@ static BOOL shouldUpdateSortIds = NO;
 #pragma mark ListEventCell UIGestureRecognizer
 
 - (void)pinchedCells:(UIPinchGestureRecognizer *)gestureRecongnizer {
+    NSLog(@"scale: %f",gestureRecongnizer.scale);
+
+
     UIGestureRecognizerState pinchState = gestureRecongnizer.state;
     
-    if(pinchState == UIGestureRecognizerStateRecognized) {
-        NSLog(@"recognized pinch");
+    
+    if(pinchState == UIGestureRecognizerStateBegan) {
+        NSLog(@"pinch began");
     } else if(pinchState == UIGestureRecognizerStateChanged) {
         // this is where it all should happen
-        NSLog(@"changed pinch");
-        if([self didPinchInwards:gestureRecongnizer]) {
-            // make cells smaller
-            if(cellHeight >= 40) {
-                cellHeight -= 1;
-            }
-        } else if([self didPinchOutwards:gestureRecongnizer]) {
+//        NSLog(@"changed pinch");
+        if(gestureRecongnizer.scale >= _lastScale) {
             // make cells larger
-            if(cellHeight <= 100) {
-                cellHeight += 1;
-            }
+            NSLog(@"larger");
+            [self increaseCellSize];
+        } else if(gestureRecongnizer.scale < _lastScale) {
+            // make cells smaller
+            NSLog(@"smaller");
+            [self decreaseCellSize];
         }
+        _lastScale = gestureRecongnizer.scale;
         [self.tableView reloadData];
+    } else if(pinchState == UIGestureRecognizerStateRecognized) {
+        NSLog(@"recognized pinch");
+        _lastScale = 1.0;
+    }
+}
 
-    } else if(pinchState == UIGestureRecognizerStateEnded) {
-        
+- (void)decreaseCellSize {
+    if(cellHeight >= 40) {
+        cellHeight -= 1.1;
+    }
+}
+
+- (void)increaseCellSize {
+    if(cellHeight <= 110) {
+        cellHeight += 1.1;
     }
 }
 
@@ -791,12 +809,14 @@ static BOOL shouldUpdateSortIds = NO;
  where the pinch started
  
  */
-- (BOOL)didPinchInwards:(UIPinchGestureRecognizer *)pinchRecognizer {
-    return pinchRecognizer.scale < 1;
+- (BOOL)didPinchInwards:(CGFloat)pinchRecognizer {
+    //_currentScale += pinchRecognizer.scale - _lastScale;
+    //_lastScale = pinchRecognizer.scale;
+    return pinchRecognizer < 1;
 }
 
-- (BOOL)didPinchOutwards:(UIPinchGestureRecognizer *)pinchRecognizer {
-    return pinchRecognizer.scale > 1;
+- (BOOL)didPinchOutwards:(CGFloat)pinchRecognizer {
+    return pinchRecognizer > 1;
 }
 
 #pragma mark UITextFieldDelegate
@@ -878,6 +898,8 @@ static BOOL shouldUpdateSortIds = NO;
 //    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
 //    [self.navigationController.navigationBar setBarTintColor:[UIColor w]];
     [super viewDidLoad];
+    NSLog(@"last %f",_lastScale);
+    _lastScale = 1.0;
     
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
