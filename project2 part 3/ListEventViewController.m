@@ -1069,7 +1069,7 @@ static BOOL shouldUpdateSortIds = NO;
             _goToPreviousSetOnRelease = _originalPoint.x < edge && endLocation.x > edge;
             
             if(_goToNextSetOnRelease || _goToPreviousSetOnRelease) {
-                [self transitionNavCenters];
+//                [self transitionNavCenters];
                 // perform animation to
                 // TODO :: check this out
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
@@ -1081,6 +1081,7 @@ static BOOL shouldUpdateSortIds = NO;
                 tableViewSpring.springSpeed = 6;
                 [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
                 [self nextListSet:_goToNextSetOnRelease];
+                [self transitionNavCenters];
                 
                 // awesome hack to cancel the gesture
                 [gestureRecognizer setEnabled:NO];
@@ -1124,6 +1125,7 @@ static BOOL shouldUpdateSortIds = NO;
                 tableViewSpring.springBounciness = 15;
                 tableViewSpring.springSpeed = 10;
                 [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+            [self transitionNavCenters];
                 
                 //[UIView animateWithDuration:0.2 animations:^{
                 //    self.tableView.frame = originalFrame;

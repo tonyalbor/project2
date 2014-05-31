@@ -5,36 +5,36 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>903DA651-3745-4B8B-BB70-0D88D89B60C0</string>
+	<string>5FC162DF-2D30-49F7-A3DD-DF2AC2C9295F</string>
 	<key>IDESourceControlProjectName</key>
 	<string>project2 part 3</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>10D546F5-F98F-406E-B3E9-3E7353FCC8EE</key>
-		<string>ssh://github.com/tonyalbor/project2.git</string>
+		<key>72787933-2FBF-4578-AC97-AF68026391D0</key>
+		<string>https://github.com/tonyalbor/project2.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>project2 part 3.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>10D546F5-F98F-406E-B3E9-3E7353FCC8EE</key>
+		<key>72787933-2FBF-4578-AC97-AF68026391D0</key>
 		<string>..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://github.com/tonyalbor/project2.git</string>
+	<string>https://github.com/tonyalbor/project2.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>10D546F5-F98F-406E-B3E9-3E7353FCC8EE</string>
+	<string>72787933-2FBF-4578-AC97-AF68026391D0</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>10D546F5-F98F-406E-B3E9-3E7353FCC8EE</string>
+			<string>72787933-2FBF-4578-AC97-AF68026391D0</string>
 			<key>IDESourceControlWCCName</key>
-			<string>project2 part 3</string>
+			<string>project2</string>
 		</dict>
 	</array>
 </dict>
