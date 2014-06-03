@@ -58,19 +58,98 @@ static BOOL shouldUpdateSortIds = NO;
 
 #pragma mark UITableViewDataSource
 
-/*
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    // create slim section header view to display list set info (eg. title, #events,...)
+- (void)setUpHeaderView {
+    
+    //NSLog(@"VIEWFORHEADERINSECTION");
+    
+    // create slim section header view to display list set info (eg. title, #events, ...)
+	
+	UIView *_header = nil;
+    
+	if(_header) {
+		NSLog(@"no header");
+		ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
+    
+		_header = [[UIView alloc] initWithFrame:CGRectMake(0, 20, self.tableView.frame.size.width, 30)];
+	
+		UINavigationBar *navigationBar = [[UINavigationBar alloc] initWithFrame:_header.frame];
+		
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 10, _header.frame.size.width, 25)];
+		[label setTextColor:[UIColor blackColor]];
+				[label setText:[[currentSet title] uppercaseString]];
+		[label setTag:30];
+		
+		//UINavigationItem *item = [[UINavigationItem alloc] initWithTitle:[[currentSet title] uppercaseString]];
+		[navigationBar setTranslucent:YES];
+		[navigationBar setAlpha:0.8];
+		//[navigationBar setItems:@[item]];
+	
+		[_header addSubview:navigationBar];
+    
+		[_header addSubview:label];
+		
+		//[self.view addSubview:_header];
+	} else {
+		_header = [[UIView alloc] init];
+		[_header setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 50)];
+		[_header setAlpha:0.5];
+		[_header setBackgroundColor:[UIColor blackColor]];
+//		[self.view addSubview:_header];
+		
+		ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
+		NSString *setTitle = [[currentSet title] lowercaseString];
+		
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 20, 100, 45)];
+		
+		[label setText:setTitle];
+		
+		[label addSubview:_header];
+		
+		[label setAlpha:0.7];
+		
+		[self.view addSubview:label];
+		[label setTag:30];
+		
+		NSLog(@"yes header");
+	}
 }
-*/
+
+- (void)updateListSetHeader {
+	UILabel *label = (UILabel *)[self.view viewWithTag:30];
+	if(label) {
+		[label setText:[[[listSetDataSource listSetForCurrentKey] title] lowercaseString]];
+	} else {
+		NSLog(@"no label");
+	}
+}
+
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return [ListEventCell selectedIndex] == indexPath.row ? cellHeight + 250 : cellHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
-    [self.titleTextField setText:[[currentSet title] uppercaseString]];
+
+    //[self tableView:tableView viewForHeaderInSection:0];
+    /*
+    UIView *headerView = [self tableView:tableView viewForHeaderInSection:0];
+    if(headerView != nil) {
+        NSLog(@"header view exists");
+        ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
+        UILabel *label = (UILabel *)[self.view viewWithTag:19];
+		
+        [label setText:[currentSet.title uppercaseString]];
+        
+        // TODO :: work on modifying existing label from header view
+        
+    } else {
+        NSLog(@"header view does not exist");
+    }
+    */
+    
+    //ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
+    //[self.titleTextField setText:[[currentSet title] uppercaseString]];
     return _cells.count;
 }
 
@@ -99,7 +178,7 @@ static BOOL shouldUpdateSortIds = NO;
     [cell.eventLabel setText:event.title];
     [cell setExpanded:[ListEventCell selectedIndex] == indexPath.row];
     
-    if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99]) event.categoryID = @0;
+    if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99] /*|| ![CustomCellColor colorExistsForCategoryId:event.categoryID]*/) event.categoryID = @0;
     
     CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
@@ -183,6 +262,7 @@ static BOOL shouldUpdateSortIds = NO;
     }
 }
 
+// TODO :: deleting _right_ after creating cell causes crash
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     List *list = [currentSet currentList];
@@ -232,26 +312,10 @@ static BOOL shouldUpdateSortIds = NO;
 }
 
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
-    // called when image view is swiped left/right
+    // called when nav center image view is swiped left/right
     
     UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
     UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
-    /*
-    POPSpringAnimation *spring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
-//    spring.toValue = [NSValue valueWithCGRect:imageView.frame];
-    
-    CGFloat dy = swipeDirection == UISwipeGestureRecognizerDirectionLeft ? -5 : 5;
-    
-    CGRect r = CGRectOffset(imageView.frame, dy*3, 0);
-    spring.toValue = [NSValue valueWithCGRect:r];
-    
-    spring.springBounciness = 15;
-    spring.springSpeed = 10;
-    [imageView pop_addAnimation:spring forKey:@"nav-center-pop-spring-switch"];
-
-    [self animateDueBig];
-    */
-    
     
     List *list = [self listForImageView:imageView];
     
@@ -683,7 +747,7 @@ static BOOL shouldUpdateSortIds = NO;
 #pragma mark ListEventCellDelegate
 
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete {
-    
+	
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *eventToBeRemoved = [_cells objectAtIndex:indexPath.row];
@@ -791,12 +855,26 @@ static BOOL shouldUpdateSortIds = NO;
 
 - (void)decreaseCellSize {
     if(cellHeight >= 40) {
+		if(cellHeight == 80) {
+			NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
+			for(NSIndexPath *indexPath in indexPaths) {
+				ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+				[cell removeSubviews];
+			}
+		}
         cellHeight -= 1.1;
     }
 }
 
 - (void)increaseCellSize {
     if(cellHeight <= 110) {
+		if(cellHeight == 80) {
+			NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
+			for(NSIndexPath *indexPath in indexPaths) {
+				ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+				[cell addSubviews];
+			}
+		}
         cellHeight += 1.1;
     }
 }
@@ -891,8 +969,12 @@ static BOOL shouldUpdateSortIds = NO;
 #pragma mark UIViewController
 
 - (void)viewDidLoad {
+
     [CustomCellColor initializeColors];
     [MemoryDataSource _load];
+	
+
+	
     [self.navigationController.navigationBar setTranslucent:YES];
     [self.navigationController setNavigationBarHidden:YES];
 //    [self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
@@ -900,6 +982,9 @@ static BOOL shouldUpdateSortIds = NO;
     [super viewDidLoad];
     NSLog(@"last %f",_lastScale);
     _lastScale = 1.0;
+	//CGRect oldFrame = self.tableView.frame;
+	//CGRect newFrame = CGRectOffset(oldFrame, 0, -20);
+	//[self.tableView setFrame:newFrame];
     
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
@@ -934,6 +1019,8 @@ static BOOL shouldUpdateSortIds = NO;
     
     // Do any additional setup after loading the view, typically from a nib.
     [self UIGestureRecognizersAreFun];
+	
+			[self setUpHeaderView];
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
@@ -1036,6 +1123,7 @@ static BOOL shouldUpdateSortIds = NO;
     list.recentlyAddedEvent = nil;
 }
 
+// TODO :: edge swipe makes it difficult to navigate up/down on tableview
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
     // TODO :: something is going on with the table view tap / cell tap
 
@@ -1096,23 +1184,28 @@ static BOOL shouldUpdateSortIds = NO;
                 // TODO :: check this out
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
                 
+                
+                /*
                 POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
                 
                 tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
                 tableViewSpring.springBounciness = 15;
                 tableViewSpring.springSpeed = 6;
                 [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+                 */
                 [self nextListSet:_goToNextSetOnRelease];
+	[self updateListSetHeader];
                 [self transitionNavCenters];
+                
                 
                 // awesome hack to cancel the gesture
                 [gestureRecognizer setEnabled:NO];
                 [gestureRecognizer setEnabled:YES];
             
                 // reset table view frame
-                //[UIView animateWithDuration:0.3 animations:^{
-                //  self.tableView.frame = originalFrame;
-                //}];
+                [UIView animateWithDuration:0.3 animations:^{
+                  self.tableView.frame = originalFrame;
+                }];
                 // go to next/previous list set
                 
             }

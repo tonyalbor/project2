@@ -22,6 +22,8 @@
 // get uicolor from customcellcolor
 - (UIColor *)customCellColorToUIColor;
 
++ (BOOL)colorExistsForCategoryId:(id)key;
+
 // get customcellcolor
 + (CustomCellColor *)colorForId:(NSNumber *)index;
 + (CustomCellColor *)redColor;

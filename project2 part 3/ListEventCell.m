@@ -48,7 +48,7 @@ static int selectedIndex = -1;
     self.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
     self.clipsToBounds = YES;
     
-    [_textField setUserInteractionEnabled:YES];
+    [_textField setUserInteractionEnabled:NO];
     [_textField setDelegate:self];
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
@@ -119,11 +119,7 @@ static int selectedIndex = -1;
                 [_delegate cellPanned:gestureRecognizer complete:_completeOnDragRelease delete:_deleteOnDragRelease];
             } else {
                 // reset cell position
-                
-                
                 POPSpringAnimation *cellSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
-
-                
                 
                 CGRect originalFrame = CGRectMake(0, self.frame.origin.y, self.bounds.size.width, self.bounds.size.height);
                 
@@ -132,9 +128,6 @@ static int selectedIndex = -1;
                 cellSpring.springSpeed = 10;
 
                 [self pop_addAnimation:cellSpring forKey:@"cellSpring"];
-//                [UIView animateWithDuration:0.2 animations:^{
-//                  self.frame = originalFrame;
-//                }];
             }
             break;
         }

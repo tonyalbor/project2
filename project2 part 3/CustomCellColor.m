@@ -41,6 +41,10 @@ static NSMutableDictionary *_customColors = nil;
     }
 }
 
++ (BOOL)colorExistsForCategoryId:(NSNumber *)category {
+    return [[_customColors allKeys] containsObject:category];
+}
+
 /*
 
  I decided to use white as the color for the extended view
@@ -149,13 +153,14 @@ static NSMutableDictionary *_customColors = nil;
 + (CustomCellColor *)orchidColor {
     return [_customColors objectForKey:ORCHID_KEY];
 }
-
+/*
 #define TEST_KEY @8
 
 + (void)setColor8 {
     id color = [self newColorWithRed:.1 blue:.3 green:.4 andIndex:TEST_KEY];
     [_customColors setObject:color forKey:TEST_KEY];
 }
+ */
 
 // ========================================================
 
