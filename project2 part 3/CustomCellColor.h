@@ -25,6 +25,8 @@
 + (BOOL)colorExistsForCategoryId:(id)key;
 
 // get customcellcolor
++ (CustomCellColor *)lightColorForId:(NSNumber *)index;
++ (CustomCellColor *)darkColorForId:(NSNumber *)index;
 + (CustomCellColor *)colorForId:(NSNumber *)index;
 + (CustomCellColor *)redColor;
 + (CustomCellColor *)blueColor;

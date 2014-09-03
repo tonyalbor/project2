@@ -33,6 +33,21 @@ static NSMutableDictionary *_customColors = nil;
     return (CustomCellColor *)[_customColors objectForKey:index];
 }
 
++ (CustomCellColor *)lightColorForId:(NSNumber *)index {
+	// rt = r + (0.25 * (255 - r))
+	CustomCellColor *color = [self colorForId:index];
+	color.red += 1/4 * (255 - color.red);
+	color.green += 1/4 * (255 - color.green);
+	color.blue += 1/4 * (255 - color.blue);
+	return color;
+}
+
++ (CustomCellColor *)darkColorForId:(NSNumber *)index {
+	CustomCellColor *color = [self colorForId:index];
+	CustomCellColor *dark = [self newColorWithRed:color.red*0.85 blue:color.blue*0.85 green:color.green*0.85 andIndex:@999];
+	return dark;
+}
+
 // set up custom colors array
 + (void)initializeColors {
     _customColors = [[NSMutableDictionary alloc] init];
@@ -47,11 +62,7 @@ static NSMutableDictionary *_customColors = nil;
 
 /*
 
- I decided to use white as the color for the extended view
- cell. I removed it as a color for a listeventcell to ensure
- the app is colorful as fuck.
-
- Goodbye, fair color :')
+ retired
  
 + (CustomCellColor *)whiteColor {
     return [self newColorWithRed:1 blue:1 green:1 andIndex:@0];
