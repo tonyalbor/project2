@@ -50,6 +50,8 @@
 - (void)addSubviews;
 - (void)removeSubviews;
 
+- (void)swipeOffScreenInDirection:(UITableViewRowAnimation)direction atIndexPath:(NSIndexPath *)indexPath;
+
 @end
 
 #pragma mark ListEventCellDelegate methods
@@ -65,6 +67,8 @@
 - (void)expandCell:(ListEventCell *)cell;
 - (void)collapseCell:(ListEventCell *)cell;
 - (void)collapseCellAtIndex:(int)index;
+- (void)deleteRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)didFinishMovingCellOffScreenAtIndexPath:(NSIndexPath *)indexPath;
 
 // TODO :: move this to actual cell model, maybe
 //- (void)completeCreationOfEventWith:(UITextField *)textfield;

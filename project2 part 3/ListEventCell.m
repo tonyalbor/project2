@@ -109,8 +109,8 @@ static int selectedIndex = -1;
             //cell superview is uitableviewwrapperview
             CGPoint endLocation = [gestureRecognizer locationInView:self.superview];
             
-            _completeOnDragRelease = endLocation.x - _originalPoint.x > self.contentView.frame.size.width / 3;
-            _deleteOnDragRelease = _originalPoint.x - endLocation.x > self.contentView.frame.size.width / 3;
+            _completeOnDragRelease = endLocation.x - _originalPoint.x > self.contentView.frame.size.width / 5;
+            _deleteOnDragRelease = _originalPoint.x - endLocation.x > self.contentView.frame.size.width / 5;
             break;
         }
         case UIGestureRecognizerStateEnded: {
@@ -134,6 +134,26 @@ static int selectedIndex = -1;
         default:
             break;
     }
+}
+
+- (void)swipeOffScreenInDirection:(UITableViewRowAnimation)direction atIndexPath:(NSIndexPath *)indexPath {
+    
+    int multiplier = direction == UITableViewRowAnimationLeft ? -1 : 1;
+    
+    CGRect offScreen = CGRectOffset(self.frame, self.frame.size.width * multiplier, 0);
+    [UIView animateWithDuration:0.25 animations:^{
+        
+        [self setFrame:offScreen];
+        
+    } completion:^(BOOL completed) {
+        
+        if(completed) {
+            [self setHidden:YES];
+            [_delegate didFinishMovingCellOffScreenAtIndexPath:indexPath];
+        }
+        
+    }];
+    
 }
 
 - (BOOL)isExpanded {
@@ -189,7 +209,6 @@ static int selectedIndex = -1;
         CGPoint touchLocation = [gestureRecognizer locationInView:self.contentView];
         
         if(CGRectContainsPoint(pencilImageView.frame, touchLocation)) {
-            NSLog(@"touched image view");
             [self didTapPencil:gestureRecognizer];
             return;
         } else {
@@ -243,11 +262,13 @@ static int selectedIndex = -1;
 
 - (void)layoutSubviews {
     
+    CGRect realMiddle = CGRectMake(self.eventLabel.frame.origin.x, self.bounds.size.height/2 - self.eventLabel.frame.size.height/2, self.eventLabel.frame.size.width, self.eventLabel.frame.size.height);
+    
+    [self.eventLabel setFrame:realMiddle];
 }
 
 - (void)didTapPencil:(UITapGestureRecognizer *)gestureRecognizer {
     [self animatePencil:gestureRecognizer];
-    
 }
 
 - (void)animatePencil:(UITapGestureRecognizer *)gestureRecognizer {
@@ -270,18 +291,18 @@ static int selectedIndex = -1;
 }
 
 - (void)addSubviews {
-    UIImageView *pencilImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
-    [pencilImageView setFrame:CGRectMake(self.eventLabel.frame.origin.x / 4, self.eventLabel.frame.origin.y + 150, 25, 25)];
-    [pencilImageView setTag:111];
-    [pencilImageView setUserInteractionEnabled:YES];
-    UITapGestureRecognizer *tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPencil:)];
-    [pencilImageView addGestureRecognizer:tapPencil];
-    [self.contentView addSubview:pencilImageView];
-    
-    UIImageView *otherImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
-    [otherImageView setFrame:CGRectOffset(pencilImageView.frame, 0, -75)];
-    [otherImageView setTag:112];
-    [self.contentView addSubview:otherImageView];
+//    UIImageView *pencilImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
+//    [pencilImageView setFrame:CGRectMake(self.eventLabel.frame.origin.x / 4, self.eventLabel.frame.origin.y + 150, 25, 25)];
+//    [pencilImageView setTag:111];
+//    [pencilImageView setUserInteractionEnabled:YES];
+//    UITapGestureRecognizer *tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapPencil:)];
+//    [pencilImageView addGestureRecognizer:tapPencil];
+//    [self.contentView addSubview:pencilImageView];
+//      
+//    UIImageView *otherImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
+//    [otherImageView setFrame:CGRectOffset(pencilImageView.frame, 0, -75)];
+//    [otherImageView setTag:112];
+//    [self.contentView addSubview:otherImageView];
 }
 
 - (void)removeSubviews {
