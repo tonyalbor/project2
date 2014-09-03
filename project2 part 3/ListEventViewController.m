@@ -49,6 +49,7 @@ static BOOL isInCreateMode = YES;
 
 // TODO :: figure out how to completely delete this
 // i might already be able to
+// edit :: actually, not yet. check didTapTableView:
 static BOOL keyboardIsUp = NO;
 
 static BOOL _isCreatingNewCell = NO;
@@ -150,7 +151,7 @@ static BOOL shouldUpdateSortIds = NO;
     
     //ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     //[self.titleTextField setText:[[currentSet title] uppercaseString]];
-    return _cells.count;
+    return [[[listSetDataSource listSetForCurrentKey] currentList] numberOfEventsForCurrentCategory];
 }
 
 - (ListEventCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -170,7 +171,7 @@ static BOOL shouldUpdateSortIds = NO;
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     cell.delegate = self;
-    ListEvent *event = [_cells objectAtIndex:indexPath.row];
+    ListEvent *event = [listSetDataSource eventAtIndex:indexPath.row];
     
     // date still unimplemented
     //[cell.dateLabel setText:event.date];
@@ -223,7 +224,6 @@ static BOOL shouldUpdateSortIds = NO;
     
     [self.tableView beginUpdates];
     [list addEvent:event];
-    [_cells addObject:event];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationBottom];
     [self.tableView endUpdates];
     //[MemoryDataSource save];
@@ -238,13 +238,11 @@ static BOOL shouldUpdateSortIds = NO;
     int newCellIndex = (int)[self.tableView numberOfRowsInSection:0] - 1;
     NSIndexPath *newCellIndexPath = [NSIndexPath indexPathForRow:newCellIndex inSection:0];
     ListEventCell *newCell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:newCellIndexPath];
-   
+    
+    [newCell.textField setUserInteractionEnabled:YES];
     [newCell.textField setEnabled:YES];
     [newCell.textField becomeFirstResponder];
-    if([newCell.textField isFirstResponder]) {
-        NSLog(@"cool, tf is first responder");
-    } else NSLog(@"nope, tf is not first responder");
-//[newCell.textField isFirstResponder];
+    
     keyboardIsUp = YES;
     
     [self enableTableViewTap];
@@ -266,30 +264,41 @@ static BOOL shouldUpdateSortIds = NO;
 - (void)deleteSwipedCell:(ListEvent *)event atIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)direction {
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     List *list = [currentSet currentList];
-    
-    [self.tableView beginUpdates];
     [list removeEvent:event];
-    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:direction];
-    [self loadEventsIntoCellsArray];
+    id cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    [cell swipeOffScreenInDirection:direction atIndexPath:indexPath];
+}
+
+- (void)didFinishMovingCellOffScreenAtIndexPath:(NSIndexPath *)indexPath {
+    [self.tableView beginUpdates];
+    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     [self.tableView endUpdates];
 }
 
+#pragma mark UITableView Adjustments
+
 - (void)scrollToBottomOfTableView {
-    /*NSInteger numOfCells = [self.tableView numberOfRowsInSection:0];
-    if(numOfCells > 1) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(numOfCells-1) inSection:0];
+    int numberOfEvents = [[[listSetDataSource listSetForCurrentKey] currentList] numberOfEventsForCurrentCategory];
+    if(numberOfEvents > 3) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:numberOfEvents-1 inSection:0];
         [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-    }*/
+    }
 }
 
 - (void)adjustTableViewForInsertion {
-    //self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 200, 0);
-    //self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 200, 0);
+    UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, 240, 0);
+    [UIView animateWithDuration:0.3 animations:^{
+        [self.tableView setContentInset:insets];
+        [self.tableView setScrollIndicatorInsets:insets];
+    }];
 }
 
 - (void)readjustTableViewBackToNormal {
-    //self.tableView.contentInset = UIEdgeInsetsZero;
-    //self.tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
+    [UIView animateWithDuration:0.3 animations:^{
+        [self.tableView setContentInset:UIEdgeInsetsZero];
+        [self.tableView setScrollIndicatorInsets:UIEdgeInsetsZero];
+    }];
 }
 
 #pragma mark UIGestureRecognizer Events
@@ -303,7 +312,7 @@ static BOOL shouldUpdateSortIds = NO;
     [self bringUpKeyboardForNewEvent];
 }
 
-- (List *)listForImageView:(UIImageView *)imageView {
+- (List *)listForImageView:(UIView *)imageView {
     ListSet *set = [listSetDataSource listSetForCurrentKey];
     if([imageView isEqual:_deletedImageView]) return [set deleted];
     else if([imageView isEqual:_completedImageView]) return [set completed];
@@ -314,7 +323,7 @@ static BOOL shouldUpdateSortIds = NO;
 - (IBAction)switchCategory:(UISwipeGestureRecognizer *)gestureRecognizer {
     // called when nav center image view is swiped left/right
     
-    UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
+    UIView *imageView = (UIView *)gestureRecognizer.view;
     UISwipeGestureRecognizerDirection swipeDirection = gestureRecognizer.direction;
     
     List *list = [self listForImageView:imageView];
@@ -331,8 +340,24 @@ static BOOL shouldUpdateSortIds = NO;
     
     [self.tableView beginUpdates];
     [self switchCategoryWithDirection:swipeDirection andList:list];
-    [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
+    
+    // animate
+    UIColor *color = nil;
+    if([[list currentCategory] isEqualToNumber:@99]) {
+        color = [UIColor lightGrayColor];
+    } else {
+//        color = [[CustomCellColor colorForId:list.currentCategory] customCellColorToUIColor];
+        color = [[CustomCellColor darkColorForId:list.currentCategory] customCellColorToUIColor];
+    }
+    [UIView animateWithDuration:0.2 animations:^{
+        [imageView setBackgroundColor:color];
+    }];
+    
+    
+//    
+//    CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
+//    cell.backgroundColor = [backgroundColor customCellColorToUIColor];
 }
 
 - (IBAction)showAllEvents:(id)sender {
@@ -340,6 +365,12 @@ static BOOL shouldUpdateSortIds = NO;
     UITapGestureRecognizer *gestureRecognizer = (UITapGestureRecognizer *)sender;
     UIImageView *imageView = (UIImageView *)gestureRecognizer.view;
     List *list = [self listForImageView:imageView];
+    
+    if(![[imageView backgroundColor] isEqual:[UIColor lightGrayColor]]) {
+        [UIView animateWithDuration:0.25 animations:^{
+            [imageView setBackgroundColor:[UIColor lightGrayColor]];
+        }];
+    }
     
     if([list numberOfEvents] <= 1) return;
     
@@ -357,7 +388,6 @@ static BOOL shouldUpdateSortIds = NO;
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationRight];
         }
-        [self loadEventsIntoCellsArray];
         [self.tableView endUpdates];
     }
     [MemoryDataSource save];
@@ -377,6 +407,7 @@ static BOOL shouldUpdateSortIds = NO;
         WYPopoverBackgroundView *appearance = [WYPopoverBackgroundView appearance];
         [appearance setOverlayColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:.4]];
         [appearance setFillBottomColor:[UIColor whiteColor]];
+//        [appearance setFillTopColor:[UIColor blackColor]];
 //        [appearance setOuterStrokeColor:[UIColor blackColor]];
 //        [appearance setInnerStrokeColor:[UIColor blackColor]];
         [appearance setBorderWidth:5];
@@ -442,49 +473,65 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView beginUpdates];
     [self deleteAllEventsFromTableViewInDirection:deleteDirection];
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
-    [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
 }
 
 - (void)animateCompletedBig {
-    CGRect due = CGRectMake(105, 496, 80, 72);
-    CGRect com = CGRectMake(190, 468, 110, 100);
-    CGRect del = CGRectMake(17, 496, 80, 72);
+    CGRect due = CGRectMake(105, 486, 80, 80);
+    CGRect com = CGRectMake(190, 455, 110, 110);
+    CGRect del = CGRectMake(17, 486, 80, 80);
     [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_COMPLETED];
-    
-    /*
-    [UIView animateWithDuration:.3 animations:^{
-        // big completed
-        // events (105,496)
-        // completed (190,468)
-        // deleted (17,496)
-        
-        [_eventsImageView setFrame:CGRectMake(105, 496, 80, 72)];
-        [_completedImageView setFrame:CGRectMake(190, 468, 110, 100)];
-        [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
-        
-        [_eventsImageView setAlpha:.2];
-        [_completedImageView setAlpha:.7];
-        [_deletedImageView setAlpha:.2];
-    }];
-     */
+}
+
+- (void)animateDueBig {
+    CGRect due = CGRectMake(105, 455, 110, 110);
+    CGRect com = CGRectMake(220, 486, 80, 80);
+    CGRect del = CGRectMake(17, 486, 80, 80);
+    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DUE];
+}
+
+- (void)animateDeletedBig {
+    CGRect due = CGRectMake(132, 486, 80, 80);
+    CGRect com = CGRectMake(220, 486, 80, 80);
+    CGRect del = CGRectMake(20, 455, 110, 110);
+    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DELETED];
 }
 
 // TODO :: possibly make an 'animations' class
 // cuz this is gonna get messy
 - (void)animateCompletedWithRect:(CGRect)completedRect dueWithRect:(CGRect)dueRect deletedWithRect:(CGRect)deletedRect biggest:(NSNumber *)biggest {
     
-    POPSpringAnimation *dueSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+    POPSpringAnimation *dueCornerRadius = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerCornerRadius];
+    POPSpringAnimation *completedCornerRadius = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerCornerRadius];
+    POPSpringAnimation *deletedCorderRadius = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerCornerRadius];
+    
+    dueCornerRadius.springBounciness = 15;
+    dueCornerRadius.springSpeed = 8;
+    dueCornerRadius.toValue = @(dueRect.size.height/2);
+    
+    completedCornerRadius.springBounciness = 15;
+    completedCornerRadius.springSpeed = 8;
+    completedCornerRadius.toValue = @(completedRect.size.height/2);
+    
+    deletedCorderRadius.springBounciness = 15;
+    deletedCorderRadius.springSpeed = 8;
+    deletedCorderRadius.toValue = @(deletedRect.size.height/2);
+    
+    [[_eventsImageView layer] pop_addAnimation:dueCornerRadius forKey:@"events_corner_radius"];
+    [[_completedImageView layer] pop_addAnimation:completedCornerRadius forKey:@"completed_corner_radius"];
+    [[_deletedImageView layer] pop_addAnimation:deletedCorderRadius forKey:@"deleted_corner_radius"];
+    
+    POPSpringAnimation *dueSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
     dueSpring.toValue = [NSValue valueWithCGRect:dueRect];
     dueSpring.springBounciness = 15;
     dueSpring.springSpeed = 10;
     
-    POPSpringAnimation *completedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+    POPSpringAnimation *completedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
     completedSpring.toValue = [NSValue valueWithCGRect:completedRect];
     completedSpring.springBounciness = 15;
     completedSpring.springSpeed = 10;
     
-    POPSpringAnimation *deletedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
+    POPSpringAnimation *deletedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
     deletedSpring.toValue = [NSValue valueWithCGRect:deletedRect];
     deletedSpring.springBounciness = 15;
     deletedSpring.springSpeed = 10;
@@ -505,7 +552,6 @@ static BOOL shouldUpdateSortIds = NO;
     completedFade.fromValue = @(_completedImageView.alpha);
     deletedFade.fromValue = @(_deletedImageView.alpha);
     
-    
     int big = biggest.intValue;
     
     CGFloat active = 0.7;
@@ -525,76 +571,9 @@ static BOOL shouldUpdateSortIds = NO;
         deletedFade.toValue = @(inactive);
     }
     
-    
-    
     [_eventsImageView pop_addAnimation:dueFade forKey:@"dueFade"];
     [_completedImageView pop_addAnimation:completedFade forKey:@"completedFade"];
     [_deletedImageView pop_addAnimation:deletedFade forKey:@"deletedFade"];
-    
-    POPBasicAnimation *dueFrame = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
-    POPBasicAnimation *completedFrame = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
-    POPBasicAnimation *deletedFrame = [POPBasicAnimation animationWithPropertyNamed:kPOPViewFrame];
-    
-    dueFrame.toValue = [NSValue valueWithCGRect:dueRect];
-    completedFrame.toValue = [NSValue valueWithCGRect:completedRect];
-    deletedFrame.toValue = [NSValue valueWithCGRect:deletedRect];
-    
-    //[_eventsImageView pop_addAnimation:dueFrame forKey:@"dueFrame"];
-    //[_completedImageView pop_addAnimation:completedFrame forKey:@"completedFrame"];
-    //[_deletedImageView pop_addAnimation:deletedFrame forKey:@"deletedFrame"];
-    
-    
-}
-
-- (void)animateDueBig {
-    CGRect due = CGRectMake(105, 468, 110, 100);
-    CGRect com = CGRectMake(220, 496, 80, 72);
-    CGRect del = CGRectMake(17, 496, 80, 72);
-    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DUE];
-    
-    
-    /*
-    [UIView animateWithDuration:.3 animations:^{
-        // big events
-        // events (105,468)
-        // completed (220,496)
-        // deleted (17, 496)
-        
-        [_eventsImageView setFrame:CGRectMake(105, 468, 110, 100)];
-        [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
-        [_deletedImageView setFrame:CGRectMake(17, 496, 80, 72)];
-        
-        [_eventsImageView setAlpha:.7];
-        [_completedImageView setAlpha:.2];
-        [_deletedImageView setAlpha:.2];
-    }];
-    */
-
-}
-
-- (void)animateDeletedBig {
-    CGRect due = CGRectMake(132, 496, 80, 72);
-    CGRect com = CGRectMake(220, 496, 80, 72);
-    CGRect del = CGRectMake(20, 468, 110, 100);
-    [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DELETED];
-    
-    
-    /*
-    [UIView animateWithDuration:.3 animations:^{
-        // big deleted
-        // events (132,496)
-        // completed (220,496)
-        // deleted (20,468)
-        
-        [_eventsImageView setFrame:CGRectMake(132, 496, 80, 72)];
-        [_completedImageView setFrame:CGRectMake(220, 496, 80, 72)];
-        [_deletedImageView setFrame:CGRectMake(20, 468, 110, 100)];
-        
-        [_eventsImageView setAlpha:.2];
-        [_completedImageView setAlpha:.2];
-        [_deletedImageView setAlpha:.7];
-    }];
-     */
 }
 
 #pragma mark MenuViewControllerDelegate
@@ -606,7 +585,6 @@ static BOOL shouldUpdateSortIds = NO;
     [self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationLeft];
     [listSetDataSource setCurrentKey:[listSetDataSource recentlyAddedSet]];
     List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
-    [self loadEventsIntoCellsArray];
     [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
     [self.tableView endUpdates];
 }
@@ -620,7 +598,6 @@ static BOOL shouldUpdateSortIds = NO;
         [listSetDataSource setCurrentKey:@(indexPath.row)];
         
         List *listToInsert = [[listSetDataSource listSetForCurrentKey] currentList];
-        [self loadEventsIntoCellsArray];
         [self insertEvents:listToInsert inDirection:UITableViewRowAnimationRight];
         [self.tableView endUpdates];
         
@@ -715,7 +692,6 @@ static BOOL shouldUpdateSortIds = NO;
     // insert events from current list into model
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
     // insert into cells array
-    [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
 }
 
@@ -739,7 +715,6 @@ static BOOL shouldUpdateSortIds = NO;
         }
     }
     [self insertEvents:currentSet.currentList inDirection:insertDirection];
-    [self loadEventsIntoCellsArray];
     [self.tableView endUpdates];
     
 }
@@ -750,7 +725,7 @@ static BOOL shouldUpdateSortIds = NO;
 	
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    ListEvent *eventToBeRemoved = [_cells objectAtIndex:indexPath.row];
+    ListEvent *eventToBeRemoved = [listSetDataSource eventAtIndex:indexPath.row];
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
     
     BOOL inDeleted = [[listSetDataSource listSetForCurrentKey] isInDeleted];
@@ -770,14 +745,11 @@ static BOOL shouldUpdateSortIds = NO;
 }
 
 - (void)changeCellColor:(ListEventCell *)cell {
-    //NSLog(@"tapped cell");
-    //ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    ListEvent *event = [_cells objectAtIndex:indexPath.row];
-    
+    ListEvent *event = [listSetDataSource eventAtIndex:indexPath.row];
     [event changeColor];
     shouldUpdateSortIds = YES;
-    [self loadEventsIntoCellsArray];
+    
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
 }
 
@@ -813,7 +785,7 @@ static BOOL shouldUpdateSortIds = NO;
         NSLog(@"got in");
         ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        ListEvent *event = [_cells objectAtIndex:indexPath.row];
+        ListEvent *event = [listSetDataSource eventAtIndex:indexPath.row];
         CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
         UIColor *colorcolor = [color customCellColorToUIColor];
         [DetailViewController setColor:colorcolor];
@@ -825,7 +797,7 @@ static BOOL shouldUpdateSortIds = NO;
 #pragma mark ListEventCell UIGestureRecognizer
 
 - (void)pinchedCells:(UIPinchGestureRecognizer *)gestureRecongnizer {
-    NSLog(@"scale: %f",gestureRecongnizer.scale);
+    //NSLog(@"scale: %f",gestureRecongnizer.scale);
 
 
     UIGestureRecognizerState pinchState = gestureRecongnizer.state;
@@ -838,17 +810,17 @@ static BOOL shouldUpdateSortIds = NO;
 //        NSLog(@"changed pinch");
         if(gestureRecongnizer.scale >= _lastScale) {
             // make cells larger
-            NSLog(@"larger");
+            //NSLog(@"larger");
             [self increaseCellSize];
         } else if(gestureRecongnizer.scale < _lastScale) {
             // make cells smaller
-            NSLog(@"smaller");
+            //NSLog(@"smaller");
             [self decreaseCellSize];
         }
         _lastScale = gestureRecongnizer.scale;
         [self.tableView reloadData];
     } else if(pinchState == UIGestureRecognizerStateRecognized) {
-        NSLog(@"recognized pinch");
+        //NSLog(@"recognized pinch");
         _lastScale = 1.0;
     }
 }
@@ -903,6 +875,7 @@ static BOOL shouldUpdateSortIds = NO;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 
     // the nav title textfield tag is 5
+    /*
     if(textField.tag == TEXTFIELD_NAVIGATION_TITLE_TAG) {
         [textField resignFirstResponder];
         [[listSetDataSource listSetForCurrentKey] setTitle:textField.text];
@@ -910,6 +883,7 @@ static BOOL shouldUpdateSortIds = NO;
         NSLog(@"text field should return for nav title");
         return NO;
     }
+     */
     
     [self readjustTableViewBackToNormal];
     [self scrollToBottomOfTableView];
@@ -947,7 +921,7 @@ static BOOL shouldUpdateSortIds = NO;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    if(textField.tag == TEXTFIELD_NAVIGATION_TITLE_TAG) return YES;
+    //if(textField.tag == TEXTFIELD_NAVIGATION_TITLE_TAG) return YES;
     UIView *view = textField.superview;
     while(![view isKindOfClass:[ListEventCell class]]) {
         // keep getting textfield's superview until it is the ListEventCell
@@ -957,6 +931,10 @@ static BOOL shouldUpdateSortIds = NO;
     }
     ListEventCell *cell = (ListEventCell *)view;
     return cell.eventLabel.text.length == 0;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+
 }
 
 #pragma mark WYPopoverControllerDelegate
@@ -989,7 +967,6 @@ static BOOL shouldUpdateSortIds = NO;
     // set up list set data source
     listSetDataSource = [ListSetDataSource sharedDataSource];
     
-    _cells = [[NSMutableArray alloc] init];
     ListSet *currentSet = [[ListSetDataSource sharedDataSource] listSetForCurrentKey];
     [[currentSet currentList] organizeEvents];
     
@@ -1014,7 +991,6 @@ static BOOL shouldUpdateSortIds = NO;
 //        [[listSet currentList] displayAllEvents];
     }
     
-    [self loadEventsIntoCellsArray];
     [self.tableView reloadData];
     
     // Do any additional setup after loading the view, typically from a nib.
@@ -1047,12 +1023,6 @@ static BOOL shouldUpdateSortIds = NO;
 }
 
 #pragma mark helper functions
-
-- (void)loadEventsIntoCellsArray {
-    List *list = [[listSetDataSource listSetForCurrentKey] currentList];
-    BOOL allEventsShown = [list isDisplayingAllEvents];
-    _cells = [NSMutableArray arrayWithArray:(allEventsShown ? [list getAllEvents] : [list eventsForCurrentCategory])];
-}
 
 // TODO :: integrate pop
 // instead of deleting and inserting rows using uitableview methods,
@@ -1092,6 +1062,7 @@ static BOOL shouldUpdateSortIds = NO;
         indexPath = [NSIndexPath indexPathForRow:i inSection:0];
         [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:insertAnimation];
     }
+    
 }
 
 - (UITableViewRowAnimation)directionToInsert:(NSNumber *)newList {
@@ -1116,27 +1087,25 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView reloadData];
     textField.text = @"";
     [textField setEnabled:NO];
-    [_cells replaceObjectAtIndex:_cells.count-1 withObject:newEvent];
     
     // TODO :: should i save here ?
     [MemoryDataSource save];
     list.recentlyAddedEvent = nil;
 }
 
-// TODO :: edge swipe makes it difficult to navigate up/down on tableview
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
     // TODO :: something is going on with the table view tap / cell tap
 
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        
         CGPoint location = [gestureRecognizer locationInView:self.view];
-
         if(location.x > 50 && location.x < self.view.frame.size.width - 50) {
             return NO;
         }
+        
         CGPoint translation = [gestureRecognizer translationInView:self.view];
-        if(fabsf(translation.x) > fabsf(translation.y)) {
-            return YES;
-        }
+        return fabsf(translation.x) > fabsf(translation.y);
+        
     }
     return YES;
 }
@@ -1321,6 +1290,20 @@ static BOOL shouldUpdateSortIds = NO;
     [doubleTapCompleted setNumberOfTapsRequired:2];
     [doubleTapCompleted addTarget:self action:@selector(showAllEvents:)];
     [self.completedImageView addGestureRecognizer:doubleTapCompleted];
+    
+    
+    [self setUpNavCenters];
+    
+}
+
+- (void)setUpNavCenters {
+    [[self.deletedImageView layer] setCornerRadius:_deletedImageView.frame.size.height/2];
+    [[self.eventsImageView layer] setCornerRadius:_eventsImageView.frame.size.height/2];
+    [[self.completedImageView layer] setCornerRadius:_completedImageView.frame.size.height/2];
+    
+//    UIImageView *trashImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"to-do-icon-rough2.png"]];
+//    [trashImageView setFrame:_eventsImageView.frame];
+//    [self.eventsImageView addSubview:trashImageView];
 }
 
 #pragma mark List Set Stuff
@@ -1339,7 +1322,8 @@ static BOOL shouldUpdateSortIds = NO;
     shouldUpdateSortIds = NO;
     
     if([ListEventCell selectedIndex]) {
-        for(int i = 0; i < _cells.count; ++i) {
+        int numberOfEvents = [[[listSetDataSource listSetForCurrentKey] currentList] numberOfEventsForCurrentCategory];
+        for(int i = 0; i < numberOfEvents; ++i) {
             ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
             [cell setExpanded:NO];
         }
@@ -1350,7 +1334,6 @@ static BOOL shouldUpdateSortIds = NO;
     //[self deleteAllEventsFromTableViewInDirection:UITableViewRowAnimationFade];
     [self deleteAllEventsFromTableViewInDirection:(next ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight)];
     next ? [listSetDataSource incrementKey] : [listSetDataSource decrementKey];
-    [self loadEventsIntoCellsArray];
     //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
     [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
     [self.tableView endUpdates];

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="2">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -59,7 +59,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" id="rdk-rW-qcO">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                        <rect key="frame" x="0.0" y="20" width="320" height="548"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <prototypes>
                                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" showsReorderControl="YES" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="listEventCell" id="IJ4-Za-pjE" customClass="ListEventCell">
@@ -112,34 +112,53 @@
                                             <outlet property="delegate" destination="2" id="jJp-Er-hPa"/>
                                         </connections>
                                     </tableView>
-                                    <imageView alpha="0.69999999999999973" contentMode="scaleToFill" image="super-rough-nav2-trash2.png" id="d4m-1p-1cN">
-                                        <rect key="frame" x="105" y="467" width="110" height="100"/>
-                                        <gestureRecognizers/>
-                                        <connections>
-                                            <outletCollection property="gestureRecognizers" destination="pFq-2x-2ex" appends="YES" id="t0E-Sh-TCV"/>
-                                            <outletCollection property="gestureRecognizers" destination="asR-7F-eQI" appends="YES" id="8lZ-od-ph3"/>
-                                            <outletCollection property="gestureRecognizers" destination="y1r-55-gaC" appends="YES" id="iUm-9N-37g"/>
-                                            <outletCollection property="gestureRecognizers" destination="2Ss-eR-dkv" appends="YES" id="naN-ZN-6qg"/>
-                                            <outletCollection property="gestureRecognizers" destination="56i-7Q-8ZY" appends="YES" id="Dxg-nV-vbu"/>
-                                            <outletCollection property="gestureRecognizers" destination="Ngw-B8-kOx" appends="YES" id="Q0y-PF-JQb"/>
-                                        </connections>
-                                    </imageView>
-                                    <imageView alpha="0.44999999999999962" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="super-rough-nav2-check.png" id="Azb-uf-HUw">
-                                        <rect key="frame" x="219" y="495" width="80" height="72"/>
+                                    <view contentMode="scaleToFill" id="wqu-e6-4ob">
+                                        <rect key="frame" x="105" y="447" width="110" height="110"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <gestureRecognizers/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="to-do-icon-rough3.png" id="HPZ-jm-LTm">
+                                                <rect key="frame" x="10" y="10" width="90" height="90"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
-                                            <outletCollection property="gestureRecognizers" destination="UT6-3d-frz" appends="YES" id="jbt-5O-ddM"/>
+                                            <outletCollection property="gestureRecognizers" destination="pFq-2x-2ex" appends="YES" id="Qew-iy-mMY"/>
+                                            <outletCollection property="gestureRecognizers" destination="asR-7F-eQI" appends="YES" id="3Ib-bL-zS0"/>
+                                            <outletCollection property="gestureRecognizers" destination="2Ss-eR-dkv" appends="YES" id="7UJ-lY-Ldt"/>
+                                            <outletCollection property="gestureRecognizers" destination="56i-7Q-8ZY" appends="YES" id="yiJ-A6-Vdq"/>
+                                            <outletCollection property="gestureRecognizers" destination="Ngw-B8-kOx" appends="YES" id="pVs-h0-dE1"/>
+                                            <outletCollection property="gestureRecognizers" destination="y1r-55-gaC" appends="YES" id="98M-0k-wMP"/>
                                         </connections>
-                                    </imageView>
-                                    <imageView alpha="0.45000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="super-rough-nav2-trash.png" id="vrA-2V-vBp">
-                                        <rect key="frame" x="16" y="495" width="80" height="72"/>
+                                    </view>
+                                    <view contentMode="scaleToFill" id="M9R-ws-wnF">
+                                        <rect key="frame" x="223" y="477" width="80" height="80"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <gestureRecognizers/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark-icon.png" id="ZhM-sg-pdG">
+                                                <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
-                                            <outletCollection property="gestureRecognizers" destination="j0c-NZ-lug" appends="YES" id="FVX-1N-oje"/>
+                                            <outletCollection property="gestureRecognizers" destination="UT6-3d-frz" appends="YES" id="bpH-n6-6ak"/>
                                         </connections>
-                                    </imageView>
+                                    </view>
+                                    <view contentMode="scaleToFill" id="laz-Oz-Zrl">
+                                        <rect key="frame" x="17" y="477" width="80" height="80"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="trash-can-icon.png" id="0sq-Iy-gN6">
+                                                <rect key="frame" x="24" y="17" width="32" height="45"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="j0c-NZ-lug" appends="YES" id="vxE-LK-CRo"/>
+                                        </connections>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
@@ -159,9 +178,9 @@
                         </textField>
                     </navigationItem>
                     <connections>
-                        <outlet property="completedImageView" destination="Azb-uf-HUw" id="J7t-ez-2FU"/>
-                        <outlet property="deletedImageView" destination="vrA-2V-vBp" id="daF-vI-5sn"/>
-                        <outlet property="eventsImageView" destination="d4m-1p-1cN" id="pez-l2-sN5"/>
+                        <outlet property="completedImageView" destination="M9R-ws-wnF" id="BIX-u7-EgN"/>
+                        <outlet property="deletedImageView" destination="laz-Oz-Zrl" id="VjL-zJ-0Nq"/>
+                        <outlet property="eventsImageView" destination="wqu-e6-4ob" id="Xi0-pB-Qaq"/>
                         <outlet property="tableView" destination="rdk-rW-qcO" id="ZRQ-qR-eUe"/>
                         <outlet property="titleTextField" destination="kRe-29-sCf" id="NF2-Kd-20t"/>
                     </connections>
@@ -362,10 +381,12 @@ AQABAAEAAQAB//+dkAEA//+PgAAE//+dkAEI//+dkAEMUERUAFBTVABQV1QAUFBUAAAAAAEAAAABA
         </scene>
     </scenes>
     <resources>
+        <image name="checkmark-icon.png" width="111" height="100"/>
         <image name="super-rough-nav2-check.png" width="111" height="100"/>
         <image name="super-rough-nav2-trash.png" width="111" height="100"/>
-        <image name="super-rough-nav2-trash2.png" width="111" height="100"/>
         <image name="super-rough-nav2.png" width="111" height="100"/>
+        <image name="to-do-icon-rough3.png" width="150" height="150"/>
+        <image name="trash-can-icon.png" width="100" height="146"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

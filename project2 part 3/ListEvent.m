@@ -10,6 +10,7 @@
 #import "CustomCellColor.h"
 #import "ListSet.h"
 #import "ListSetDataSource.h"
+#import "List.h"
 
 @implementation ListEvent
 
@@ -65,7 +66,6 @@
         ++temp;
         categoryID = [NSNumber numberWithInteger:temp];
     }
-    //sortId = @([[[ListSetDataSource sharedDataSource] listSetForCurrentKey] numberOfEventsInDue] -1);// index of last item from categoryid
 }
 
 @end

@@ -39,9 +39,11 @@
 
 - (void)addEvent:(ListEvent *)event {
     if(!_events) _events = [[NSMutableDictionary alloc] init];
-    if(!_currentCategory || [self isDisplayingAllEvents]) _currentCategory = @0;
-    //if(!event.categoryID) _currentCategory = @0;
-    event.categoryID = _currentCategory;
+    
+    // if all events are shown or current category is nil, set event id to 0
+    // else set it to current category
+    if(!_currentCategory || [self isDisplayingAllEvents]) event.categoryID = @0;
+    else event.categoryID = _currentCategory;
     
     // sort id is the index of the event, based on category
     // TODO :: i need to change this every time the cell color changes
@@ -93,18 +95,16 @@
 
 - (int)numberOfEventsForCurrentCategory {
     if([self isDisplayingAllEvents]) {
-        int totalNumberOfEvents = 0;
-        for(id key in _events) {
-            NSArray *array = [_events objectForKey:key];
-            totalNumberOfEvents += array.count;
-        }
-        return totalNumberOfEvents;
+        return [self numberOfEvents];
     }
     return (int)[[_events objectForKey:_currentCategory] count];
 }
 
 // TODO :: go through and return events in order by sort id
 - (NSMutableArray *)eventsForCurrentCategory {
+    if([self isDisplayingAllEvents]) {
+        return [self getAllEvents];
+    }
     return [_events objectForKey:_currentCategory];
 }
 

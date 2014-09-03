@@ -33,7 +33,11 @@
 		EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46218AC567B00B2B5E9 /* super-rough-nav2-check.png */; };
 		EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */ = {isa = PBXBuildFile; fileRef = EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */; };
 		EA762F9017EBA14E00B80123 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA762F8F17EBA14E00B80123 /* DetailViewController.m */; };
+		EA7C51A119B2B9270028FFF9 /* checkmark-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EA7C519F19B2B9270028FFF9 /* checkmark-icon.png */; };
+		EA7C51A219B2B9270028FFF9 /* trash-can-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = EA7C51A019B2B9270028FFF9 /* trash-can-icon.png */; };
 		EAB8DA4018FE3A090021D595 /* List.m in Sources */ = {isa = PBXBuildFile; fileRef = EAB8DA3F18FE3A090021D595 /* List.m */; };
+		EAC4409019B56E9000340334 /* to-do-icon-rough2.png in Resources */ = {isa = PBXBuildFile; fileRef = EAC4408F19B56E9000340334 /* to-do-icon-rough2.png */; };
+		EAC4409219B5701200340334 /* to-do-icon-rough3.png in Resources */ = {isa = PBXBuildFile; fileRef = EAC4409119B5701200340334 /* to-do-icon-rough3.png */; };
 		EAEB577E18F67A2D006C42F8 /* ListSet.m in Sources */ = {isa = PBXBuildFile; fileRef = EAEB577D18F67A2D006C42F8 /* ListSet.m */; };
 		EAEB578118F67CFA006C42F8 /* ListSetDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = EAEB578018F67CFA006C42F8 /* ListSetDataSource.m */; };
 		EAFDD8711856F2200049F482 /* save_data.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAFDD8701856F2200049F482 /* save_data.plist */; };
@@ -78,8 +82,12 @@
 		EA74F46318AC567B00B2B5E9 /* super-rough-nav2-trash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "super-rough-nav2-trash.png"; sourceTree = "<group>"; };
 		EA762F8E17EBA14E00B80123 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		EA762F8F17EBA14E00B80123 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		EA7C519F19B2B9270028FFF9 /* checkmark-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark-icon.png"; sourceTree = "<group>"; };
+		EA7C51A019B2B9270028FFF9 /* trash-can-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash-can-icon.png"; sourceTree = "<group>"; };
 		EAB8DA3E18FE3A090021D595 /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = List.h; sourceTree = "<group>"; };
 		EAB8DA3F18FE3A090021D595 /* List.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = List.m; sourceTree = "<group>"; };
+		EAC4408F19B56E9000340334 /* to-do-icon-rough2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "to-do-icon-rough2.png"; sourceTree = "<group>"; };
+		EAC4409119B5701200340334 /* to-do-icon-rough3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "to-do-icon-rough3.png"; sourceTree = "<group>"; };
 		EAEB577C18F67A2D006C42F8 /* ListSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSet.h; sourceTree = "<group>"; };
 		EAEB577D18F67A2D006C42F8 /* ListSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListSet.m; sourceTree = "<group>"; };
 		EAEB577F18F67CFA006C42F8 /* ListSetDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListSetDataSource.h; sourceTree = "<group>"; };
@@ -150,6 +158,10 @@
 		EA26D37617DD582E0066C43B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EA7C519F19B2B9270028FFF9 /* checkmark-icon.png */,
+				EA7C51A019B2B9270028FFF9 /* trash-can-icon.png */,
+				EAC4408F19B56E9000340334 /* to-do-icon-rough2.png */,
+				EAC4409119B5701200340334 /* to-do-icon-rough3.png */,
 				EA5589EF1931D13600D5F97B /* pencil.png */,
 				EA5589F31931D8E400D5F97B /* super-rough-nav2-trash2.png */,
 				EA5589F11931D71100D5F97B /* trash-2.png */,
@@ -303,10 +315,14 @@
 			files = (
 				EA0E69D0191AF6B00025AE6C /* Podfile in Resources */,
 				EA26D37A17DD582E0066C43B /* InfoPlist.strings in Resources */,
+				EAC4409219B5701200340334 /* to-do-icon-rough3.png in Resources */,
 				EA33247218A8DDAB00916A7E /* super-rough-nav2.png in Resources */,
 				EA5589F21931D71100D5F97B /* trash-2.png in Resources */,
 				EAFDD8711856F2200049F482 /* save_data.plist in Resources */,
+				EAC4409019B56E9000340334 /* to-do-icon-rough2.png in Resources */,
 				EA26D38217DD582E0066C43B /* Default.png in Resources */,
+				EA7C51A219B2B9270028FFF9 /* trash-can-icon.png in Resources */,
+				EA7C51A119B2B9270028FFF9 /* checkmark-icon.png in Resources */,
 				EA74F46518AC567B00B2B5E9 /* super-rough-nav2-trash.png in Resources */,
 				EA26D38417DD582E0066C43B /* Default@2x.png in Resources */,
 				EA74F46418AC567B00B2B5E9 /* super-rough-nav2-check.png in Resources */,

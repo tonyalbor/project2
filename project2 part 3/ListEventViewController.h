@@ -20,9 +20,9 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@property (weak, nonatomic) IBOutlet UIImageView *deletedImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *eventsImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *completedImageView;
+@property (weak, nonatomic) IBOutlet UIView *deletedImageView;
+@property (weak, nonatomic) IBOutlet UIView *eventsImageView;
+@property (weak, nonatomic) IBOutlet UIView *completedImageView;
 
 @property (strong, nonatomic) IBOutlet UITextField *titleTextField;
 
