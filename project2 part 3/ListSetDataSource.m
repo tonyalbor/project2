@@ -8,6 +8,8 @@
 
 #import "ListSetDataSource.h"
 #import "ListSet.h"
+#import "List.h"
+#import "ListEvent.h"
 
 @implementation ListSetDataSource
 
@@ -69,6 +71,12 @@ static ListSetDataSource *_sharedDataSource = nil;
     for(id key in _sets) [setsArray addObject:[_sets objectForKey:key]];
     return setsArray;
 }
+
+- (ListEvent *)eventAtIndex:(NSInteger)index {
+    return [[[[self listSetForCurrentKey] currentList] eventsForCurrentCategory] objectAtIndex:index];
+}
+
+#pragma mark Private Methods
 
 - (NSNumber *)getNewKey {
     return @(_sets.allKeys.count);

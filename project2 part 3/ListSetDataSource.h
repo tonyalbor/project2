@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class ListSet;
+@class ListEvent;
 
 @interface ListSetDataSource : NSObject
 
@@ -36,5 +37,7 @@
 
 // all sets
 - (NSArray *)getAllSets;
+
+- (ListEvent *)eventAtIndex:(NSInteger)index;
 
 @end
