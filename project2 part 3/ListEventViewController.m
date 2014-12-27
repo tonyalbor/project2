@@ -18,6 +18,10 @@
 // TODO :: there's a bug with the transition nav centers method calls
 // they're just not being called at the right time
 
+// TODO :: canceling animations
+// an animation might not be complete while another animation on the same object
+// is beginning. this leads to some weird UI
+
 @interface ListEventViewController () {
     WYPopoverController *popover;
 }
@@ -40,7 +44,7 @@
 
 @synthesize listSetDataSource;
 
-static CGFloat cellHeight = 80;
+static CGFloat cellHeight = 12;
 
 // hmmm, doesn't seem like I'm using this
 // TODO :: check to see if i really need this
@@ -124,10 +128,14 @@ static BOOL shouldUpdateSortIds = NO;
 	}
 }
 
-
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return cellHeight;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return [ListEventCell selectedIndex] == indexPath.row ? cellHeight + 250 : cellHeight;
+    
+    return [ListEventCell selectedIndex] == indexPath.row ? /*cellHeight + 250*/self.view.frame.size.height : /*cellHeight*/UITableViewAutomaticDimension;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -721,9 +729,63 @@ static BOOL shouldUpdateSortIds = NO;
 
 #pragma mark ListEventCellDelegate
 
+// TODO :: overlay
+// top&bottom overlay needs like a few more points in height
+// (might be status bar height?)
+
+// TODO :: overlay
+// need to add bottom overlay (overlay beneath cell)
+
+// TODO :: make this private variables (not static)
+// fuck static
+static UIView *_overlay = nil;
+static UIView *_bottomOverlay = nil;
+
+- (void)didBeginPanningCell:(ListEventCell *)cell {
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    CGRect cellFrame = [self.tableView rectForRowAtIndexPath:indexPath];
+    cellFrame.origin.y -= self.tableView.contentOffset.y;
+    cellFrame.origin.y += [[UIApplication sharedApplication] statusBarFrame].size.height;
+//    CGRect overlayFrame = CGRectDivide(<#CGRect rect#>, <#CGRect *slice#>, <#CGRect *remainder#>, <#CGFloat amount#>, <#CGRectEdge edge#>)
+    
+    const CGFloat overlayAlpha = 0.25;
+    
+    _overlay = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, cellFrame.origin.y)];
+    [_overlay setBackgroundColor:[UIColor blackColor]];
+    [_overlay setAlpha:overlayAlpha];
+    
+    _bottomOverlay = [[UIView alloc] initWithFrame:CGRectMake(0, cellFrame.origin.y+cellFrame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+    [_bottomOverlay setBackgroundColor:[UIColor blackColor]];
+    [_bottomOverlay setAlpha:overlayAlpha];
+    
+    [self.view addSubview:_overlay];
+    [self.view addSubview:_bottomOverlay];
+}
+
+- (void)_removeCellPanningOverlay {
+    
+    [_overlay removeFromSuperview];
+    [_bottomOverlay removeFromSuperview];
+}
+
+- (void)didStopPanningCell:(ListEventCell *)cell {
+    
+    [self _removeCellPanningOverlay];
+}
+
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete {
+    
+    [self _removeCellPanningOverlay];
 	
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
+    // TODO :: create cell delegate methods =>
+    // didBeginPanningCell:(cell *)cell
+    // didStopPanningCell:(cell *)cell
+    // (this method is when panning completes)
+    //
+    // OKAY THIS MIGHT BE DONE NOW
+    
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *eventToBeRemoved = [listSetDataSource eventAtIndex:indexPath.row];
     ListSet *currentSet = [listSetDataSource listSetForCurrentKey];
@@ -760,6 +822,14 @@ static BOOL shouldUpdateSortIds = NO;
     [cell addSubviews];
     [self.tableView endUpdates];
     [cell setExpanded:YES];
+    [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    [self animateHideNavs];
+    
+    // table should not scroll while cell is expanded
+    [self.tableView setScrollEnabled:NO];
+    
+    // disable cell pan
+    [[cell panGestureRecognizer] setEnabled:NO];
 }
 
 - (void)collapseCell:(ListEventCell *)cell {
@@ -768,6 +838,10 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView endUpdates];
     [cell setExpanded:NO];
     [cell removeSubviews];
+    [self animateShowNavs];
+    [self.tableView setScrollEnabled:YES];
+    [[cell panGestureRecognizer] setEnabled:YES];
+    
 }
 
 - (void)collapseCellAtIndex:(int)index {
@@ -794,60 +868,261 @@ static BOOL shouldUpdateSortIds = NO;
     }
 }
 
+#pragma mark UIScrollViewDelegate
+
+// save CGPoint of long touch
+// then on collapse, scroll back to that point
+
+static BOOL navsHidden = NO;
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    
+    if(navsHidden) return; // no point in hiding them again if they are already hidden
+    
+    // okay good
+    // TODO :: hide navs if navs are in the way of the last index path
+    
+    CGFloat currentNavHeight = 0.0;
+    
+    int n = [[[listSetDataSource listSetForCurrentKey] _currentList] intValue];
+    switch(n) {
+        case 0: // del
+            currentNavHeight += [_deletedImageView frame].size.height;
+            break;
+        case 1: // event
+            currentNavHeight += [_eventsImageView frame].size.height;
+            break;
+        case 2: // com
+            currentNavHeight += [_completedImageView frame].size.height;
+            break;
+            default:
+            break;
+    }
+    
+    if(scrollView.contentSize.height > self.view.frame.size.height - currentNavHeight) {
+        [self animateHideNavs];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
+//    if(scrollView.contentSize.height < self.view.frame.size.height) return;
+    
+    if(navsHidden) {
+        
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:[self.tableView numberOfRowsInSection:0]-1 inSection:0];
+        
+        NSArray *visible = [self.tableView indexPathsForVisibleRows];
+        for(NSIndexPath *i in visible) {
+            if(lastIndexPath.row == i.row) {
+                return;
+            }
+        }
+        [self animateShowNavs];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    
+//    if(scrollView.contentSize.height < self.view.frame.size.height) return;
+    
+    if(!decelerate && navsHidden) {
+        
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:[self.tableView numberOfRowsInSection:0]-1 inSection:0];
+        
+        NSArray *visible = [self.tableView indexPathsForVisibleRows];
+        for(NSIndexPath *i in visible) {
+            if(lastIndexPath.row == i.row) {
+                return;
+            }
+        }
+        [self animateShowNavs];
+    }
+}
+
+// TODO :: its a little funnky with lists that are barely larger than table view size
+/*
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//    NSLog(@"scrolling....");
+    if(self.tableView.frame.size.height - scrollView.contentSize.height > 100) {
+        return;
+    }
+    
+    if(navsHidden && scrollView.contentSize.height - scrollView.contentOffset.y < 50) {
+        
+    }
+    NSLog(@"scroll view content y look here: %f",scrollView.contentOffset.y);
+    NSLog(@"scroll content view entrire heright: %f",scrollView.contentSize.height);
+//    NSLog(@"table: %f",self.tableView.frame.size.height);
+    NSLog(@"other lat importhant thin g llook her: %f",scrollView.frame.size.height);
+    CGFloat scrollViewHeight = self.tableView.frame.size.height > scrollView.contentSize.height ? self.tableView.frame.size.height : scrollView.contentSize.height;
+
+    
+    
+    if(scrollView.contentOffset.y + scrollView.frame.size.height >= scrollViewHeight-100) {
+        // get frames
+        if(!navsHidden) {
+            [self animateHideNavs];
+        }
+//        NSLog(@"at the bottom");
+    } else {
+        if(navsHidden) {
+            [self animateShowNavs];
+            
+//            [UIView animateWithDuration:0.6 animations:^{
+//                [_completedImageView setFrame:CGRectOffset(_completedImageView.frame, 0, -_completedImageView.frame.size.height -50)];
+//                [_eventsImageView setFrame:CGRectOffset(_eventsImageView.frame, 0, -_eventsImageView.frame.size.height -50)];
+//                [_deletedImageView setFrame:CGRectOffset(_deletedImageView.frame, 0, -_deletedImageView.frame.size.height-50)];
+//            } completion:^(BOOL finished) {
+//                if(finished) {
+//                    navsHidden = NO;
+//                }
+//            }];
+//            
+//            
+//            
+//            navsHidden = NO;
+        }
+    }
+}
+*/
+- (void)animateHideNavs {
+    
+    NSLog(@"animate hide");
+    [self cancelNavAnimations];
+    CGRect eventsFrame = CGRectOffset(_eventsImageView.frame, 0, _eventsImageView.frame.size.height+ 50);
+    CGRect deletedFrame = CGRectOffset(_deletedImageView.frame, 0, _deletedImageView.frame.size.height+ 50);
+    CGRect completedFrame = CGRectOffset(_completedImageView.frame, 0, _completedImageView.frame.size.height+ 50);
+    navsHidden = YES;
+    [UIView animateWithDuration:0.5 animations:^{
+        [_eventsImageView setFrame:eventsFrame];
+        [_deletedImageView setFrame:deletedFrame];
+        [_completedImageView setFrame:completedFrame];
+    } completion:^(BOOL finished) {
+        if(finished) {
+            navsHidden = YES;
+        }
+    }];
+}
+
+- (void)animateShowNavs {
+    
+    [self cancelNavAnimations];
+    [self transitionNavCenters]; // TODO :: remake this shit to not be so bouncy
+    // but only for this function
+    // cuz for transitionNavCenters the bounce is just right
+    // its just too much for when scrolling ends
+    navsHidden = NO;
+    NSLog(@"animate show");
+    
+//    POPSpringAnimation *dueSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+//    POPSpringAnimation *completedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+//    POPSpringAnimation *deletedSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+//    
+//    dueSpring.toValue = [NSValue valueWithCGRect:CGRectOffset(_eventsImageView.frame, 0, -_eventsImageView.frame.size.height-50)];
+//    completedSpring.toValue = [NSValue valueWithCGRect:CGRectOffset(_completedImageView.frame, 0, -_completedImageView.frame.size.height-50)];
+//    deletedSpring.toValue = [NSValue valueWithCGRect:CGRectOffset(_deletedImageView.frame, 0, -_deletedImageView.frame.size.height-50)];
+//    
+//    dueSpring.springBounciness = 8;
+//    completedSpring.springBounciness = 8;
+//    deletedSpring.springBounciness = 8;
+//    
+//    dueSpring.springSpeed = 4;
+//    completedSpring.springSpeed = 5;
+//    deletedSpring.springSpeed = 3;
+//    
+//    [_eventsImageView pop_addAnimation:dueSpring forKey:@"showEventsSpring"];
+//    [_completedImageView pop_addAnimation:completedSpring forKey:@"showCompletedSpring"];
+//    [_deletedImageView pop_addAnimation:deletedSpring forKey:@"showDeletedSpring"];
+//    
+//    navsHidden = NO;
+}
+
+- (void)cancelNavAnimations {
+    
+    [_eventsImageView pop_removeAllAnimations];
+    [_completedImageView pop_removeAllAnimations];
+    [_deletedImageView pop_removeAllAnimations];
+}
+
 #pragma mark ListEventCell UIGestureRecognizer
 
 - (void)pinchedCells:(UIPinchGestureRecognizer *)gestureRecongnizer {
-    //NSLog(@"scale: %f",gestureRecongnizer.scale);
 
-
+    // TODO :: make increase/decrease functions better
+    // since I'm going with self sizing cells,
+    // i am now attempting to change the constraint values on the cells (top & bottom)
+    // its a bit funky so i will just not do anything for now until i get a chance to revisit
+    return;
+    
+    
+    
     UIGestureRecognizerState pinchState = gestureRecongnizer.state;
     
     
     if(pinchState == UIGestureRecognizerStateBegan) {
         NSLog(@"pinch began");
+        
     } else if(pinchState == UIGestureRecognizerStateChanged) {
         // this is where it all should happen
-//        NSLog(@"changed pinch");
+        
         if(gestureRecongnizer.scale >= _lastScale) {
             // make cells larger
-            //NSLog(@"larger");
             [self increaseCellSize];
+            
         } else if(gestureRecongnizer.scale < _lastScale) {
             // make cells smaller
-            //NSLog(@"smaller");
             [self decreaseCellSize];
         }
+        
         _lastScale = gestureRecongnizer.scale;
         [self.tableView reloadData];
+        
     } else if(pinchState == UIGestureRecognizerStateRecognized) {
-        //NSLog(@"recognized pinch");
+        
         _lastScale = 1.0;
     }
 }
 
 - (void)decreaseCellSize {
-    if(cellHeight >= 40) {
-		if(cellHeight == 80) {
-			NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
-			for(NSIndexPath *indexPath in indexPaths) {
-				ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-				[cell removeSubviews];
-			}
-		}
-        cellHeight -= 1.1;
+    if(cellHeight >= 13) {
+//		if(cellHeight == 80) {
+//			NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
+//			for(NSIndexPath *indexPath in indexPaths) {
+//				ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+//				[cell removeSubviews];
+//			}
+//		}
+        NSInteger numberOfRows = [self.tableView numberOfRowsInSection:0];
+        for(int i = 0; i < numberOfRows; ++i) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+            cell.topConstraint.constant -= 0.5;
+            cell.bottomConstraint.constant -= 0.5;
+            cellHeight = cell.bottomConstraint.constant;
+        }
+//        cellHeight -= 1.0;
     }
 }
 
 - (void)increaseCellSize {
     if(cellHeight <= 110) {
-		if(cellHeight == 80) {
-			NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
-			for(NSIndexPath *indexPath in indexPaths) {
-				ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-				[cell addSubviews];
-			}
-		}
-        cellHeight += 1.1;
+//		if(cellHeight == 80) {
+//			NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
+//			for(NSIndexPath *indexPath in indexPaths) {
+//				ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+//				[cell addSubviews];
+//			}
+//		}
+        NSInteger numberOfRows = [self.tableView numberOfRowsInSection:0];
+        for(int i = 0; i < numberOfRows; ++i) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+            cell.topConstraint.constant += 0.5;
+            cell.bottomConstraint.constant += 0.5;
+            cellHeight = cell.bottomConstraint.constant;
+        }
+//        cellHeight += 1.0;
     }
 }
 
@@ -996,7 +1271,8 @@ static BOOL shouldUpdateSortIds = NO;
     // Do any additional setup after loading the view, typically from a nib.
     [self UIGestureRecognizersAreFun];
 	
-			[self setUpHeaderView];
+    // dont need this for now
+//    [self setUpHeaderView];
 }
 
 - (void)didTapTableView:(UITapGestureRecognizer *)tapRecognizer {
@@ -1151,6 +1427,16 @@ static BOOL shouldUpdateSortIds = NO;
 //                [self transitionNavCenters];
                 // perform animation to
                 // TODO :: check this out
+                
+                // if there is no list set to switch to,
+                // then stay on current one
+                if([listSetDataSource numberOfSets] <= 1) {
+                    [gestureRecognizer setEnabled:NO];
+                    [self animateResetTableView];
+                    [gestureRecognizer setEnabled:YES];
+                    return;
+                }
+                
                 CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
                 
                 
@@ -1168,6 +1454,7 @@ static BOOL shouldUpdateSortIds = NO;
                 
                 
                 // awesome hack to cancel the gesture
+                
                 [gestureRecognizer setEnabled:NO];
                 [gestureRecognizer setEnabled:YES];
             
@@ -1201,14 +1488,7 @@ static BOOL shouldUpdateSortIds = NO;
 
             } else {*/
                 // reset table view position
-                CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
-                
-                POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
-                
-                tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
-                tableViewSpring.springBounciness = 15;
-                tableViewSpring.springSpeed = 10;
-                [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
+            [self animateResetTableView];
             [self transitionNavCenters];
                 
                 //[UIView animateWithDuration:0.2 animations:^{
@@ -1222,6 +1502,18 @@ static BOOL shouldUpdateSortIds = NO;
         default:
             break;
     }
+}
+
+- (void)animateResetTableView {
+    
+    CGRect originalFrame = CGRectMake(0, self.tableView.frame.origin.y, self.tableView.bounds.size.width, self.tableView.bounds.size.height);
+    
+    POPSpringAnimation *tableViewSpring = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
+    
+    tableViewSpring.toValue = [NSValue valueWithCGRect:originalFrame];
+    tableViewSpring.springBounciness = 15;
+    tableViewSpring.springSpeed = 10;
+    [self.tableView pop_addAnimation:tableViewSpring forKey:@"tableViewSpring"];
 }
 
 - (void)transitionNavCenters {
