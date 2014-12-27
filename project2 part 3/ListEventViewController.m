@@ -747,26 +747,38 @@ static UIView *_bottomOverlay = nil;
     CGRect cellFrame = [self.tableView rectForRowAtIndexPath:indexPath];
     cellFrame.origin.y -= self.tableView.contentOffset.y;
     cellFrame.origin.y += [[UIApplication sharedApplication] statusBarFrame].size.height;
-//    CGRect overlayFrame = CGRectDivide(<#CGRect rect#>, <#CGRect *slice#>, <#CGRect *remainder#>, <#CGFloat amount#>, <#CGRectEdge edge#>)
-    
-    const CGFloat overlayAlpha = 0.25;
     
     _overlay = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, cellFrame.origin.y)];
     [_overlay setBackgroundColor:[UIColor blackColor]];
-    [_overlay setAlpha:overlayAlpha];
+    [_overlay setAlpha:0.0];
     
     _bottomOverlay = [[UIView alloc] initWithFrame:CGRectMake(0, cellFrame.origin.y+cellFrame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
     [_bottomOverlay setBackgroundColor:[UIColor blackColor]];
-    [_bottomOverlay setAlpha:overlayAlpha];
+    [_bottomOverlay setAlpha:0.0];
     
     [self.view addSubview:_overlay];
     [self.view addSubview:_bottomOverlay];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [_overlay setAlpha:0.25];
+        [_bottomOverlay setAlpha:0.25];
+    }];
 }
 
 - (void)_removeCellPanningOverlay {
     
-    [_overlay removeFromSuperview];
-    [_bottomOverlay removeFromSuperview];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [_overlay setAlpha:0.0];
+        [_bottomOverlay setAlpha:0.0];
+        
+    } completion:^(BOOL finished) {
+        
+        if(finished) {
+            [_overlay removeFromSuperview];
+            [_bottomOverlay removeFromSuperview];
+        }
+    }];
 }
 
 - (void)didStopPanningCell:(ListEventCell *)cell {
