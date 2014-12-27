@@ -18,10 +18,18 @@
 @property (weak, nonatomic) IBOutlet UILabel *eventLabel;
 @property (weak, nonatomic) IBOutlet UITextField *textField;
 
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *bottomConstraint;
+
 @property (weak, nonatomic) UIView *datePicker;
 
 // delegate to send ListEventCellDelegate messages to
 @property (strong, nonatomic) id<ListEventCellDelegate>delegate;
+
+// cell gesture recognizers
+@property (strong, nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (strong, nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
+@property (strong, nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 
 // initialize all gesture recognizers for cell
 - (void)initWithGestureRecognizers;
@@ -57,6 +65,9 @@
 #pragma mark ListEventCellDelegate methods
 
 @protocol ListEventCellDelegate <NSObject>
+
+- (void)didBeginPanningCell:(ListEventCell *)cell;
+- (void)didStopPanningCell:(ListEventCell *)cell;
 
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete;
 //- (void)cellTapped:(ListEventCell *)cell;

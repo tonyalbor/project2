@@ -8,6 +8,7 @@
 
 #import "ListEventCell.h"
 #import <POP/POP.h>
+#import "CustomCellColor.h"
 
 @implementation ListEventCell {
     CGPoint _originalCenter;
@@ -40,6 +41,10 @@ static int selectedIndex = -1;
     // Configure the view for the selected state
 }
 
+- (UIEdgeInsets)layoutMargins {
+    return UIEdgeInsetsZero;
+}
+
 - (void)initWithGestureRecognizers {
     if(self.gestureRecognizers.count == 3) return;
     
@@ -61,6 +66,10 @@ static int selectedIndex = -1;
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] init];
     [pan addTarget:self action:@selector(pannedCell:)];
     [pan setDelegate:self];
+    
+    self.panGestureRecognizer = pan;
+    self.tapGestureRecognizer = tap;
+    self.longPressGestureRecognizer = longPress;
     
     [self addGestureRecognizer:pan];
     [self addGestureRecognizer:tap];
@@ -98,6 +107,7 @@ static int selectedIndex = -1;
         case UIGestureRecognizerStateBegan: {
             _originalCenter = self.center;
             _originalPoint = [gestureRecognizer locationInView:self];
+            [_delegate didBeginPanningCell:self];
             break;
         }
         case UIGestureRecognizerStateChanged: {
@@ -128,6 +138,7 @@ static int selectedIndex = -1;
                 cellSpring.springSpeed = 10;
 
                 [self pop_addAnimation:cellSpring forKey:@"cellSpring"];
+                [_delegate didStopPanningCell:self];
             }
             break;
         }
@@ -240,13 +251,20 @@ static int selectedIndex = -1;
         NSLog(@"selected index %d is expanded %d",selectedIndex,_isExpanded);
     if(selectedIndex == -1) {
         // nothing is expanded; expand
+        _isExpanded = YES;
         [_delegate expandCell:self];
         _isExpanded = YES;
     } else if(_isExpanded) {
         // self is expanded; collapse
+        _isExpanded = NO;
         [_delegate collapseCell:self];
         _isExpanded = NO;
     } else if(selectedIndex >= 0) {
+        // TODO :: remove collapse cell at index
+        // just do it, no time for explaining
+        // okay well super quick
+        // now the expanded cell will be the only visible cell, so blah blah blah just do it
+        
         // something else is expanded; collapse currently expanded; expand self
         // TODO :: animation
         [_delegate collapseCellAtIndex:selectedIndex];
@@ -262,9 +280,13 @@ static int selectedIndex = -1;
 
 - (void)layoutSubviews {
     
-    CGRect realMiddle = CGRectMake(self.eventLabel.frame.origin.x, self.bounds.size.height/2 - self.eventLabel.frame.size.height/2, self.eventLabel.frame.size.width, self.eventLabel.frame.size.height);
-    
-    [self.eventLabel setFrame:realMiddle];
+    if(_isExpanded) {
+        NSLog(@"is expanded");
+    } else {
+        CGRect realMiddle = CGRectMake(self.eventLabel.frame.origin.x, self.bounds.size.height/2 - self.eventLabel.frame.size.height/2, self.eventLabel.frame.size.width, self.eventLabel.frame.size.height);
+        
+        [self.eventLabel setFrame:realMiddle];
+    }
 }
 
 - (void)didTapPencil:(UITapGestureRecognizer *)gestureRecognizer {
@@ -303,6 +325,20 @@ static int selectedIndex = -1;
 //    [otherImageView setFrame:CGRectOffset(pencilImageView.frame, 0, -75)];
 //    [otherImageView setTag:112];
 //    [self.contentView addSubview:otherImageView];
+    
+    NSLog(@"just got added");
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.05 * self.frame.size.width, _eventLabel.frame.origin.y + _eventLabel.frame.size.height, 0.9 * self.frame.size.width, 100)];
+    NSLog(@"first %f",0.2 * self.frame.size.width);
+    NSLog(@"e %f",_eventLabel.frame.origin.y);
+    NSLog(@"last: %f",0.6 * self.frame.size.width);
+//    [view setFrame:CGRectMake(50, 50, 30, 30)];
+    UIColor *color = [CustomCellColor lightColorForUIColor:self.backgroundView.backgroundColor];
+//    color = self.backgroundView.backgroundColor;
+    [view setBackgroundColor:color];
+    [[view layer] setBorderColor:[[UIColor blackColor] CGColor]];
+    [view setTag:111];
+//    [self.contentView addSubview:view];
+    [self.contentView insertSubview:view atIndex:0];
 }
 
 - (void)removeSubviews {
