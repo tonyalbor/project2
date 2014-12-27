@@ -72,6 +72,11 @@ static ListSetDataSource *_sharedDataSource = nil;
     return setsArray;
 }
 
+- (NSInteger)numberOfSets {
+    
+    return [_sets count];
+}
+
 - (ListEvent *)eventAtIndex:(NSInteger)index {
     return [[[[self listSetForCurrentKey] currentList] eventsForCurrentCategory] objectAtIndex:index];
 }

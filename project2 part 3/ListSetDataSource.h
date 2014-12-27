@@ -37,6 +37,7 @@
 
 // all sets
 - (NSArray *)getAllSets;
+- (NSInteger)numberOfSets;
 
 - (ListEvent *)eventAtIndex:(NSInteger)index;
 
