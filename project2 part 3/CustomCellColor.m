@@ -48,6 +48,23 @@ static NSMutableDictionary *_customColors = nil;
 	return dark;
 }
 
++ (UIColor *)lightColorForUIColor:(UIColor *)color {
+    for(id key in _customColors) {
+        CustomCellColor *customColor = [_customColors objectForKey:key];
+        if([customColor isEqualToColor:color])
+            return [[CustomCellColor lightColorForId:key] customCellColorToUIColor];
+//            return [customColor customCellColorToUIColor];
+    }
+    return [UIColor whiteColor];
+}
+
+- (BOOL)isEqualToColor:(UIColor *)color {
+    CGFloat colorRed, colorGreen, colorBlue;
+    CGFloat one = 1.0f;
+    [color getRed:&colorRed green:&colorGreen blue:&colorBlue alpha:&one];
+    return red == colorRed && green == colorGreen && blue == colorBlue;
+}
+
 // set up custom colors array
 + (void)initializeColors {
     _customColors = [[NSMutableDictionary alloc] init];

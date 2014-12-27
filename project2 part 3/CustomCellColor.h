@@ -21,7 +21,7 @@
 
 // get uicolor from customcellcolor
 - (UIColor *)customCellColorToUIColor;
-
++ (UIColor *)lightColorForUIColor:(UIColor *)color;
 + (BOOL)colorExistsForCategoryId:(id)key;
 
 // get customcellcolor
