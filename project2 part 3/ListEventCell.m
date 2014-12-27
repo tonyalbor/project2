@@ -300,8 +300,8 @@ static int selectedIndex = -1;
     [UIView animateWithDuration:.2 animations:^{
         CGRect newFrame = CGRectInset(originalFrame, -originalFrame.size.width/4, -originalFrame.size.height/4);
         [pencilImageView setFrame:newFrame];
-    } completion:^(BOOL finsished) {
-        if(finsished) {
+    } completion:^(BOOL finished) {
+        if(finished) {
             POPSpringAnimation *spring = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerBounds];
             spring.toValue = [NSValue valueWithCGRect:originalFrame];
             spring.springBounciness = 15;
