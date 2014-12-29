@@ -82,7 +82,7 @@
                                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                             <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         </label>
-                                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Event" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UH7-R4-QiO">
+                                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Event" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UH7-R4-QiO">
                                                             <constraints>
                                                                 <constraint firstAttribute="width" id="AtQ-wA-dux"/>
                                                             </constraints>
@@ -139,7 +139,7 @@
                                             <outlet property="delegate" destination="2" id="jJp-Er-hPa"/>
                                         </connections>
                                     </tableView>
-                                    <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wqu-e6-4ob">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wqu-e6-4ob">
                                         <rect key="frame" x="105" y="447" width="110" height="110"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="to-do-icon-rough3.png" translatesAutoresizingMaskIntoConstraints="NO" id="HPZ-jm-LTm">
@@ -147,6 +147,10 @@
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="110" id="1Oa-gK-e6p"/>
+                                            <constraint firstAttribute="height" constant="110" id="VMH-eN-gkn"/>
+                                        </constraints>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="pFq-2x-2ex" appends="YES" id="Qew-iy-mMY"/>
                                             <outletCollection property="gestureRecognizers" destination="asR-7F-eQI" appends="YES" id="3Ib-bL-zS0"/>
@@ -156,7 +160,7 @@
                                             <outletCollection property="gestureRecognizers" destination="y1r-55-gaC" appends="YES" id="98M-0k-wMP"/>
                                         </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="M9R-ws-wnF">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M9R-ws-wnF">
                                         <rect key="frame" x="223" y="477" width="80" height="80"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="checkmark-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZhM-sg-pdG">
@@ -164,11 +168,15 @@
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="80" id="I1F-dj-sRn"/>
+                                            <constraint firstAttribute="height" constant="80" id="SaA-zV-zhH"/>
+                                        </constraints>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="UT6-3d-frz" appends="YES" id="bpH-n6-6ak"/>
                                         </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="laz-Oz-Zrl">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="laz-Oz-Zrl">
                                         <rect key="frame" x="17" y="477" width="80" height="80"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="trash-can-icon.png" translatesAutoresizingMaskIntoConstraints="NO" id="0sq-Iy-gN6">
@@ -176,6 +184,10 @@
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="80" id="BbX-J7-pWV"/>
+                                            <constraint firstAttribute="width" constant="80" id="C7R-ZO-dMu"/>
+                                        </constraints>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="j0c-NZ-lug" appends="YES" id="vxE-LK-CRo"/>
                                         </connections>
@@ -183,10 +195,16 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="laz-Oz-Zrl" secondAttribute="bottom" constant="11" id="5Jr-GM-Wtf"/>
                                     <constraint firstAttribute="trailing" secondItem="rdk-rW-qcO" secondAttribute="trailing" id="EI7-Jz-NjW"/>
+                                    <constraint firstAttribute="centerX" secondItem="wqu-e6-4ob" secondAttribute="centerX" id="JTl-Q6-3DK"/>
                                     <constraint firstItem="rdk-rW-qcO" firstAttribute="leading" secondItem="eqc-hU-NZ0" secondAttribute="leading" id="MRw-0B-r1r"/>
                                     <constraint firstAttribute="bottom" secondItem="rdk-rW-qcO" secondAttribute="bottom" id="ZEy-bU-jKx"/>
+                                    <constraint firstAttribute="bottom" secondItem="M9R-ws-wnF" secondAttribute="bottom" constant="11" id="aD2-Wh-8br"/>
+                                    <constraint firstAttribute="bottom" secondItem="wqu-e6-4ob" secondAttribute="bottom" constant="11" id="bgb-8H-bMe"/>
+                                    <constraint firstItem="wqu-e6-4ob" firstAttribute="leading" secondItem="laz-Oz-Zrl" secondAttribute="trailing" constant="8" id="dzP-PG-eVD"/>
                                     <constraint firstItem="rdk-rW-qcO" firstAttribute="centerX" secondItem="wqu-e6-4ob" secondAttribute="centerX" id="jcB-WL-qYx"/>
+                                    <constraint firstItem="M9R-ws-wnF" firstAttribute="leading" secondItem="wqu-e6-4ob" secondAttribute="trailing" constant="8" id="lFO-db-4Xl"/>
                                     <constraint firstItem="rdk-rW-qcO" firstAttribute="top" secondItem="eqc-hU-NZ0" secondAttribute="top" constant="20" id="oFa-2V-49G"/>
                                 </constraints>
                             </view>
@@ -212,9 +230,17 @@
                         </textField>
                     </navigationItem>
                     <connections>
+                        <outlet property="completedHeightConstraint" destination="SaA-zV-zhH" id="GvA-LB-aRo"/>
                         <outlet property="completedImageView" destination="M9R-ws-wnF" id="BIX-u7-EgN"/>
+                        <outlet property="completedWidthConstraint" destination="I1F-dj-sRn" id="wg1-s2-HbV"/>
+                        <outlet property="deletedHeightConstraint" destination="BbX-J7-pWV" id="qu3-EU-Gz6"/>
                         <outlet property="deletedImageView" destination="laz-Oz-Zrl" id="VjL-zJ-0Nq"/>
+                        <outlet property="deletedWidthConstraint" destination="C7R-ZO-dMu" id="Tw8-np-obr"/>
+                        <outlet property="eventsHeightConstraint" destination="VMH-eN-gkn" id="sd3-Ms-Drl"/>
                         <outlet property="eventsImageView" destination="wqu-e6-4ob" id="Xi0-pB-Qaq"/>
+                        <outlet property="eventsToCompletedConstraint" destination="lFO-db-4Xl" id="uhc-Bm-Vi7"/>
+                        <outlet property="eventsToDeletedConstraint" destination="dzP-PG-eVD" id="suy-OX-STB"/>
+                        <outlet property="eventsWidthConstraint" destination="1Oa-gK-e6p" id="ejY-Wm-fuf"/>
                         <outlet property="tableView" destination="rdk-rW-qcO" id="ZRQ-qR-eUe"/>
                         <outlet property="titleTextField" destination="kRe-29-sCf" id="NF2-Kd-20t"/>
                     </connections>
