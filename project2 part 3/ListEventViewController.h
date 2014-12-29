@@ -21,8 +21,19 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (weak, nonatomic) IBOutlet UIView *deletedImageView;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *deletedHeightConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *deletedWidthConstraint;
+
 @property (weak, nonatomic) IBOutlet UIView *eventsImageView;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *eventsHeightConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *eventsWidthConstraint;
+
 @property (weak, nonatomic) IBOutlet UIView *completedImageView;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *completedHeightConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *completedWidthConstraint;
+
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *eventsToCompletedConstraint;
+@property (strong, nonatomic) IBOutlet NSLayoutConstraint *eventsToDeletedConstraint;
 
 @property (strong, nonatomic) IBOutlet UITextField *titleTextField;
 

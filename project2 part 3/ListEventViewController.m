@@ -189,7 +189,9 @@ static BOOL shouldUpdateSortIds = NO;
     
     if(event.categoryID == nil || [event.categoryID isEqualToNumber:@99] /*|| ![CustomCellColor colorExistsForCategoryId:event.categoryID]*/) event.categoryID = @0;
     
-    CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
+    // using dark color for now
+    CustomCellColor *backgroundColor = [CustomCellColor darkColorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
+    
     cell.backgroundColor = [backgroundColor customCellColorToUIColor];
     
     [cell.textField setTag:indexPath.row];
@@ -336,6 +338,9 @@ static BOOL shouldUpdateSortIds = NO;
     
     List *list = [self listForImageView:imageView];
     
+    // dont do anything if it is not the current list
+    if(list != [[listSetDataSource listSetForCurrentKey] currentList]) return;
+    
     // nowhere to switch to
     if([list numberOfEvents] <= 1) return;
     
@@ -356,7 +361,7 @@ static BOOL shouldUpdateSortIds = NO;
         color = [UIColor lightGrayColor];
     } else {
 //        color = [[CustomCellColor colorForId:list.currentCategory] customCellColorToUIColor];
-        color = [[CustomCellColor darkColorForId:list.currentCategory] customCellColorToUIColor];
+        color = [[CustomCellColor lightColorForId:list.currentCategory] customCellColorToUIColor];
     }
     [UIView animateWithDuration:0.2 animations:^{
         [imageView setBackgroundColor:color];
@@ -484,24 +489,33 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView endUpdates];
 }
 
+#define NAV_CENTER_BIG   110
+#define NAV_CENTER_SMALL 80
+
 - (void)animateCompletedBig {
-    CGRect due = CGRectMake(105, 486, 80, 80);
-    CGRect com = CGRectMake(190, 455, 110, 110);
-    CGRect del = CGRectMake(17, 486, 80, 80);
+    
+    CGRect due = [self frameForImageView:_eventsImageView withBigNav:2];
+    CGRect com = [self frameForImageView:_completedImageView withBigNav:2];
+    CGRect del = [self frameForImageView:_deletedImageView withBigNav:2];
+    
     [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_COMPLETED];
 }
 
 - (void)animateDueBig {
-    CGRect due = CGRectMake(105, 455, 110, 110);
-    CGRect com = CGRectMake(220, 486, 80, 80);
-    CGRect del = CGRectMake(17, 486, 80, 80);
+    
+    CGRect due = [self frameForImageView:_eventsImageView withBigNav:1];
+    CGRect com = [self frameForImageView:_completedImageView withBigNav:1];
+    CGRect del = [self frameForImageView:_deletedImageView withBigNav:1];
+    
     [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DUE];
 }
 
 - (void)animateDeletedBig {
-    CGRect due = CGRectMake(132, 486, 80, 80);
-    CGRect com = CGRectMake(220, 486, 80, 80);
-    CGRect del = CGRectMake(20, 455, 110, 110);
+    
+    CGRect due = [self frameForImageView:_eventsImageView withBigNav:0];
+    CGRect com = [self frameForImageView:_completedImageView withBigNav:0];
+    CGRect del = [self frameForImageView:_deletedImageView withBigNav:0];
+    
     [self animateCompletedWithRect:com dueWithRect:due deletedWithRect:del biggest:EVENTS_DELETED];
 }
 
@@ -834,7 +848,11 @@ static UIView *_bottomOverlay = nil;
     [cell addSubviews];
     [self.tableView endUpdates];
     [cell setExpanded:YES];
+    
+    // scroll row to top
     [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    
+    // hide navigation
     [self animateHideNavs];
     
     // table should not scroll while cell is expanded
@@ -847,11 +865,11 @@ static UIView *_bottomOverlay = nil;
 - (void)collapseCell:(ListEventCell *)cell {
     [ListEventCell setSelectedIndex:-1];
     [self.tableView beginUpdates];
+    [self.tableView setScrollEnabled:YES];
     [self.tableView endUpdates];
     [cell setExpanded:NO];
     [cell removeSubviews];
     [self animateShowNavs];
-    [self.tableView setScrollEnabled:YES];
     [[cell panGestureRecognizer] setEnabled:YES];
     
 }
@@ -866,6 +884,9 @@ static UIView *_bottomOverlay = nil;
     [cell removeSubviews];
 }
 
+// TODO :: deprecated?
+// check if this is being used anymore
+// i doubt it since i am not using detail view controller anymore
 - (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
     if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         NSLog(@"got in");
@@ -1379,6 +1400,74 @@ static BOOL navsHidden = NO;
     // TODO :: should i save here ?
     [MemoryDataSource save];
     list.recentlyAddedEvent = nil;
+}
+
+const CGFloat NAV_CENTER_BOTTOM_TO_SUPERVIEW = 11;
+
+- (CGRect)frameForImageView:(UIView *)nav withBigNav:(int)bigNav {
+    
+    // total nav center width, including two small navs and one big nav
+    CGFloat totalNavWidth = NAV_CENTER_SMALL + _eventsToDeletedConstraint.constant + NAV_CENTER_BIG + _eventsToCompletedConstraint.constant + NAV_CENTER_SMALL;
+    
+    // width remaining that is not occupied by the nav centers
+    CGFloat widthRemaining = self.view.frame.size.width - totalNavWidth;
+    
+    // padding to go on each side of entire nav center
+    CGFloat navPadding = widthRemaining / 2.0;
+    
+    // starting y positions for nav centers
+    CGFloat yBig = self.view.frame.size.height - NAV_CENTER_BOTTOM_TO_SUPERVIEW - NAV_CENTER_BIG;
+    CGFloat ySmall = self.view.frame.size.height - NAV_CENTER_BOTTOM_TO_SUPERVIEW - NAV_CENTER_SMALL;
+    
+    switch(bigNav) {
+            
+        case 0: // deleted big
+            if([nav isEqual:_deletedImageView]) {
+                
+                return CGRectMake(navPadding, yBig, NAV_CENTER_BIG, NAV_CENTER_BIG);
+                
+            } else if([nav isEqual:_eventsImageView]) {
+                
+                return CGRectMake(navPadding + NAV_CENTER_BIG + _eventsToDeletedConstraint.constant, ySmall, NAV_CENTER_SMALL, NAV_CENTER_SMALL);
+                
+            } else if([nav isEqual:_completedImageView]) {
+                
+                return CGRectMake(navPadding + NAV_CENTER_BIG + _eventsToDeletedConstraint.constant + NAV_CENTER_SMALL + _eventsToCompletedConstraint.constant, ySmall, NAV_CENTER_SMALL, NAV_CENTER_SMALL);
+            }
+            
+        case 1: // due big
+            if([nav isEqual:_deletedImageView]) {
+                
+                return CGRectMake(navPadding, ySmall, NAV_CENTER_SMALL, NAV_CENTER_SMALL);
+                
+            } else if([nav isEqual:_eventsImageView]) {
+                
+                return CGRectMake(navPadding + NAV_CENTER_SMALL + _eventsToDeletedConstraint.constant, yBig, NAV_CENTER_BIG, NAV_CENTER_BIG);
+                
+            } else if([nav isEqual:_completedImageView]) {
+                
+                return CGRectMake(navPadding + NAV_CENTER_SMALL + _eventsToDeletedConstraint.constant + NAV_CENTER_BIG + _eventsToCompletedConstraint.constant, ySmall, NAV_CENTER_SMALL, NAV_CENTER_SMALL);
+                
+            }
+            
+        case 2: // completed big
+            if([nav isEqual:_deletedImageView]) {
+                
+                return CGRectMake(navPadding, ySmall, NAV_CENTER_SMALL, NAV_CENTER_SMALL);
+                
+            } else if([nav isEqual:_eventsImageView]) {
+                
+                return CGRectMake(navPadding + NAV_CENTER_SMALL + _eventsToDeletedConstraint.constant, ySmall, NAV_CENTER_SMALL, NAV_CENTER_SMALL);
+                
+            } else if([nav isEqual:_completedImageView]) {
+                
+                return CGRectMake(navPadding + NAV_CENTER_SMALL + _eventsToDeletedConstraint.constant + NAV_CENTER_SMALL + _eventsToCompletedConstraint.constant, yBig, NAV_CENTER_BIG, NAV_CENTER_BIG);
+                
+            }
+            
+        default:
+            return CGRectZero;
+    }
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer {
