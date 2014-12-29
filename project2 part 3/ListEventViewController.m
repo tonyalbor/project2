@@ -356,21 +356,34 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView endUpdates];
     
     // animate
-    UIColor *color = nil;
-    if([[list currentCategory] isEqualToNumber:@99]) {
-        color = [UIColor lightGrayColor];
-    } else {
-//        color = [[CustomCellColor colorForId:list.currentCategory] customCellColorToUIColor];
-        color = [[CustomCellColor lightColorForId:list.currentCategory] customCellColorToUIColor];
-    }
-    [UIView animateWithDuration:0.2 animations:^{
-        [imageView setBackgroundColor:color];
-    }];
-    
+    [self updateNavColor:imageView];
     
 //    
 //    CustomCellColor *backgroundColor = [CustomCellColor colorForId:[event.categoryID isEqualToNumber:@99] ? @0 : event.categoryID];
 //    cell.backgroundColor = [backgroundColor customCellColorToUIColor];
+}
+
+- (void)updateNavCenterColors {
+    
+    [self updateNavColor:_deletedImageView];
+    [self updateNavColor:_eventsImageView];
+    [self updateNavColor:_completedImageView];
+}
+
+- (void)updateNavColor:(UIView *)nav {
+    
+    UIColor *color = [UIColor lightGrayColor];
+    
+    List *list = [self listForImageView:nav];
+    if(![[list currentCategory] isEqualToNumber:@99]) {
+        color = [[CustomCellColor lightColorForId:list.currentCategory] customCellColorToUIColor];
+    }
+    
+    if([[nav backgroundColor] isEqual:color]) return;
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [nav setBackgroundColor:color];
+    }];
 }
 
 - (IBAction)showAllEvents:(id)sender {
@@ -1730,6 +1743,9 @@ const CGFloat NAV_CENTER_BOTTOM_TO_SUPERVIEW = 11;
     //[self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:UITableViewRowAnimationFade];
     [self insertEvents:[[listSetDataSource listSetForCurrentKey] currentList] inDirection:(next ? UITableViewRowAnimationRight : UITableViewRowAnimationLeft)];
     [self.tableView endUpdates];
+    
+    // update nav center colors
+    [self updateNavCenterColors];
     
     // TODO :: take this out
     // TODO :: change this to MemoryCard
