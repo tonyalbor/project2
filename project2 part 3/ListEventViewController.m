@@ -24,6 +24,8 @@
 
 @interface ListEventViewController () {
     WYPopoverController *popover;
+    UIView *_overlay;
+    UIView *_bottomOverlay;
 }
 
 @end
@@ -756,18 +758,6 @@ static BOOL shouldUpdateSortIds = NO;
 
 #pragma mark ListEventCellDelegate
 
-// TODO :: overlay
-// top&bottom overlay needs like a few more points in height
-// (might be status bar height?)
-
-// TODO :: overlay
-// need to add bottom overlay (overlay beneath cell)
-
-// TODO :: make this private variables (not static)
-// fuck static
-static UIView *_overlay = nil;
-static UIView *_bottomOverlay = nil;
-
 - (void)didBeginPanningCell:(ListEventCell *)cell {
     
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
@@ -818,12 +808,6 @@ static UIView *_bottomOverlay = nil;
     [self _removeCellPanningOverlay];
 	
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
-    // TODO :: create cell delegate methods =>
-    // didBeginPanningCell:(cell *)cell
-    // didStopPanningCell:(cell *)cell
-    // (this method is when panning completes)
-    //
-    // OKAY THIS MIGHT BE DONE NOW
     
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     ListEvent *eventToBeRemoved = [listSetDataSource eventAtIndex:indexPath.row];
