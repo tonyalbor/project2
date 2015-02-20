@@ -119,6 +119,8 @@ static int selectedIndex = -1;
             //cell superview is uitableviewwrapperview
             CGPoint endLocation = [gestureRecognizer locationInView:self.superview];
             
+            [_delegate didPanCellAmount:abs(self.center.x - _originalCenter.x)];
+            
             _completeOnDragRelease = endLocation.x - _originalPoint.x > self.contentView.frame.size.width / 5;
             _deleteOnDragRelease = _originalPoint.x - endLocation.x > self.contentView.frame.size.width / 5;
             break;
@@ -138,8 +140,8 @@ static int selectedIndex = -1;
                 cellSpring.springSpeed = 10;
 
                 [self pop_addAnimation:cellSpring forKey:@"cellSpring"];
-                [_delegate didStopPanningCell:self];
             }
+            [_delegate didStopPanningCell:self];
             break;
         }
         default:
@@ -279,13 +281,13 @@ static int selectedIndex = -1;
 }
 
 - (void)layoutSubviews {
-    
+//    [super layoutSubviews];
     if(_isExpanded) {
         NSLog(@"is expanded");
     } else {
-        CGRect realMiddle = CGRectMake(self.eventLabel.frame.origin.x, self.bounds.size.height/2 - self.eventLabel.frame.size.height/2, self.eventLabel.frame.size.width, self.eventLabel.frame.size.height);
+//        CGRect realMiddle = CGRectMake(self.eventLabel.frame.origin.x, self.bounds.size.height/2 - self.eventLabel.frame.size.height/2, self.eventLabel.frame.size.width, self.eventLabel.frame.size.height);
         
-        [self.eventLabel setFrame:realMiddle];
+//        [self.eventLabel setFrame:realMiddle];
     }
 }
 
@@ -313,6 +315,7 @@ static int selectedIndex = -1;
 }
 
 - (void)addSubviews {
+    return;
 //    UIImageView *pencilImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pencil.png"]];
 //    [pencilImageView setFrame:CGRectMake(self.eventLabel.frame.origin.x / 4, self.eventLabel.frame.origin.y + 150, 25, 25)];
 //    [pencilImageView setTag:111];
@@ -342,6 +345,7 @@ static int selectedIndex = -1;
 }
 
 - (void)removeSubviews {
+    return;
     id view = [self.contentView viewWithTag:111];
     if(view) [view removeFromSuperview];
     

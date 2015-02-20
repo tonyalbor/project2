@@ -67,6 +67,9 @@
 @protocol ListEventCellDelegate <NSObject>
 
 - (void)didBeginPanningCell:(ListEventCell *)cell;
+
+- (void)didPanCellTo:(CGFloat)xValue;
+- (void)didPanCellAmount:(CGFloat)amount;
 - (void)didStopPanningCell:(ListEventCell *)cell;
 
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete;

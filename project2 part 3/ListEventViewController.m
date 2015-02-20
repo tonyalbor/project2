@@ -22,6 +22,53 @@
 // an animation might not be complete while another animation on the same object
 // is beginning. this leads to some weird UI
 
+/*
+ 
+ 
+ PROPOSED NAV CENTER
+ 
+ TODO START COMP      TODO START COMP
+        =>                  <=
+ START COMP TODO      COMP TODO START
+        =>                  <=
+ COMP TODO START      START COMP TODO
+        =>
+ TODO START COMP
+       <=
+ COMP TODO START
+       <= 
+ START COMP TODO
+       <=
+ TODO START COMP
+ 
+ 
+ COMP TODO START
+ 
+ START COMP TODO
+ 
+ TODO START COMP
+ 
+ 
+ also, my idea to put in IN PROGESS or whatever was also because trash doesn't really get used very often. the action of deleting does get used (which should probably be the super pans), but having a whole nav center devoted to trash is too much (it can be hidden away somewhere)
+ 
+ 
+ */
+
+// CRAZY THOUGHT
+// multiple table view controllers
+// one for every event status
+// or table view data sources rather
+// well maybe not, read up on the obj.io articles again
+
+// look into changing the data source of a table view
+// i wanna know how to show a table view app with multiple data sources
+// it might be one table view data source object that gets handed an array of events
+// and of course it only needs one controller (maybe just multiple instances of the same table view controller side by side?)
+// okay just thinking about it made it seem simpler
+// have one table view controller that has one data source object
+// that data source object will use an array or something
+// i dont even know anymore actually, all this might be too much
+
 @interface ListEventViewController () {
     WYPopoverController *popover;
     UIView *_overlay;
@@ -175,9 +222,9 @@ static BOOL shouldUpdateSortIds = NO;
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // might use later for dragging/reorder cells
-}
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+//    // might use later for dragging/reorder cells
+//}
 
 - (void)configureCell:(ListEventCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     cell.delegate = self;
@@ -759,7 +806,7 @@ static BOOL shouldUpdateSortIds = NO;
 #pragma mark ListEventCellDelegate
 
 - (void)didBeginPanningCell:(ListEventCell *)cell {
-    
+    [self.tableView setBackgroundColor:[UIColor greenColor]];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     CGRect cellFrame = [self.tableView rectForRowAtIndexPath:indexPath];
     cellFrame.origin.y -= self.tableView.contentOffset.y;
@@ -775,26 +822,74 @@ static BOOL shouldUpdateSortIds = NO;
     
     [self.view addSubview:_overlay];
     [self.view addSubview:_bottomOverlay];
+}
+
+- (void)didPanCellAmount:(CGFloat)amount {
     
-    [UIView animateWithDuration:0.2 animations:^{
-        [_overlay setAlpha:0.25];
-        [_bottomOverlay setAlpha:0.25];
+    // amount is actual x value of cell
+    CGFloat multiplier = 1.7;
+    CGFloat max = CGRectGetWidth([self.tableView frame]);
+    CGFloat alpha = (amount * multiplier) / max;
+    
+    multiplier = 2 - alpha;
+//    NSLog(@"multiplier: %f",multiplier);
+    
+    CGFloat value = 0.2;
+    
+    NSTimeInterval duration = 1 - (multiplier * value);
+    
+    [self _animateOverlayAlpha:alpha withDuration:duration*2];
+}
+
+- (void)_setOverlayAlpha:(CGFloat)alpha {
+    
+    [_overlay setAlpha:alpha];
+    [_bottomOverlay setAlpha:alpha];
+}
+
+- (void)_animateOverlayAlpha:(CGFloat)alpha withDuration:(NSTimeInterval)duration {
+    
+    if(alpha >= 1) {
+        [self.tableView setBackgroundColor:[UIColor redColor]];
+    } else {
+        [self.tableView setBackgroundColor:[UIColor greenColor]];
+    }
+    [UIView animateWithDuration:duration animations:^{
+        [self _setOverlayAlpha:alpha];
     }];
+}
+
+- (void)_animateOverlayAlpha:(CGFloat)alpha completion:(void(^)())completion {
+    
+//    NSLog(@"about");
+    CGFloat multiplier = 2 - alpha;
+//    NSLog(@"multiplier: %f",multiplier);
+    
+    CGFloat value = 0.2;
+    NSTimeInterval duration = multiplier * value;
+    
+//    NSLog(@"duration: %f",duration);
+    
+    // the higher the alpha, the longer the time
+    [UIView animateWithDuration:0.2 animations:^{
+        [self _setOverlayAlpha:alpha];
+    } completion:^(BOOL finished) {
+        if(finished) {
+            completion();
+        }
+    }];
+}
+
+- (void)_removeOverlayFromSuperview {
+    
+    [_overlay removeFromSuperview];
+    [_bottomOverlay removeFromSuperview];
 }
 
 - (void)_removeCellPanningOverlay {
     
-    
-    [UIView animateWithDuration:0.2 animations:^{
-        [_overlay setAlpha:0.0];
-        [_bottomOverlay setAlpha:0.0];
-        
-    } completion:^(BOOL finished) {
-        
-        if(finished) {
-            [_overlay removeFromSuperview];
-            [_bottomOverlay removeFromSuperview];
-        }
+    [self _animateOverlayAlpha:0.0 completion:^{
+        [self _removeOverlayFromSuperview];
     }];
 }
 
@@ -805,7 +900,7 @@ static BOOL shouldUpdateSortIds = NO;
 
 - (void)cellPanned:(UIPanGestureRecognizer *)gestureRecognizer complete:(BOOL)shouldComplete delete:(BOOL)shouldDelete {
     
-    [self _removeCellPanningOverlay];
+//    [self _removeCellPanningOverlay];
 	
     ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
     
@@ -838,13 +933,19 @@ static BOOL shouldUpdateSortIds = NO;
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
 }
 
+static CGFloat _y = 0.0f;
+
 - (void)expandCell:(ListEventCell *)cell {
+    
+    _y = cell.frame.origin.y - self.tableView.contentOffset.y;
+    NSLog(@"DI IS Y: %f",_y);
+    
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     [ListEventCell setSelectedIndex:indexPath.row];
     [self.tableView beginUpdates];
-    [cell addSubviews];
+//    [cell addSubviews];
     [self.tableView endUpdates];
-    [cell setExpanded:YES];
+//    [cell setExpanded:YES];
     
     // scroll row to top
     [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
@@ -860,42 +961,54 @@ static BOOL shouldUpdateSortIds = NO;
 }
 
 - (void)collapseCell:(ListEventCell *)cell {
+    double percentageDown = self.tableView.contentSize.height - self.tableView.contentOffset.y;
+    percentageDown /= self.tableView.contentSize.height;
+    
+    NSLog(@"left to go more at bottom: %f",percentageDown);
     [ListEventCell setSelectedIndex:-1];
-    [self.tableView beginUpdates];
     [self.tableView setScrollEnabled:YES];
+    [self.tableView beginUpdates];
+    
+    [CATransaction setCompletionBlock: ^{
+        // scroll
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:[self scrollPositionForCollapsingCell] animated:YES];
+    }];
+    
+    
     [self.tableView endUpdates];
-    [cell setExpanded:NO];
-    [cell removeSubviews];
+    
+    
+    
+    
+//    [cell setExpanded:NO];
+//    [cell removeSubviews];
     [self animateShowNavs];
     [[cell panGestureRecognizer] setEnabled:YES];
     
 }
 
+- (UITableViewScrollPosition)scrollPositionForCollapsingCell {
+    return UITableViewScrollPositionNone;
+    CGFloat height = CGRectGetHeight(self.tableView.frame);
+    CGFloat percentage = _y / height;
+    if(percentage < 0.33) {
+        return UITableViewScrollPositionTop;
+    } else if(percentage < 0.66) {
+        return UITableViewScrollPositionMiddle;
+    } else {
+        return UITableViewScrollPositionTop;
+    }
+}
+
 - (void)collapseCellAtIndex:(int)index {
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
     [ListEventCell setSelectedIndex:-1];
-    ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+//    ListEventCell *cell = (ListEventCell *)[self.tableView cellForRowAtIndexPath:indexPath];
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
-    [cell setExpanded:NO];
-    [cell removeSubviews];
-}
-
-// TODO :: deprecated?
-// check if this is being used anymore
-// i doubt it since i am not using detail view controller anymore
-- (void)cellLongPressed:(UILongPressGestureRecognizer *)gestureRecognizer {
-    if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"got in");
-        ListEventCell *cell = (ListEventCell *)gestureRecognizer.view;
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        ListEvent *event = [listSetDataSource eventAtIndex:indexPath.row];
-        CustomCellColor *color = [CustomCellColor colorForId:event.categoryID];
-        UIColor *colorcolor = [color customCellColorToUIColor];
-        [DetailViewController setColor:colorcolor];
-        DetailViewController *detail = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
-        [self.navigationController pushViewController:detail animated:YES];
-    }
+//    [cell setExpanded:NO];
+//    [cell removeSubviews];
 }
 
 #pragma mark UIScrollViewDelegate
@@ -1030,7 +1143,7 @@ static BOOL navsHidden = NO;
         [_completedImageView setFrame:completedFrame];
     } completion:^(BOOL finished) {
         if(finished) {
-            navsHidden = YES;
+//            navsHidden = YES;
         }
     }];
 }
@@ -1222,6 +1335,8 @@ static BOOL navsHidden = NO;
         if(cell.textField.delegate == self) [cell.textField setDelegate:cell];
     }
     
+    [self.tableView setUserInteractionEnabled:YES];
+    
     return NO;
 }
 
@@ -1232,6 +1347,8 @@ static BOOL navsHidden = NO;
         // keep getting textfield's superview until it is the ListEventCell
         // i think on ios 6 and ios 7 they have a different heirarchy
         // but eventually it'll get there
+        
+        // TODO :: hacky, fix
         view = view.superview;
     }
     ListEventCell *cell = (ListEventCell *)view;
@@ -1239,7 +1356,7 @@ static BOOL navsHidden = NO;
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-
+    [self.tableView setUserInteractionEnabled:NO];
 }
 
 #pragma mark WYPopoverControllerDelegate
@@ -1681,9 +1798,13 @@ const CGFloat NAV_CENTER_BOTTOM_TO_SUPERVIEW = 11;
     [doubleTapCompleted addTarget:self action:@selector(showAllEvents:)];
     [self.completedImageView addGestureRecognizer:doubleTapCompleted];
     
-    
     [self setUpNavCenters];
     
+}
+
+- (void)navCenterPanned:(id)navCenter {
+    // so in the end, one of three things will happen
+    // panned to the left, the top, or the right
 }
 
 - (void)setUpNavCenters {
